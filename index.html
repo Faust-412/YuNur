@@ -3,98 +3,431 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YuNur</title>
+  <title>YuNur - Современный сайт</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f2f7f4;
+      color: #333;
+      line-height: 1.6;
     }
-    .form-container {
-      margin-top: 30px;
+
+    /* Шапка */
+    header {
+      background-color: #1b4332;
+      padding: 15px 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-    .form-group {
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #95d5b2;
+    }
+
+    /* Главный экран */
+    .hero {
+      background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 20px 60px;
+    }
+
+    .hero-content {
+      max-width: 800px;
+    }
+
+    .hero h1 {
+      font-size: 64px;
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 22px;
+      color: #d8f3dc;
+      margin-bottom: 40px;
+    }
+
+    .btn-primary {
+      background-color: #2d6a4f;
+      color: #fff;
+      padding: 16px 40px;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(45, 106, 79, 0.4);
+    }
+
+    .btn-primary:hover {
+      background-color: #40916c;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(45, 106, 79, 0.5);
+    }
+
+    /* Секции */
+    section {
+      padding: 80px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 36px;
+      color: #1b4332;
+      text-align: center;
+      margin-bottom: 50px;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background-color: #2d6a4f;
+      margin: 15px auto 0;
+      border-radius: 2px;
+    }
+
+    /* О нас */
+    .about-content {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      font-size: 18px;
+      line-height: 1.8;
+      color: #444;
+    }
+
+    /* Услуги */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .service-card {
+      background-color: #fff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .service-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .service-card h3 {
+      font-size: 22px;
+      color: #1b4332;
       margin-bottom: 15px;
     }
+
+    .service-card p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Форма заявки */
+    .form-section {
+      background-color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      padding: 50px;
+      max-width: 600px;
+      margin: 0 auto 80px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
     .form-group label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #1b4332;
+      font-size: 16px;
     }
+
     .form-group input,
     .form-group textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
     }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2d6a4f;
+    }
+
     .form-group textarea {
-      height: 100px;
+      height: 120px;
       resize: vertical;
     }
+
     .submit-btn {
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 24px;
+      width: 100%;
+      background-color: #2d6a4f;
+      color: #fff;
+      padding: 16px;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
+      font-size: 18px;
       cursor: pointer;
-      font-size: 16px;
+      transition: all 0.3s ease;
+      font-weight: 600;
     }
+
     .submit-btn:hover {
-      background-color: #45a049;
+      background-color: #40916c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(45, 106, 79, 0.4);
     }
-    .message {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 4px;
-      display: none;
-    }
-    .message.info {
+
+    .form-message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
       background-color: #d7e3ff;
       color: #1a3d6e;
       border: 1px solid #b8cff5;
+      text-align: center;
+      display: none;
+      font-weight: 500;
     }
+
     .form-note {
-      margin-top: 10px;
+      margin-top: 20px;
+      text-align: center;
       font-size: 14px;
       color: #666;
+    }
+
+    /* Подвал */
+    footer {
+      background-color: #1b4332;
+      color: #fff;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    footer p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* Мобильная версия */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav ul {
+        gap: 20px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .about-content {
+        padding: 25px;
+        font-size: 16px;
+      }
+
+      .form-section {
+        padding: 30px 20px;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      nav ul {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        padding: 14px 30px;
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Привет! Это сайт YuNur</h1>
-  <p>Мой новый сайт на GitHub Pages.</p>
-  
-  <div class="form-container">
-    <h2>Форма заявки</h2>
-    <form id="contactForm">
-      <div class="form-group">
-        <label for="name">Имя:</label>
-        <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
+  <!-- Шапка -->
+  <header>
+    <div class="header-container">
+      <a href="#" class="logo">YuNur</a>
+      <nav>
+        <ul>
+          <li><a href="#about">О нас</a></li>
+          <li><a href="#services">Услуги</a></li>
+          <li><a href="#contact">Заявка</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Главный экран -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>YuNur</h1>
+      <p>Ваш надёжный партнёр для решения любых задач</p>
+      <a href="#contact" class="btn-primary">Оставить заявку</a>
+    </div>
+  </section>
+
+  <!-- О нас -->
+  <section id="about">
+    <h2 class="section-title">О нас</h2>
+    <div class="about-content">
+      <p>Мы — команда профессионалов, стремящаяся предоставлять качественные услуги нашим клиентам. YuNur — это бренд, который объединяет опыт, инновации и индивидуальный подход к каждому проекту.</p>
+      <br>
+      <p>Наша миссия — помогать людям и бизнесу достигать своих целей, предлагая современные решения и поддерживая высокий уровень сервиса. Мы ценим доверие наших клиентов и работаем над тем, чтобы каждое взаимодействие с нами было приятным и продуктивным.</p>
+    </div>
+  </section>
+
+  <!-- Услуги -->
+  <section id="services">
+    <h2 class="section-title">Услуги</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">💼</div>
+        <h3>Консультации</h3>
+        <p>Профессиональные консультации по всем вопросам. Поможем разобраться в любой ситуации и найти оптимальное решение.</p>
       </div>
-      
-      <div class="form-group">
-        <label for="contact">Контакт (телефон/мессенджер):</label>
-        <input type="text" id="contact" name="contact" required placeholder="Введите ваш телефон или ник в мессенджере">
+      <div class="service-card">
+        <div class="service-icon">🛠️</div>
+        <h3>Разработка</h3>
+        <p>Создание современных решений под ваши задачи. От идеи до реализации — полный цикл разработки.</p>
       </div>
-      
-      <div class="form-group">
-        <label for="message">Сообщение:</label>
-        <textarea id="message" name="message" required placeholder="Введите ваше сообщение"></textarea>
+      <div class="service-card">
+        <div class="service-icon">📈</div>
+        <h3>Поддержка</h3>
+        <p>Постоянная поддержка и сопровождение проектов. Мы всегда на связи, чтобы помочь вам в любой момент.</p>
       </div>
-      
-      <button type="submit" class="submit-btn">Отправить</button>
-      
-      <div id="formMessage" class="message info">
-        Функция временно недоступна, мы тестируем сайт
-      </div>
-      
-      <p class="form-note">Мы свяжемся с вами через WhatsApp</p>
-    </form>
-  </div>
+    </div>
+  </section>
+
+  <!-- Форма заявки -->
+  <section id="contact">
+    <h2 class="section-title">Оставить заявку</h2>
+    <div class="form-section">
+      <form id="contactForm">
+        <div class="form-group">
+          <label for="name">Имя:</label>
+          <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
+        </div>
+        
+        <div class="form-group">
+          <label for="contact">Контакт (телефон/мессенджер):</label>
+          <input type="text" id="contact" name="contact" required placeholder="Введите ваш телефон или ник в мессенджере">
+        </div>
+        
+        <div class="form-group">
+          <label for="message">Сообщение:</label>
+          <textarea id="message" name="message" required placeholder="Введите ваше сообщение"></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn">Отправить</button>
+        
+        <div id="formMessage" class="form-message">
+          Функция скоро появится
+        </div>
+        
+        <p class="form-note">Мы свяжемся с вами через WhatsApp</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Подвал -->
+  <footer>
+    <p>&copy; 2025 YuNur. Все права защищены.</p>
+  </footer>
 
   <script>
     document.getElementById('contactForm').addEventListener('submit', function(e) {
@@ -108,6 +441,27 @@
       setTimeout(function() {
         messageDiv.style.display = 'none';
       }, 5000);
+    });
+
+    // Плавная прокрутка для якорных ссылок
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          const headerOffset = 70;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
     });
   </script>
 </body>
