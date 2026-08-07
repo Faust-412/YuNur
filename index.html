@@ -516,6 +516,63 @@
                 padding: 2rem 1.5rem;
             }
         }
+
+        /* ==================== ЧАСТЫЕ ВОПРОСЫ ==================== */
+        .faq-item {
+            background: var(--card-bg);
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            background: var(--white);
+            border: none;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--header-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-color);
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+        }
+
+        .faq-answer p {
+            padding: 1.2rem 1.5rem;
+            margin: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -636,6 +693,43 @@
         </div>
     </section>
 
+    <!-- Что можно взять в рассрочку -->
+    <section id="products">
+        <div class="container">
+            <h2 class="section-title">Что можно взять в рассрочку</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Техника</h3>
+                    <p>Телефоны, ноутбуки, планшеты</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Бытовая техника</h3>
+                    <p>Холодильники, стиральные машины</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Мебель</h3>
+                    <p>Гарнитуры, кровати, детская</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Одежда и обувь</h3>
+                    <p>Для всей семьи</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Лечение</h3>
+                    <p>Стоматология, обследования</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Образование</h3>
+                    <p>Курсы и обучение</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Умра и поездки</h3>
+                    <p>Паломничество и семейные путешествия</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Как это работает -->
     <section id="how-it-works">
         <div class="container">
@@ -685,6 +779,69 @@
                 <div class="feature-card">
                     <h3>Без пени и штрафов</h3>
                     <p>Платите по графику без лишних забот</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Частые вопросы -->
+    <section id="faq" style="background-color: var(--bg-color);">
+        <div class="container">
+            <h2 class="section-title">Частые вопросы</h2>
+            <div class="faq-container" style="max-width: 800px; margin: 0 auto;">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Это действительно халяль?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Да. Мы работаем по принципу мурабаха: покупаем товар и продаём его вам с фиксированной наценкой. Цена известна в момент договора и не меняется. Это не заём с процентом, а купля-продажа, разрешённая шариатом.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Какие документы нужны?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Паспорт и два поручителя. Это обязательное условие.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Как быстро одобрите?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Обычно в тот же день. Оставляете заявку — мы связываемся через WhatsApp и всё оформляем.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Что если я задержу платёж?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Мы не начисляем пени и штрафы, сумма не растёт. Если ситуация изменилась — напишите нам, найдём решение.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Обязателен ли первоначальный взнос?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Да: 25%, 40% или 50%. Чем больше взнос, тем меньше наценка и ежемесячный платёж.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Можно ли погасить раньше срока?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Да, без лишних комиссий и штрафов. Общая сумма зафиксирована в договоре.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -848,6 +1005,12 @@
             setTimeout(() => {
                 messageBox.style.display = 'none';
             }, 5000);
+        }
+
+        // Аккордеон для FAQ
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            faqItem.classList.toggle('active');
         }
 
         // Установка значений по умолчанию: 25%, 6 мес.
