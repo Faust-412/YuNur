@@ -327,6 +327,38 @@
             transform: translateY(-5px);
         }
 
+        .step-illustration {
+            margin-bottom: 1rem;
+        }
+
+        .step-illustration svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .speech-bubble {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            position: relative;
+            margin: 0.5rem auto 1rem;
+            max-width: 200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #ffffff;
+        }
+
         .step-number {
             width: 60px;
             height: 60px;
@@ -510,6 +542,15 @@
             .steps-grid,
             .features-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .step-illustration svg {
+                max-width: 100px;
+            }
+
+            .speech-bubble {
+                max-width: 180px;
+                font-size: 0.8rem;
             }
 
             .form-container {
@@ -736,21 +777,104 @@
             <h2 class="section-title">Как это работает</h2>
             <div class="steps-grid">
                 <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-label="Человечек смотрит в телефон">
+                            <!-- Пятно-клякса -->
+                            <ellipse cx="60" cy="55" rx="45" ry="35" fill="#dcefe3"/>
+                            <!-- Человечек смотрит в телефон -->
+                            <circle cx="60" cy="40" r="10" fill="none" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="50" x2="60" y2="70" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="55" x2="45" y2="65" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="55" x2="75" y2="65" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="70" x2="50" y2="85" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="70" x2="70" y2="85" stroke="#1b4332" stroke-width="2"/>
+                            <!-- Телефон в руках -->
+                            <rect x="42" y="60" width="12" height="18" rx="2" fill="none" stroke="#1b4332" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">Я нашёл то, что нужно, в обычном магазине</div>
                     <div class="step-number">1</div>
                     <h3>Выбираете товар</h3>
                     <p>Вы находите товар или услугу в любом магазине</p>
                 </div>
                 <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg" aria-label="Два человечка пожимают руки">
+                            <!-- Пятно-клякса -->
+                            <ellipse cx="70" cy="55" rx="55" ry="35" fill="#a7c4b5"/>
+                            <!-- Левый человечек -->
+                            <circle cx="45" cy="40" r="10" fill="none" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="45" y1="50" x2="45" y2="65" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="45" y1="55" x2="55" y2="62" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="45" y1="55" x2="35" y2="62" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="45" y1="65" x2="38" y2="80" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="45" y1="65" x2="52" y2="80" stroke="#1b4332" stroke-width="2"/>
+                            <!-- Правый человечек -->
+                            <circle cx="95" cy="40" r="10" fill="none" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="95" y1="50" x2="95" y2="65" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="95" y1="55" x2="85" y2="62" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="95" y1="55" x2="105" y2="62" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="95" y1="65" x2="88" y2="80" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="95" y1="65" x2="102" y2="80" stroke="#1b4332" stroke-width="2"/>
+                            <!-- Рукопожатие -->
+                            <line x1="55" y1="62" x2="65" y2="62" stroke="#1b4332" stroke-width="2.5"/>
+                            <line x1="65" y1="62" x2="75" y2="62" stroke="#1b4332" stroke-width="2.5"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">YuNur выкупает товар — я не беру кредит</div>
                     <div class="step-number">2</div>
                     <h3>Мы оплачиваем его магазину</h3>
                     <p>YuNur выкупает товар у продавца по договору купли-продажи</p>
                 </div>
                 <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-label="Человечек с календарём">
+                            <!-- Пятно-клякса -->
+                            <ellipse cx="60" cy="55" rx="45" ry="35" fill="#dcefe3"/>
+                            <!-- Человечек с календарём -->
+                            <circle cx="60" cy="40" r="10" fill="none" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="50" x2="60" y2="70" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="55" x2="48" y2="65" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="55" x2="72" y2="65" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="70" x2="52" y2="85" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="70" x2="68" y2="85" stroke="#1b4332" stroke-width="2"/>
+                            <!-- Календарь -->
+                            <rect x="68" y="58" width="22" height="28" rx="2" fill="none" stroke="#1b4332" stroke-width="1.5"/>
+                            <line x1="68" y1="65" x2="90" y2="65" stroke="#1b4332" stroke-width="1.5"/>
+                            <circle cx="75" cy="72" r="2" fill="#1b4332"/>
+                            <circle cx="83" cy="72" r="2" fill="#1b4332"/>
+                            <circle cx="75" cy="80" r="2" fill="#1b4332"/>
+                            <circle cx="83" cy="80" r="2" fill="#1b4332"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">Плачу равными частями, сумма не меняется</div>
                     <div class="step-number">3</div>
                     <h3>Вы платите нам по графику</h3>
                     <p>Возвращаете сумму равными платежами без процентов</p>
                 </div>
                 <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-label="Довольный человечек с коробкой">
+                            <!-- Пятно-клякса -->
+                            <ellipse cx="60" cy="55" rx="45" ry="35" fill="#a7c4b5"/>
+                            <!-- Довольный человечек с коробкой -->
+                            <circle cx="60" cy="35" r="10" fill="none" stroke="#1b4332" stroke-width="2"/>
+                            <!-- Улыбка -->
+                            <path d="M 56 38 Q 60 42 64 38" fill="none" stroke="#1b4332" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="60" y1="45" x2="60" y2="60" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="50" x2="45" y2="58" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="50" x2="75" y2="58" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="60" x2="50" y2="75" stroke="#1b4332" stroke-width="2"/>
+                            <line x1="60" y1="60" x2="70" y2="75" stroke="#1b4332" stroke-width="2"/>
+                            <!-- Коробка -->
+                            <rect x="48" y="58" width="24" height="20" rx="2" fill="none" stroke="#1b4332" stroke-width="1.5"/>
+                            <line x1="60" y1="58" x2="60" y2="78" stroke="#1b4332" stroke-width="1.5"/>
+                            <line x1="48" y1="65" x2="72" y2="65" stroke="#1b4332" stroke-width="1.5"/>
+                            <!-- Бант на коробке -->
+                            <path d="M 55 58 L 60 52 L 65 58" fill="none" stroke="#1b4332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">И это моё с первого дня!</div>
                     <div class="step-number">4</div>
                     <h3>Товар сразу ваш</h3>
                     <p>Пользуетесь товаром с первого дня, несмотря на рассрочку</p>
