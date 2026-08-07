@@ -87,10 +87,67 @@
 
         /* ==================== ГЛАВНЫЙ ЭКРАН ==================== */
         .hero {
-            background: linear-gradient(135deg, var(--header-bg) 0%, var(--accent-color) 100%);
+            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
             color: var(--white);
-            padding: 100px 0;
+            padding: 100px 0 150px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-light-spot {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hero-light-spot.top-left {
+            top: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(77, 153, 128, 0.4) 0%, transparent 70%);
+        }
+
+        .hero-light-spot.bottom-right {
+            bottom: -100px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(64, 145, 108, 0.35) 0%, transparent 70%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+        }
+
+        .hero-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            z-index: 4;
+        }
+
+        .hero-wave svg {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .hero h1 {
@@ -140,7 +197,11 @@
 
         /* ==================== КАЛЬКУЛЯТОР ==================== */
         .calculator-section {
-            background-color: var(--white);
+            background-color: var(--bg-color);
+            position: relative;
+            z-index: 5;
+            margin-top: -80px;
+            padding-top: 160px;
         }
 
         .calculator {
@@ -472,10 +533,34 @@
 
     <!-- Главный экран -->
     <section class="hero">
-        <div class="container">
+        <!-- Исламский геометрический узор (восьмиконечные звёзды) -->
+        <svg class="hero-pattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="islamic-star-pattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+                    <!-- Восьмиконечная звезда -->
+                    <path d="M40 0 L50 30 L80 40 L50 50 L40 80 L30 50 L0 40 L30 30 Z" fill="#ffffff"/>
+                    <path d="M40 20 L45 35 L60 40 L45 45 L40 60 L35 45 L20 40 L35 35 Z" fill="#ffffff"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#islamic-star-pattern)"/>
+        </svg>
+        
+        <!-- Световые пятна для глубины -->
+        <div class="hero-light-spot top-left"></div>
+        <div class="hero-light-spot bottom-right"></div>
+        
+        <!-- Контент -->
+        <div class="container hero-content">
             <h1>Честная рассрочка для твоей семьи</h1>
             <p>Фиксированный график, который легко планировать. Без процентов и штрафов.</p>
             <a href="#calculator" class="btn">Рассчитать рассрочку</a>
+        </div>
+        
+        <!-- Волна внизу -->
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,32 C240,80 480,0 720,32 C960,64 1200,16 1440,48 L1440,80 L0,80 Z" fill="#f2f7f4"/>
+            </svg>
         </div>
     </section>
 
