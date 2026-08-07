@@ -184,6 +184,33 @@
             border-color: var(--accent-color);
         }
 
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-option {
+            padding: 12px 20px;
+            border: 2px solid var(--accent-color);
+            background: var(--white);
+            color: var(--accent-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-option:hover {
+            background: var(--bg-color);
+        }
+
+        .btn-option.active {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
         .results {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -460,37 +487,56 @@
                 <div class="calculator-inputs">
                     <div class="input-group">
                         <label for="cost">Стоимость товара или услуги (₽)</label>
-                        <input type="number" id="cost" value="100000" min="1000">
+                        <input type="number" id="cost" value="100000" min="1" max="100000">
+                        <span id="cost-warning" style="color: #d32f2f; font-size: 0.85rem; margin-top: 0.3rem; display: none;">Максимальная сумма 100 000 руб.</span>
                     </div>
                     <div class="input-group">
-                        <label for="initial">Первоначальный взнос (₽)</label>
-                        <input type="number" id="initial" value="0" min="0">
+                        <label>Первоначальный взнос</label>
+                        <div class="button-group" id="initial-percent-buttons">
+                            <button type="button" class="btn-option" data-percent="25">25%</button>
+                            <button type="button" class="btn-option" data-percent="40">40%</button>
+                            <button type="button" class="btn-option" data-percent="50">50%</button>
+                        </div>
+                        <div id="initial-ruble-display" style="margin-top: 0.5rem; font-weight: 600; color: var(--accent-color);"></div>
                     </div>
                     <div class="input-group">
-                        <label for="term">Срок рассрочки (месяцев)</label>
-                        <select id="term">
-                            <option value="3">3 месяца</option>
-                            <option value="4">4 месяца</option>
-                            <option value="6">6 месяцев</option>
-                            <option value="8">8 месяцев</option>
-                            <option value="10">10 месяцев</option>
-                            <option value="12" selected>12 месяцев</option>
-                        </select>
+                        <label>Срок рассрочки</label>
+                        <div class="button-group" id="term-buttons">
+                            <button type="button" class="btn-option" data-months="3">3 мес.</button>
+                            <button type="button" class="btn-option" data-months="6">6 мес.</button>
+                            <button type="button" class="btn-option" data-months="10">10 мес.</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="results">
                     <div class="result-card">
+                        <h3>Стоимость товара</h3>
+                        <div class="value" id="res-cost">0 ₽</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Взнос</h3>
+                        <div class="value" id="res-initial">0 ₽</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Сумма финансирования</h3>
+                        <div class="value" id="res-financing">0 ₽</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Наценка</h3>
+                        <div class="value" id="res-markup-percent">0%</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Сумма наценки</h3>
+                        <div class="value" id="res-markup-ruble">0 ₽</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Общая стоимость</h3>
+                        <div class="value" id="res-total">0 ₽</div>
+                    </div>
+                    <div class="result-card">
                         <h3>Ежемесячный платёж</h3>
-                        <div class="value" id="monthly-payment">0 ₽</div>
-                    </div>
-                    <div class="result-card">
-                        <h3>Торговая наценка</h3>
-                        <div class="value" id="markup">0 ₽</div>
-                    </div>
-                    <div class="result-card">
-                        <h3>Общая стоимость в рассрочку</h3>
-                        <div class="value" id="total">0 ₽</div>
+                        <div class="value" id="res-monthly">0 ₽</div>
                     </div>
                 </div>
 
@@ -589,8 +635,13 @@
     </footer>
 
     <script>
-        // ЗАМЕНИ НА СВОЁ ЗНАЧЕНИЕ (0.02 = 2% в месяц)
-        const MARKUP_RATE = 0.02;
+        // НАСТРОЙКИ: меняй значения здесь
+        const BASE_MARKUP = {
+            25: 39,  // 25% взнос → 39% базовая наценка
+            40: 29,  // 40% взнос → 29% базовая наценка
+            50: 24   // 50% взнос → 24% базовая наценка
+        };
+        const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
 
         // Форматирование числа с пробелами (15 745 ₽)
         function formatNumber(num) {
@@ -599,32 +650,91 @@
 
         // Расчёт калькулятора
         function calculate() {
-            const cost = parseFloat(document.getElementById('cost').value) || 0;
-            const initial = parseFloat(document.getElementById('initial').value) || 0;
-            const term = parseInt(document.getElementById('term').value) || 12;
+            const costInput = document.getElementById('cost');
+            let cost = parseFloat(costInput.value) || 0;
+            
+            // Проверка максимальной суммы
+            const warningEl = document.getElementById('cost-warning');
+            if (cost > 100000) {
+                warningEl.style.display = 'block';
+                costInput.value = '';
+                cost = 0;
+            } else {
+                warningEl.style.display = 'none';
+            }
 
-            // База = стоимость − взнос
-            const base = Math.max(0, cost - initial);
+            // Получаем выбранный процент взноса
+            const initialPercentButtons = document.querySelectorAll('#initial-percent-buttons .btn-option');
+            let initialPercent = 25;  // по умолчанию
+            initialPercentButtons.forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    initialPercent = parseInt(btn.dataset.percent);
+                }
+            });
 
-            // Наценка = база × процент наценки в месяц × количество месяцев
-            const markup = base * MARKUP_RATE * term;
+            // Получаем выбранный срок
+            const termButtons = document.querySelectorAll('#term-buttons .btn-option');
+            let term = 6;  // по умолчанию
+            termButtons.forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    term = parseInt(btn.dataset.months);
+                }
+            });
 
-            // Общая стоимость = база + наценка
-            const total = base + markup;
+            // Взнос = стоимость × %
+            const initialRuble = cost * (initialPercent / 100);
 
-            // Ежемесячный платёж = общая стоимость ÷ количество месяцев
+            // Показываем сумму взноса в рублях
+            document.getElementById('initial-ruble-display').textContent = formatNumber(initialRuble);
+
+            // Финансирование = стоимость − взнос
+            const financing = cost - initialRuble;
+
+            // Итоговая наценка = базовая + срок × 1%
+            const baseMarkupPercent = BASE_MARKUP[initialPercent];
+            const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+
+            // Наценка ₽ = финансирование × итоговая наценка %
+            const markupRuble = financing * (totalMarkupPercent / 100);
+
+            // Общая стоимость = финансирование + наценка ₽
+            const total = financing + markupRuble;
+
+            // Ежемесячный платёж = общая стоимость ÷ срок
             const monthly = term > 0 ? total / term : 0;
 
             // Обновление результатов
-            document.getElementById('monthly-payment').textContent = formatNumber(monthly);
-            document.getElementById('markup').textContent = formatNumber(markup);
-            document.getElementById('total').textContent = formatNumber(total);
+            document.getElementById('res-cost').textContent = formatNumber(cost);
+            document.getElementById('res-initial').textContent = formatNumber(initialRuble) + ` (${initialPercent}%)`;
+            document.getElementById('res-financing').textContent = formatNumber(financing);
+            document.getElementById('res-markup-percent').textContent = `${baseMarkupPercent}% + ${term} мес. = ${totalMarkupPercent}%`;
+            document.getElementById('res-markup-ruble').textContent = formatNumber(markupRuble);
+            document.getElementById('res-total').textContent = formatNumber(total);
+            document.getElementById('res-monthly').textContent = formatNumber(monthly);
         }
 
-        // Навешиваем обработчики на все поля калькулятора
+        // Инициализация кнопок первоначального взноса
+        const initialPercentButtons = document.querySelectorAll('#initial-percent-buttons .btn-option');
+        initialPercentButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                initialPercentButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                calculate();
+            });
+        });
+
+        // Инициализация кнопок срока
+        const termButtons = document.querySelectorAll('#term-buttons .btn-option');
+        termButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                termButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                calculate();
+            });
+        });
+
+        // Обработчик изменения стоимости
         document.getElementById('cost').addEventListener('input', calculate);
-        document.getElementById('initial').addEventListener('input', calculate);
-        document.getElementById('term').addEventListener('change', calculate);
 
         // Мобильное меню
         function toggleMenu() {
@@ -644,15 +754,28 @@
             event.preventDefault();
             const messageBox = document.getElementById('form-message');
             messageBox.style.display = 'block';
-            
+
             // Скрыть сообщение через 5 секунд
             setTimeout(() => {
                 messageBox.style.display = 'none';
             }, 5000);
         }
 
-        // Первичный расчёт при загрузке
-        calculate();
+        // Установка значений по умолчанию: 25%, 6 мес.
+        function initDefaults() {
+            // Активируем кнопку 25% для взноса
+            const initialBtn = document.querySelector('#initial-percent-buttons .btn-option[data-percent="25"]');
+            if (initialBtn) initialBtn.classList.add('active');
+
+            // Активируем кнопку 6 мес. для срока
+            const termBtn = document.querySelector('#term-buttons .btn-option[data-months="6"]');
+            if (termBtn) termBtn.classList.add('active');
+
+            // Первичный расчёт
+            calculate();
+        }
+
+        initDefaults();
     </script>
 </body>
 </html>
