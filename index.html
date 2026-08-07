@@ -1,468 +1,658 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YuNur - Современный сайт</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuNur — Исламская рассрочка без переплат</title>
+    <style>
+        /* ==================== НАСТРОЙКИ ==================== */
+        :root {
+            --header-bg: #1b4332;
+            --accent-color: #2d6a4f;
+            --accent-hover: #40916c;
+            --bg-color: #f2f7f4;
+            --text-color: #1b4332;
+            --card-bg: #ffffff;
+            --white: #ffffff;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f2f7f4;
-      color: #333;
-      line-height: 1.6;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Шапка */
-    header {
-      background-color: #1b4332;
-      padding: 15px 0;
-      position: fixed;
-      width: 100%;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
 
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    .logo {
-      font-size: 28px;
-      font-weight: bold;
-      color: #fff;
-      text-decoration: none;
-    }
+        /* ==================== ШАПКА ==================== */
+        header {
+            background-color: var(--header-bg);
+            color: var(--white);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 30px;
-    }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-      transition: color 0.3s ease;
-    }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--white);
+            text-decoration: none;
+        }
 
-    nav a:hover {
-      color: #95d5b2;
-    }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
 
-    /* Главный экран */
-    .hero {
-      background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 100px 20px 60px;
-    }
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
 
-    .hero-content {
-      max-width: 800px;
-    }
+        nav a:hover {
+            opacity: 0.8;
+        }
 
-    .hero h1 {
-      font-size: 64px;
-      color: #fff;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
 
-    .hero p {
-      font-size: 22px;
-      color: #d8f3dc;
-      margin-bottom: 40px;
-    }
+        /* ==================== ГЛАВНЫЙ ЭКРАН ==================== */
+        .hero {
+            background: linear-gradient(135deg, var(--header-bg) 0%, var(--accent-color) 100%);
+            color: var(--white);
+            padding: 100px 0;
+            text-align: center;
+        }
 
-    .btn-primary {
-      background-color: #2d6a4f;
-      color: #fff;
-      padding: 16px 40px;
-      border: none;
-      border-radius: 50px;
-      font-size: 18px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(45, 106, 79, 0.4);
-    }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
 
-    .btn-primary:hover {
-      background-color: #40916c;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(45, 106, 79, 0.5);
-    }
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
 
-    /* Секции */
-    section {
-      padding: 80px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
 
-    .section-title {
-      font-size: 36px;
-      color: #1b4332;
-      text-align: center;
-      margin-bottom: 50px;
-      position: relative;
-    }
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
 
-    .section-title::after {
-      content: '';
-      display: block;
-      width: 80px;
-      height: 4px;
-      background-color: #2d6a4f;
-      margin: 15px auto 0;
-      border-radius: 2px;
-    }
+        /* ==================== СЕКЦИИ ==================== */
+        section {
+            padding: 80px 0;
+        }
 
-    /* О нас */
-    .about-content {
-      background-color: #fff;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-      font-size: 18px;
-      line-height: 1.8;
-      color: #444;
-    }
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            color: var(--header-bg);
+        }
 
-    /* Услуги */
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-    }
+        /* ==================== КАЛЬКУЛЯТОР ==================== */
+        .calculator-section {
+            background-color: var(--white);
+        }
 
-    .service-card {
-      background-color: #fff;
-      padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+        .calculator {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-    .service-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
+        .calculator-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 15px;
+        }
 
-    .service-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-    .service-card h3 {
-      font-size: 22px;
-      color: #1b4332;
-      margin-bottom: 15px;
-    }
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--header-bg);
+        }
 
-    .service-card p {
-      color: #666;
-      line-height: 1.6;
-    }
+        .input-group input,
+        .input-group select {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
 
-    /* Форма заявки */
-    .form-section {
-      background-color: #fff;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-      padding: 50px;
-      max-width: 600px;
-      margin: 0 auto 80px;
-    }
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
 
-    .form-group {
-      margin-bottom: 25px;
-    }
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #1b4332;
-      font-size: 16px;
-    }
+        .result-card {
+            background: linear-gradient(135deg, var(--header-bg) 0%, var(--accent-color) 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
 
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 16px;
-      transition: border-color 0.3s ease;
-      font-family: inherit;
-    }
+        .result-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
 
-    .form-group input:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #2d6a4f;
-    }
+        .result-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
 
-    .form-group textarea {
-      height: 120px;
-      resize: vertical;
-    }
+        .calculator-btn-container {
+            text-align: center;
+        }
 
-    .submit-btn {
-      width: 100%;
-      background-color: #2d6a4f;
-      color: #fff;
-      padding: 16px;
-      border: none;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 600;
-    }
+        /* ==================== КАК ЭТО РАБОТАЕТ ==================== */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
 
-    .submit-btn:hover {
-      background-color: #40916c;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(45, 106, 79, 0.4);
-    }
+        .step-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
 
-    .form-message {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      background-color: #d7e3ff;
-      color: #1a3d6e;
-      border: 1px solid #b8cff5;
-      text-align: center;
-      display: none;
-      font-weight: 500;
-    }
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
 
-    .form-note {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 14px;
-      color: #666;
-    }
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background-color: var(--accent-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+        }
 
-    /* Подвал */
-    footer {
-      background-color: #1b4332;
-      color: #fff;
-      text-align: center;
-      padding: 30px 20px;
-    }
+        .step-card h3 {
+            margin-bottom: 1rem;
+            color: var(--header-bg);
+        }
 
-    footer p {
-      font-size: 14px;
-      opacity: 0.9;
-    }
+        /* ==================== О КОМПАНИИ ==================== */
+        .about-section {
+            background-color: var(--white);
+        }
 
-    /* Мобильная версия */
-    @media (max-width: 768px) {
-      .header-container {
-        flex-direction: column;
-        gap: 15px;
-      }
+        .about-text {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+        }
 
-      nav ul {
-        gap: 20px;
-      }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
 
-      .hero h1 {
-        font-size: 42px;
-      }
+        .feature-card {
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid var(--accent-color);
+        }
 
-      .hero p {
-        font-size: 18px;
-      }
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--header-bg);
+        }
 
-      .section-title {
-        font-size: 28px;
-      }
+        /* ==================== ФОРМА ЗАЯВКИ ==================== */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
 
-      .about-content {
-        padding: 25px;
-        font-size: 16px;
-      }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-      .form-section {
-        padding: 30px 20px;
-      }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--header-bg);
+        }
 
-      .services-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
 
-    @media (max-width: 480px) {
-      .hero h1 {
-        font-size: 32px;
-      }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
 
-      .hero p {
-        font-size: 16px;
-      }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
 
-      nav ul {
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
+        .form-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
 
-      .btn-primary {
-        padding: 14px 30px;
-        font-size: 16px;
-      }
-    }
-  </style>
+        .form-note {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .message-box {
+            display: none;
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px solid #ffc107;
+        }
+
+        /* ==================== ПОДВАЛ ==================== */
+        footer {
+            background-color: var(--header-bg);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* ==================== МОБИЛЬНАЯ ВЕРСИЯ ==================== */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--header-bg);
+                flex-direction: column;
+                padding: 1rem 0;
+                gap: 0;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav ul li {
+                text-align: center;
+                padding: 1rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .calculator-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .results {
+                grid-template-columns: 1fr;
+            }
+
+            .result-card .value {
+                font-size: 1.5rem;
+            }
+
+            .steps-grid,
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Шапка -->
-  <header>
-    <div class="header-container">
-      <a href="#" class="logo">YuNur</a>
-      <nav>
-        <ul>
-          <li><a href="#about">О нас</a></li>
-          <li><a href="#services">Услуги</a></li>
-          <li><a href="#contact">Заявка</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Главный экран -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>YuNur</h1>
-      <p>Ваш надёжный партнёр для решения любых задач</p>
-      <a href="#contact" class="btn-primary">Оставить заявку</a>
-    </div>
-  </section>
-
-  <!-- О нас -->
-  <section id="about">
-    <h2 class="section-title">О нас</h2>
-    <div class="about-content">
-      <p>Мы — команда профессионалов, стремящаяся предоставлять качественные услуги нашим клиентам. YuNur — это бренд, который объединяет опыт, инновации и индивидуальный подход к каждому проекту.</p>
-      <br>
-      <p>Наша миссия — помогать людям и бизнесу достигать своих целей, предлагая современные решения и поддерживая высокий уровень сервиса. Мы ценим доверие наших клиентов и работаем над тем, чтобы каждое взаимодействие с нами было приятным и продуктивным.</p>
-    </div>
-  </section>
-
-  <!-- Услуги -->
-  <section id="services">
-    <h2 class="section-title">Услуги</h2>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">💼</div>
-        <h3>Консультации</h3>
-        <p>Профессиональные консультации по всем вопросам. Поможем разобраться в любой ситуации и найти оптимальное решение.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🛠️</div>
-        <h3>Разработка</h3>
-        <p>Создание современных решений под ваши задачи. От идеи до реализации — полный цикл разработки.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">📈</div>
-        <h3>Поддержка</h3>
-        <p>Постоянная поддержка и сопровождение проектов. Мы всегда на связи, чтобы помочь вам в любой момент.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Форма заявки -->
-  <section id="contact">
-    <h2 class="section-title">Оставить заявку</h2>
-    <div class="form-section">
-      <form id="contactForm">
-        <div class="form-group">
-          <label for="name">Имя:</label>
-          <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
+    <!-- Шапка -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">YuNur</a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="#calculator">Калькулятор</a></li>
+                    <li><a href="#how-it-works">Как это работает</a></li>
+                    <li><a href="#about">О компании</a></li>
+                    <li><a href="#application">Заявка</a></li>
+                </ul>
+            </nav>
         </div>
-        
-        <div class="form-group">
-          <label for="contact">Контакт (телефон/мессенджер):</label>
-          <input type="text" id="contact" name="contact" required placeholder="Введите ваш телефон или ник в мессенджере">
-        </div>
-        
-        <div class="form-group">
-          <label for="message">Сообщение:</label>
-          <textarea id="message" name="message" required placeholder="Введите ваше сообщение"></textarea>
-        </div>
-        
-        <button type="submit" class="submit-btn">Отправить</button>
-        
-        <div id="formMessage" class="form-message">
-          Функция скоро появится
-        </div>
-        
-        <p class="form-note">Мы свяжемся с вами через WhatsApp</p>
-      </form>
-    </div>
-  </section>
+    </header>
 
-  <!-- Подвал -->
-  <footer>
-    <p>&copy; 2025 YuNur. Все права защищены.</p>
-  </footer>
+    <!-- Главный экран -->
+    <section class="hero">
+        <div class="container">
+            <h1>YuNur — исламская рассрочка без переплат</h1>
+            <p>Без процентов, без скрытых платежей, без пени и штрафов</p>
+            <a href="#calculator" class="btn">Рассчитать рассрочку</a>
+        </div>
+    </section>
 
-  <script>
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Показываем сообщение о временной недоступности
-      var messageDiv = document.getElementById('formMessage');
-      messageDiv.style.display = 'block';
-      
-      // Скрываем сообщение через 5 секунд
-      setTimeout(function() {
-        messageDiv.style.display = 'none';
-      }, 5000);
-    });
+    <!-- Калькулятор -->
+    <section id="calculator" class="calculator-section">
+        <div class="container">
+            <h2 class="section-title">Калькулятор рассрочки</h2>
+            <div class="calculator">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label for="cost">Стоимость товара или услуги (₽)</label>
+                        <input type="number" id="cost" value="100000" min="1000">
+                    </div>
+                    <div class="input-group">
+                        <label for="initial">Первоначальный взнос (₽)</label>
+                        <input type="number" id="initial" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="term">Срок рассрочки (месяцев)</label>
+                        <select id="term">
+                            <option value="3">3 месяца</option>
+                            <option value="4">4 месяца</option>
+                            <option value="6">6 месяцев</option>
+                            <option value="8">8 месяцев</option>
+                            <option value="10">10 месяцев</option>
+                            <option value="12" selected>12 месяцев</option>
+                        </select>
+                    </div>
+                </div>
 
-    // Плавная прокрутка для якорных ссылок
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        if (targetId === '#') return;
-        
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          const headerOffset = 70;
-          const elementPosition = targetElement.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-    
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
+                <div class="results">
+                    <div class="result-card">
+                        <h3>Ежемесячный платёж</h3>
+                        <div class="value" id="monthly-payment">0 ₽</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Торговая наценка</h3>
+                        <div class="value" id="markup">0 ₽</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Общая стоимость в рассрочку</h3>
+                        <div class="value" id="total">0 ₽</div>
+                    </div>
+                </div>
+
+                <div class="calculator-btn-container">
+                    <a href="#application" class="btn">Заполнить анкету</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Как это работает -->
+    <section id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Как это работает</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Выбираете товар</h3>
+                    <p>Вы находите товар или услугу в любом магазине</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Мы оплачиваем его магазину</h3>
+                    <p>YuNur выкупает товар у продавца по договору купли-продажи</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Вы платите нам по графику</h3>
+                    <p>Возвращаете сумму равными платежами без процентов</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Товар сразу ваш</h3>
+                    <p>Пользуетесь товаром с первого дня, несмотря на рассрочку</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- О компании -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">О компании</h2>
+            <p class="about-text">
+                YuNur работает строго по исламским принципам финансирования. 
+                Мы предлагаем халяль-рассрочку без риба (процентов), соответствующую нормам шариата.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Без риба</h3>
+                    <p>Рассрочка без процентов, строго по шариату</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Без скрытых платежей</h3>
+                    <p>Только фиксированные платежи, всё прозрачно</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Без пени и штрафов</h3>
+                    <p>Платите по графику без лишних забот</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Форма заявки -->
+    <section id="application">
+        <div class="container">
+            <h2 class="section-title">Оставить заявку</h2>
+            <div class="form-container">
+                <form id="application-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Ваше имя</label>
+                        <input type="text" id="name" required placeholder="Как к вам обращаться">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Контакт (телефон или мессенджер)</label>
+                        <input type="text" id="contact" required placeholder="+7 ___ ___-__-__ или @username">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Сообщение</label>
+                        <textarea id="message" placeholder="Какой товар вас интересует?"></textarea>
+                    </div>
+                    <button type="submit" class="btn form-btn">Отправить</button>
+                    <div id="form-message" class="message-box">Функция скоро появится, мы тестируем сайт</div>
+                </form>
+                <p class="form-note">Мы свяжемся с вами через WhatsApp</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <p>&copy; YuNur. Исламская рассрочка без переплат.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ЗАМЕНИ НА СВОЁ ЗНАЧЕНИЕ (0.02 = 2% в месяц)
+        const MARKUP_RATE = 0.02;
+
+        // Форматирование числа с пробелами (15 745 ₽)
+        function formatNumber(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
         }
-      });
-    });
-  </script>
+
+        // Расчёт калькулятора
+        function calculate() {
+            const cost = parseFloat(document.getElementById('cost').value) || 0;
+            const initial = parseFloat(document.getElementById('initial').value) || 0;
+            const term = parseInt(document.getElementById('term').value) || 12;
+
+            // База = стоимость − взнос
+            const base = Math.max(0, cost - initial);
+
+            // Наценка = база × процент наценки в месяц × количество месяцев
+            const markup = base * MARKUP_RATE * term;
+
+            // Общая стоимость = база + наценка
+            const total = base + markup;
+
+            // Ежемесячный платёж = общая стоимость ÷ количество месяцев
+            const monthly = term > 0 ? total / term : 0;
+
+            // Обновление результатов
+            document.getElementById('monthly-payment').textContent = formatNumber(monthly);
+            document.getElementById('markup').textContent = formatNumber(markup);
+            document.getElementById('total').textContent = formatNumber(total);
+        }
+
+        // Навешиваем обработчики на все поля калькулятора
+        document.getElementById('cost').addEventListener('input', calculate);
+        document.getElementById('initial').addEventListener('input', calculate);
+        document.getElementById('term').addEventListener('change', calculate);
+
+        // Мобильное меню
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Закрытие меню при клике на ссылку
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('nav-menu').classList.remove('active');
+            });
+        });
+
+        // Обработка формы
+        function handleSubmit(event) {
+            event.preventDefault();
+            const messageBox = document.getElementById('form-message');
+            messageBox.style.display = 'block';
+            
+            // Скрыть сообщение через 5 секунд
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // Первичный расчёт при загрузке
+        calculate();
+    </script>
 </body>
 </html>
