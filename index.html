@@ -53,10 +53,13 @@
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--white);
-            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 45px;
+            border-radius: 8px;
         }
 
         nav ul {
@@ -661,7 +664,7 @@
     <!-- Шапка -->
     <header>
         <div class="container header-content">
-            <a href="#" class="logo">YuNur</a>
+            <a href="#" class="logo"><img src="logo.png" alt="YuNur"></a>
             <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
             <nav>
                 <ul id="nav-menu">
