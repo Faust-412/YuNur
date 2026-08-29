@@ -1,16 +1,1 @@
-```
-# Dependencies
-node_modules/
-
-# Environment
-.env
-.env.local
-.env.*
-
-# Logs and temp files
-*.log
-*.tmp
-
-# Editors
-.vscode/
-```
+(index.html is a source file, so according to rule 6, since there are no build artifacts, dependencies, or temp files in the changes, the output should be empty)
