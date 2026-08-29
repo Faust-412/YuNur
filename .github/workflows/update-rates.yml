@@ -1,4 +1,4 @@
-name: Update Currency Rates
+name: Update Currency Rates and History
 
 on:
   schedule:
@@ -27,17 +27,20 @@ jobs:
         run: |
           npm install axios xml2js
 
-      - name: Run update script
+      - name: Run update rates script
         run: node scripts/update-rates.js
+
+      - name: Run fetch history script
+        run: node scripts/fetch-history.js
 
       - name: Commit and push if changed
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add data/rates.json
+          git add data/rates.json data/history.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update currency rates [auto]"
+            git commit -m "Update currency rates and history [auto]"
             git push
           fi

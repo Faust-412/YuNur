@@ -16,6 +16,8 @@
             --text-color: #1b4332;
             --card-bg: #ffffff;
             --white: #ffffff;
+            --green-up: #2d6a4f;
+            --red-down: #d32f2f;
         }
 
         * {
@@ -119,62 +121,106 @@
             color: var(--header-bg);
         }
 
-        /* ==================== КУРСЫ ВАЛЮТ ==================== */
+        /* ==================== КАРТОЧКИ АКТИВОВ ==================== */
         .rates-section {
             background-color: var(--bg-color);
         }
 
-        .rates-card {
-            max-width: 900px;
-            margin: 0 auto;
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 2rem;
+        }
+
+        .asset-card {
             background: var(--card-bg);
             border: 1px solid var(--accent-color);
-            border-radius: 30px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: box-shadow 0.3s, transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .rates-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.5rem;
+        .asset-card:hover {
+            box-shadow: 0 4px 20px rgba(45, 106, 79, 0.15);
+            transform: translateY(-2px);
         }
 
-        .rates-table th,
-        .rates-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        .asset-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .rates-table th {
-            color: var(--header-bg);
-            font-weight: 600;
-            font-size: 0.95rem;
+        .asset-icon {
+            font-size: 2rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            border-radius: 12px;
         }
 
-        .rates-table td {
-            font-size: 1rem;
+        .asset-info {
+            flex: 1;
         }
 
-        .rates-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .rate-change {
-            font-weight: 600;
+        .asset-name {
             font-size: 0.9rem;
-        }
-
-        .rate-change.positive {
-            color: #2d6a4f;
-        }
-
-        .rate-change.negative {
-            color: #d32f2f;
-        }
-
-        .rate-change.neutral {
             color: #666;
+            font-weight: 500;
+        }
+
+        .asset-code {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--header-bg);
+        }
+
+        .asset-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: -0.02em;
+        }
+
+        .asset-change {
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .asset-change.positive {
+            color: var(--green-up);
+            background: rgba(45, 106, 79, 0.1);
+        }
+
+        .asset-change.negative {
+            color: var(--red-down);
+            background: rgba(211, 47, 47, 0.1);
+        }
+
+        .asset-change.neutral {
+            color: #666;
+            background: #f0f0f0;
+        }
+
+        .sparkline-container {
+            width: 100%;
+            height: 50px;
+            margin-top: auto;
+        }
+
+        .sparkline-container svg {
+            width: 100%;
+            height: 100%;
         }
 
         .rates-update-time {
@@ -228,6 +274,12 @@
         }
 
         /* ==================== МОБИЛЬНАЯ ВЕРСИЯ ==================== */
+        @media (max-width: 1024px) {
+            .assets-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .mobile-menu-btn {
                 display: block;
@@ -267,14 +319,26 @@
                 font-size: 1.8rem;
             }
 
-            .rates-table th,
-            .rates-table td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
+            .assets-grid {
+                gap: 16px;
             }
 
-            .rates-card {
-                padding: 1.5rem;
+            .asset-card {
+                padding: 1.25rem;
+            }
+
+            .asset-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+
+            .asset-price {
+                font-size: 1.4rem;
+            }
+
+            .asset-code {
+                font-size: 1rem;
             }
         }
     </style>
@@ -291,7 +355,6 @@
                     <li><a href="index.html#how-it-works">Как это работает</a></li>
                     <li><a href="index.html#about">О компании</a></li>
                     <li><a href="rates.html">Курсы валют</a></li>
-                    <li><a href="index.html#application">Заявка</a></li>
                 </ul>
             </nav>
             <a href="index.html#application" class="header-btn">Оставить заявку</a>
@@ -301,30 +364,15 @@
     <!-- Курсы валют и золото -->
     <section class="rates-section">
         <div class="container">
-            <h2 class="section-title">Курсы валют и золото</h2>
-            <div class="rates-card">
-                <div id="rates-content">
-                    <table class="rates-table">
-                        <thead>
-                            <tr>
-                                <th>Валюта / Актив</th>
-                                <th>Курс (₽)</th>
-                                <th>Изменение</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rates-body">
-                            <tr>
-                                <td colspan="3" style="text-align: center;">Загрузка данных...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div id="rates-update-time" class="rates-update-time"></div>
-                    <div id="rates-pending" class="rates-pending" style="display: none;">Курсы скоро обновятся</div>
-                    <div id="rates-error" class="rates-error" style="display: none;"></div>
-                    <div class="rates-btn-container">
-                        <button class="btn-rates" onclick="loadRates()">Обновить курсы</button>
-                    </div>
-                </div>
+            <h2 class="section-title">Рынки</h2>
+            <div id="assets-container" class="assets-grid">
+                <!-- Карточки будут добавлены через JS -->
+            </div>
+            <div id="rates-update-time" class="rates-update-time"></div>
+            <div id="rates-pending" class="rates-pending" style="display: none;">Загрузка данных...</div>
+            <div id="rates-error" class="rates-error" style="display: none;"></div>
+            <div class="rates-btn-container">
+                <button class="btn-rates" onclick="loadAllData()">Обновить курсы</button>
             </div>
         </div>
     </section>
@@ -343,58 +391,296 @@
             menu.classList.toggle('active');
         }
 
-        // Загрузка курсов из локального JSON файла
-        async function loadRates() {
-            const ratesBody = document.getElementById('rates-body');
+        // Иконки для активов
+        const assetIcons = {
+            'USD': '🇺🇸',
+            'EUR': '🇪🇺',
+            'CNY': '🇨🇳',
+            'JPY': '🇯🇵',
+            'GOLD': '🥇',
+            'BTC': '₿',
+            'ETH': 'Ξ'
+        };
+
+        // Создание SVG спарклайна
+        function createSparkline(data, isUp) {
+            if (!data || data.length === 0) {
+                return '';
+            }
+
+            const width = 200;
+            const height = 50;
+            const padding = 4;
+            const color = isUp ? '#2d6a4f' : '#d32f2f';
+            
+            // Находим мин и макс для масштабирования
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const range = max - min || 1; // Избегаем деления на ноль
+
+            // Генерируем точки пути
+            const points = data.map((value, index) => {
+                const x = padding + (index / (data.length - 1)) * (width - 2 * padding);
+                const y = padding + (1 - (value - min) / range) * (height - 2 * padding);
+                return `${x},${y}`;
+            }).join(' ');
+
+            // Создаём путь для заливки (добавляем точки вниз для замыкания)
+            const firstX = padding;
+            const lastX = width - padding;
+            const bottomY = height - padding;
+            const fillPoints = `${firstX},${bottomY} ${points} ${lastX},${bottomY}`;
+
+            return `
+                <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="gradient-${isUp ? 'up' : 'down'}" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:${color};stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:${color};stop-opacity:0.05" />
+                        </linearGradient>
+                    </defs>
+                    <polygon points="${fillPoints}" fill="url(#gradient-${isUp ? 'up' : 'down'})" />
+                    <polyline points="${points}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            `;
+        }
+
+        // Создание плоского спарклайна (если нет истории)
+        function createFlatSparkline() {
+            const width = 200;
+            const height = 50;
+            const padding = 4;
+            const y = height / 2;
+            const color = '#2d6a4f';
+
+            return `
+                <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+                    <line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" 
+                          stroke="${color}" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            `;
+        }
+
+        // Рендеринг карточки актива
+        function renderAssetCard(asset, historyData) {
+            const icon = assetIcons[asset.code] || '💱';
+            const isCrypto = ['BTC', 'ETH'].includes(asset.code);
+            
+            // Проверяем доступность данных
+            if (asset.unavailable) {
+                return `
+                    <div class="asset-card">
+                        <div class="asset-header">
+                            <div class="asset-icon">${icon}</div>
+                            <div class="asset-info">
+                                <div class="asset-name">${asset.name}</div>
+                                <div class="asset-code">${asset.code}</div>
+                            </div>
+                        </div>
+                        <div class="asset-price">недоступно</div>
+                        <div class="sparkline-container">${createFlatSparkline()}</div>
+                    </div>
+                `;
+            }
+
+            // Расчёт изменения в процентах
+            let changeHtml = '<span class="asset-change neutral">—</span>';
+            if (asset.changePercent !== null && asset.changePercent !== undefined) {
+                const isPositive = asset.changePercent >= 0;
+                const sign = isPositive ? '+' : '';
+                const changeClass = isPositive ? 'positive' : 'negative';
+                changeHtml = `<span class="asset-change ${changeClass}">${sign}${asset.changePercent.toFixed(2)}%</span>`;
+            }
+
+            // Форматирование цены
+            let priceFormatted;
+            if (asset.code === 'JPY') {
+                priceFormatted = asset.value.toFixed(4);
+            } else if (isCrypto) {
+                priceFormatted = asset.value.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else {
+                priceFormatted = asset.value.toFixed(2);
+            }
+
+            // Получаем историю для спарклайна
+            let sparklineHtml;
+            const history = historyData ? historyData[asset.code.toLowerCase()] : null;
+            
+            if (history && history.length > 1) {
+                const isUp = history[history.length - 1] >= history[0];
+                sparklineHtml = createSparkline(history, isUp);
+            } else {
+                sparklineHtml = createFlatSparkline();
+            }
+
+            return `
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div class="asset-icon">${icon}</div>
+                        <div class="asset-info">
+                            <div class="asset-name">${asset.name}</div>
+                            <div class="asset-code">${asset.code}</div>
+                        </div>
+                    </div>
+                    <div class="asset-price">${priceFormatted} ₽</div>
+                    ${changeHtml}
+                    <div class="sparkline-container">${sparklineHtml}</div>
+                </div>
+            `;
+        }
+
+        // Загрузка истории из локального файла
+        async function loadHistory() {
+            try {
+                const response = await fetch('data/history.json?t=' + Date.now());
+                if (!response.ok) return null;
+                const data = await response.json();
+                
+                if (!Array.isArray(data) || data.length === 0) return null;
+
+                // Преобразуем в формат по кодам активов
+                const historyByCode = {
+                    usd: [],
+                    eur: [],
+                    cny: [],
+                    jpy: [],
+                    gold: []
+                };
+
+                // Берём последние 30 записей
+                const recentData = data.slice(-30);
+                
+                recentData.forEach(record => {
+                    if (record.usd) historyByCode.usd.push(record.usd);
+                    if (record.eur) historyByCode.eur.push(record.eur);
+                    if (record.cny) historyByCode.cny.push(record.cny);
+                    if (record.jpy) historyByCode.jpy.push(record.jpy);
+                    if (record.gold) historyByCode.gold.push(record.gold);
+                });
+
+                return historyByCode;
+            } catch (error) {
+                console.log('История не загружена:', error.message);
+                return null;
+            }
+        }
+
+        // Загрузка криптовалют с CoinGecko
+        async function loadCrypto() {
+            try {
+                const response = await fetch(
+                    'https://api.coingecko.com/api/v3/coins/markets?vs_currency=rub&ids=bitcoin,ethereum&sparkline=true',
+                    { timeout: 10000 }
+                );
+                
+                if (!response.ok) throw new Error('API unavailable');
+                
+                const data = await response.json();
+                
+                const crypto = {};
+                data.forEach(coin => {
+                    const code = coin.symbol.toUpperCase();
+                    crypto[code] = {
+                        value: coin.current_price,
+                        changePercent: coin.price_change_percentage_24h,
+                        history: coin.sparkline_in_7d?.price || []
+                    };
+                });
+                
+                return crypto;
+            } catch (error) {
+                console.log('Криптоданные недоступны:', error.message);
+                return {
+                    BTC: { unavailable: true },
+                    ETH: { unavailable: true }
+                };
+            }
+        }
+
+        // Основная функция загрузки всех данных
+        async function loadAllData() {
+            const container = document.getElementById('assets-container');
             const updateTimeEl = document.getElementById('rates-update-time');
             const errorEl = document.getElementById('rates-error');
             const pendingEl = document.getElementById('rates-pending');
 
             try {
-                // Добавляем timestamp чтобы избежать кэширования
-                const response = await fetch('data/rates.json?t=' + Date.now());
-                
-                if (!response.ok) {
-                    throw new Error('Файл не найден');
+                pendingEl.style.display = 'block';
+                errorEl.style.display = 'none';
+                container.innerHTML = '';
+
+                // Загружаем данные параллельно
+                const [ratesResponse, historyData, cryptoData] = await Promise.all([
+                    fetch('data/rates.json?t=' + Date.now()),
+                    loadHistory(),
+                    loadCrypto()
+                ]);
+
+                if (!ratesResponse.ok) {
+                    throw new Error('Файл курсов не найден');
                 }
 
-                const data = await response.json();
+                const ratesData = await ratesResponse.json();
 
-                if (!data.currencies || data.currencies.length === 0) {
-                    throw new Error('Нет данных');
+                if (!ratesData.currencies || ratesData.currencies.length === 0) {
+                    throw new Error('Нет данных о курсах');
                 }
 
-                let html = '';
-                data.currencies.forEach(curr => {
-                    let changeHtml = '<span class="rate-change neutral">—</span>';
+                // Собираем все активы
+                const assets = [];
 
+                // Валюты и золото из rates.json
+                ratesData.currencies.forEach(curr => {
+                    let changePercent = null;
                     if (curr.previous !== null && curr.previous > 0) {
-                        const change = curr.value - curr.previous;
-                        const changePercent = ((change / curr.previous) * 100).toFixed(2);
-
-                        if (change > 0) {
-                            changeHtml = `<span class="rate-change positive">+${change.toFixed(2)} (+${changePercent}%)</span>`;
-                        } else if (change < 0) {
-                            changeHtml = `<span class="rate-change negative">${change.toFixed(2)} (${changePercent}%)</span>`;
-                        } else {
-                            changeHtml = '<span class="rate-change neutral">0.00 (0.00%)</span>';
-                        }
+                        changePercent = ((curr.value - curr.previous) / curr.previous) * 100;
                     }
 
-                    html += `
-                        <tr>
-                            <td>${curr.name} (${curr.code})</td>
-                            <td>${curr.value.toFixed(2)}</td>
-                            <td>${changeHtml}</td>
-                        </tr>
-                    `;
+                    assets.push({
+                        code: curr.code,
+                        name: curr.name,
+                        value: curr.value,
+                        changePercent: changePercent
+                    });
                 });
 
-                ratesBody.innerHTML = html;
+                // Криптовалюты
+                if (cryptoData.BTC) {
+                    assets.push({
+                        code: 'BTC',
+                        name: 'Bitcoin',
+                        value: cryptoData.BTC.value,
+                        changePercent: cryptoData.BTC.changePercent,
+                        history: cryptoData.BTC.history,
+                        unavailable: cryptoData.BTC.unavailable
+                    });
+                }
+                if (cryptoData.ETH) {
+                    assets.push({
+                        code: 'ETH',
+                        name: 'Ethereum',
+                        value: cryptoData.ETH.value,
+                        changePercent: cryptoData.ETH.changePercent,
+                        history: cryptoData.ETH.history,
+                        unavailable: cryptoData.ETH.unavailable
+                    });
+                }
+
+                // Рендерим карточки
+                let html = '';
+                assets.forEach(asset => {
+                    // Для крипты используем её собственную историю
+                    const assetHistoryData = asset.history 
+                        ? { [asset.code.toLowerCase()]: asset.history } 
+                        : historyData;
+                    html += renderAssetCard(asset, assetHistoryData);
+                });
+
+                container.innerHTML = html;
 
                 // Форматируем дату обновления
-                if (data.updatedAt) {
-                    const updateDate = new Date(data.updatedAt);
+                if (ratesData.updatedAt) {
+                    const updateDate = new Date(ratesData.updatedAt);
                     const formattedDate = updateDate.toLocaleString('ru-RU', {
                         day: 'numeric',
                         month: 'long',
@@ -409,17 +695,18 @@
                 pendingEl.style.display = 'none';
 
             } catch (error) {
-                console.error('Ошибка загрузки курсов:', error);
-                ratesBody.innerHTML = '';
+                console.error('Ошибка загрузки данных:', error);
+                container.innerHTML = '';
                 updateTimeEl.textContent = '';
-                errorEl.textContent = '';
-                pendingEl.style.display = 'block';
+                errorEl.textContent = 'Ошибка загрузки данных';
+                errorEl.style.display = 'block';
+                pendingEl.style.display = 'none';
             }
         }
 
-        // Загружаем курсы при загрузке страницы
+        // Загружаем данные при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            loadRates();
+            loadAllData();
         });
     </script>
 </body>
