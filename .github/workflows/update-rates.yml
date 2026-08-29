@@ -1,0 +1,43 @@
+name: Update Currency Rates
+
+on:
+  schedule:
+    # Запуск ежедневно в 00:00 UTC
+    - cron: '0 0 * * *'
+    # Запуск каждые 6 часов (в 6:00, 12:00, 18:00 UTC)
+    - cron: '0 6,12,18 * * *'
+  workflow_dispatch: # Ручной запуск через GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  update-rates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install axios xml2js
+
+      - name: Run update script
+        run: node scripts/update-rates.js
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add data/rates.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update currency rates [auto]"
+            git push
+          fi
