@@ -589,10 +589,10 @@
         }
 
         .calculator-card {
-            background: var(--card-bg);
-            border: 1px solid var(--accent-color);
+            background: var(--accent-color);
             border-radius: 30px;
             padding: 3rem;
+            color: var(--white);
         }
 
         .calculator-inputs {
@@ -607,85 +607,141 @@
             flex-direction: column;
         }
 
+        .slider-group {
+            position: relative;
+        }
+
+        .slider-value-display {
+            background: var(--white);
+            color: var(--header-bg);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-height: 24px;
+        }
+
+        .ruble-subvalue {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-top: 4px;
+        }
+
         .input-group label {
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: var(--header-bg);
-        }
-
-        .input-group input,
-        .input-group select {
-            padding: 15px;
-            border: 1px solid #d0d0d0;
-            border-radius: 15px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-option {
-            padding: 12px 24px;
-            border: 2px solid var(--accent-color);
-            background: var(--white);
-            color: var(--accent-color);
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .btn-option:hover {
-            background: var(--bg-color);
-        }
-
-        .btn-option.active {
-            background: var(--accent-color);
             color: var(--white);
+            font-size: 0.95rem;
         }
 
-        .results {
+        /* Стиль слайдеров */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--white);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--white);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Новые результаты - большие цифры в ряд */
+        .results-new {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .result-card {
-            background: var(--accent-color);
-            color: var(--white);
-            padding: 2rem;
-            border-radius: 20px;
+        .result-item {
             text-align: center;
+            padding: 1.5rem 1rem;
         }
 
-        .result-card h3 {
+        .result-label {
             font-size: 0.9rem;
-            margin-bottom: 0.5rem;
             opacity: 0.9;
+            margin-bottom: 0.75rem;
             font-weight: 500;
         }
 
-        .result-card .value {
-            font-size: 1.8rem;
+        .result-big-value {
+            font-size: 2rem;
             font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .result-small-percent {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
         }
 
         .calculator-btn-container {
             text-align: center;
+        }
+
+        .btn-white {
+            display: inline-block;
+            background: var(--white);
+            color: var(--accent-color);
+            padding: 16px 40px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid var(--white);
+        }
+
+        .btn-white:hover {
+            background: transparent;
+            color: var(--white);
+        }
+
+        .guarantors-link {
+            margin-top: 1rem;
+        }
+
+        .guarantors-link a {
+            color: var(--white);
+            font-size: 0.9rem;
+            text-decoration: underline;
+            opacity: 0.9;
+        }
+
+        .guarantors-link a:hover {
+            opacity: 1;
         }
 
         /* ==================== КАК ЭТО РАБОТАЕТ ==================== */
@@ -1228,12 +1284,12 @@
                 grid-template-columns: 1fr;
             }
 
-            .results {
+            .results-new {
                 grid-template-columns: 1fr;
             }
 
-            .result-card .value {
-                font-size: 1.5rem;
+            .result-big-value {
+                font-size: 1.8rem;
             }
 
             .steps-grid,
@@ -1443,63 +1499,56 @@
             <div class="calculator">
                 <div class="calculator-card">
                     <div class="calculator-inputs">
-                        <div class="input-group">
-                            <label for="cost">Стоимость товара или услуги (₽)</label>
-                            <input type="number" id="cost" value="100000" min="1" max="100000">
-                            <span id="cost-warning" style="color: #d32f2f; font-size: 0.85rem; margin-top: 0.3rem; display: none;">Максимальная сумма 100 000 руб.</span>
-                        </div>
-                        <div class="input-group">
-                            <label>Первоначальный взнос</label>
-                            <div class="button-group" id="initial-percent-buttons">
-                                <button type="button" class="btn-option" data-percent="25">25%</button>
-                                <button type="button" class="btn-option" data-percent="40">40%</button>
-                                <button type="button" class="btn-option" data-percent="50">50%</button>
+                        <!-- Стоимость товара -->
+                        <div class="input-group slider-group">
+                            <div class="slider-value-display">
+                                <span id="cost-display">100 000 руб.</span>
                             </div>
-                            <div id="initial-ruble-display" style="margin-top: 0.5rem; font-weight: 600; color: var(--accent-color);"></div>
+                            <label for="cost-slider">Стоимость товара или услуги</label>
+                            <input type="range" id="cost-slider" min="10000" max="1000000" step="5000" value="100000">
                         </div>
-                        <div class="input-group">
-                            <label>Срок рассрочки</label>
-                            <div class="button-group" id="term-buttons">
-                                <button type="button" class="btn-option" data-months="3">3 мес.</button>
-                                <button type="button" class="btn-option" data-months="6">6 мес.</button>
-                                <button type="button" class="btn-option" data-months="10">10 мес.</button>
+                        
+                        <!-- Первоначальный взнос -->
+                        <div class="input-group slider-group">
+                            <div class="slider-value-display">
+                                <span id="initial-display">25%</span>
+                                <span id="initial-ruble-display" class="ruble-subvalue"></span>
                             </div>
+                            <label for="initial-slider">Первоначальный взнос</label>
+                            <input type="range" id="initial-slider" min="0" max="2" step="1" value="0">
+                        </div>
+                        
+                        <!-- Срок рассрочки -->
+                        <div class="input-group slider-group">
+                            <div class="slider-value-display">
+                                <span id="term-display">6 мес.</span>
+                            </div>
+                            <label for="term-slider">Срок рассрочки</label>
+                            <input type="range" id="term-slider" min="0" max="2" step="1" value="1">
                         </div>
                     </div>
 
-                    <div class="results">
-                        <div class="result-card">
-                            <h3>Стоимость товара</h3>
-                            <div class="value" id="res-cost">0 ₽</div>
+                    <div class="results-new">
+                        <div class="result-item">
+                            <div class="result-label">Ежемесячный платёж</div>
+                            <div class="result-big-value" id="res-monthly">0 ₽</div>
                         </div>
-                        <div class="result-card">
-                            <h3>Взнос</h3>
-                            <div class="value" id="res-initial">0 ₽</div>
+                        <div class="result-item">
+                            <div class="result-label">Наценка</div>
+                            <div class="result-big-value" id="res-markup-ruble">0 ₽</div>
+                            <div class="result-small-percent" id="res-markup-percent">0%</div>
                         </div>
-                        <div class="result-card">
-                            <h3>Сумма финансирования</h3>
-                            <div class="value" id="res-financing">0 ₽</div>
-                        </div>
-                        <div class="result-card">
-                            <h3>Наценка</h3>
-                            <div class="value" id="res-markup-percent">0%</div>
-                        </div>
-                        <div class="result-card">
-                            <h3>Сумма наценки</h3>
-                            <div class="value" id="res-markup-ruble">0 ₽</div>
-                        </div>
-                        <div class="result-card">
-                            <h3>Общая стоимость</h3>
-                            <div class="value" id="res-total">0 ₽</div>
-                        </div>
-                        <div class="result-card">
-                            <h3>Ежемесячный платёж</h3>
-                            <div class="value" id="res-monthly">0 ₽</div>
+                        <div class="result-item">
+                            <div class="result-label">Общая стоимость в рассрочку</div>
+                            <div class="result-big-value" id="res-total">0 ₽</div>
                         </div>
                     </div>
 
                     <div class="calculator-btn-container">
-                        <a href="#application" class="btn btn-primary">Заполнить анкету</a>
+                        <a href="#application" class="btn btn-white">Заполнить анкету</a>
+                        <div class="guarantors-link">
+                            <a href="#faq">Нужно два поручителя</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1825,49 +1874,46 @@
         };
         const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
 
+        // Массивы значений для слайдеров
+        const INITIAL_PERCENTS = [25, 40, 50];
+        const TERMS = [3, 6, 10];
+
         // Форматирование числа с пробелами (15 745 ₽)
         function formatNumber(num) {
             return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
         }
 
+        // Форматирование числа без знака рубля
+        function formatNumberPlain(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
         // Расчёт калькулятора
         function calculate() {
-            const costInput = document.getElementById('cost');
-            let cost = parseFloat(costInput.value) || 0;
-            
-            // Проверка максимальной суммы
-            const warningEl = document.getElementById('cost-warning');
-            if (cost > 100000) {
-                warningEl.style.display = 'block';
-                costInput.value = '';
-                cost = 0;
-            } else {
-                warningEl.style.display = 'none';
-            }
+            // Получаем стоимость из слайдера
+            const costSlider = document.getElementById('cost-slider');
+            let cost = parseInt(costSlider.value) || 0;
 
-            // Получаем выбранный процент взноса
-            const initialPercentButtons = document.querySelectorAll('#initial-percent-buttons .btn-option');
-            let initialPercent = 25;  // по умолчанию
-            initialPercentButtons.forEach(btn => {
-                if (btn.classList.contains('active')) {
-                    initialPercent = parseInt(btn.dataset.percent);
-                }
-            });
+            // Обновляем отображение стоимости
+            document.getElementById('cost-display').textContent = formatNumberPlain(cost) + ' руб.';
 
-            // Получаем выбранный срок
-            const termButtons = document.querySelectorAll('#term-buttons .btn-option');
-            let term = 6;  // по умолчанию
-            termButtons.forEach(btn => {
-                if (btn.classList.contains('active')) {
-                    term = parseInt(btn.dataset.months);
-                }
-            });
+            // Получаем процент взноса из слайдера (индекс 0, 1, 2)
+            const initialSlider = document.getElementById('initial-slider');
+            const initialIndex = parseInt(initialSlider.value);
+            const initialPercent = INITIAL_PERCENTS[initialIndex];
 
-            // Взнос = стоимость × %
+            // Получаем срок из слайдера (индекс 0, 1, 2)
+            const termSlider = document.getElementById('term-slider');
+            const termIndex = parseInt(termSlider.value);
+            const term = TERMS[termIndex];
+
+            // Обновляем отображение процента взноса и суммы в рублях
+            document.getElementById('initial-display').textContent = initialPercent + '%';
             const initialRuble = cost * (initialPercent / 100);
-
-            // Показываем сумму взноса в рублях
             document.getElementById('initial-ruble-display').textContent = formatNumber(initialRuble);
+
+            // Обновляем отображение срока
+            document.getElementById('term-display').textContent = term + ' мес.';
 
             // Финансирование = стоимость − взнос
             const financing = cost - initialRuble;
@@ -1886,37 +1932,16 @@
             const monthly = term > 0 ? total / term : 0;
 
             // Обновление результатов
-            document.getElementById('res-cost').textContent = formatNumber(cost);
-            document.getElementById('res-initial').textContent = formatNumber(initialRuble) + ` (${initialPercent}%)`;
-            document.getElementById('res-financing').textContent = formatNumber(financing);
-            document.getElementById('res-markup-percent').textContent = `${baseMarkupPercent}% + ${term} мес. = ${totalMarkupPercent}%`;
-            document.getElementById('res-markup-ruble').textContent = formatNumber(markupRuble);
-            document.getElementById('res-total').textContent = formatNumber(total);
             document.getElementById('res-monthly').textContent = formatNumber(monthly);
+            document.getElementById('res-markup-ruble').textContent = formatNumber(markupRuble);
+            document.getElementById('res-markup-percent').textContent = `${totalMarkupPercent}%`;
+            document.getElementById('res-total').textContent = formatNumber(total);
         }
 
-        // Инициализация кнопок первоначального взноса
-        const initialPercentButtons = document.querySelectorAll('#initial-percent-buttons .btn-option');
-        initialPercentButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                initialPercentButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                calculate();
-            });
-        });
-
-        // Инициализация кнопок срока
-        const termButtons = document.querySelectorAll('#term-buttons .btn-option');
-        termButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                termButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                calculate();
-            });
-        });
-
-        // Обработчик изменения стоимости
-        document.getElementById('cost').addEventListener('input', calculate);
+        // Инициализация обработчиков слайдеров
+        document.getElementById('cost-slider').addEventListener('input', calculate);
+        document.getElementById('initial-slider').addEventListener('input', calculate);
+        document.getElementById('term-slider').addEventListener('input', calculate);
 
         // Мобильное меню
         function toggleMenu() {
@@ -1949,21 +1974,8 @@
             faqItem.classList.toggle('active');
         }
 
-        // Установка значений по умолчанию: 25%, 6 мес.
-        function initDefaults() {
-            // Активируем кнопку 25% для взноса
-            const initialBtn = document.querySelector('#initial-percent-buttons .btn-option[data-percent="25"]');
-            if (initialBtn) initialBtn.classList.add('active');
-
-            // Активируем кнопку 6 мес. для срока
-            const termBtn = document.querySelector('#term-buttons .btn-option[data-months="6"]');
-            if (termBtn) termBtn.classList.add('active');
-
-            // Первичный расчёт
-            calculate();
-        }
-
-        initDefaults();
+        // Первичный расчёт при загрузке
+        calculate();
 
         // Кнопка доступности (крупный текст)
         function initAccessibilityToggle() {
