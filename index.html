@@ -623,6 +623,34 @@
             min-height: 24px;
         }
 
+        .cost-input-field {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--header-bg);
+            outline: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .cost-input-field:focus {
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        /* Скрываем стрелки input type="number" для текстового поля */
+        .cost-input-field::-webkit-outer-spin-button,
+        .cost-input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cost-input-field[type=number] {
+            -moz-appearance: textfield;
+        }
+
         .ruble-subvalue {
             display: block;
             font-size: 0.85rem;
@@ -1502,10 +1530,10 @@
                         <!-- Стоимость товара -->
                         <div class="input-group slider-group">
                             <div class="slider-value-display">
-                                <span id="cost-display">100 000 руб.</span>
+                                <input type="text" id="cost-input" value="100 000" class="cost-input-field">
                             </div>
                             <label for="cost-slider">Стоимость товара или услуги</label>
-                            <input type="range" id="cost-slider" min="10000" max="1000000" step="5000" value="100000">
+                            <input type="range" id="cost-slider" min="10000" max="100000" step="1000" value="100000">
                         </div>
                         
                         <!-- Первоначальный взнос -->
@@ -1894,8 +1922,9 @@
             const costSlider = document.getElementById('cost-slider');
             let cost = parseInt(costSlider.value) || 0;
 
-            // Обновляем отображение стоимости
-            document.getElementById('cost-display').textContent = formatNumberPlain(cost) + ' руб.';
+            // Обновляем отображение стоимости в поле ввода
+            const costInput = document.getElementById('cost-input');
+            costInput.value = formatNumberPlain(cost);
 
             // Получаем процент взноса из слайдера (индекс 0, 1, 2)
             const initialSlider = document.getElementById('initial-slider');
@@ -1938,10 +1967,44 @@
             document.getElementById('res-total').textContent = formatNumber(total);
         }
 
+        // Обработка ввода в поле стоимости
+        function handleCostInput() {
+            const costInput = document.getElementById('cost-input');
+            const costSlider = document.getElementById('cost-slider');
+            
+            // Удаляем все нецифровые символы
+            let value = costInput.value.replace(/\D/g, '');
+            
+            if (value === '') {
+                value = '0';
+            }
+            
+            let numValue = parseInt(value);
+            
+            // Ограничиваем значениями от 10 000 до 100 000
+            if (numValue < 10000) {
+                numValue = 10000;
+            } else if (numValue > 100000) {
+                numValue = 100000;
+            }
+            
+            // Обновляем слайдер
+            costSlider.value = numValue;
+            
+            // Форматируем отображение
+            costInput.value = formatNumberPlain(numValue);
+            
+            // Пересчитываем
+            calculate();
+        }
+
         // Инициализация обработчиков слайдеров
         document.getElementById('cost-slider').addEventListener('input', calculate);
         document.getElementById('initial-slider').addEventListener('input', calculate);
         document.getElementById('term-slider').addEventListener('input', calculate);
+        
+        // Обработчик для поля ввода стоимости
+        document.getElementById('cost-input').addEventListener('input', handleCostInput);
 
         // Мобильное меню
         function toggleMenu() {
