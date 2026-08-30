@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бренд — YuNur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&display=swap&subset=cyrillic" rel="stylesheet">
+    <style>
+        /* ==================== НАСТРОЙКИ ==================== */
+        :root {
+            --header-bg: #1b4332;
+            --accent-color: #2d6a4f;
+            --bg-color: #f2f7f4;
+            --text-color: #1b4332;
+            --card-bg: #ffffff;
+            --white: #ffffff;
+            --gold: #d4af37;
+            --deep-green-dark: #0a1f17;
+            --deep-green-mid: #1b4332;
+            --deep-green-light: #2d6a4f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ==================== ШАПКА ==================== */
+        header {
+            background-color: var(--header-bg);
+            color: var(--white);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 45px;
+            border-radius: 8px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .header-btn {
+            background: var(--white);
+            color: var(--header-bg);
+            padding: 10px 24px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.3s;
+        }
+
+        .header-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* ==================== СЕКЦИИ ==================== */
+        section {
+            padding: 60px 0;
+        }
+
+        /* ==================== СТРАНИЦА БРЕНДА ==================== */
+        .brand-page {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .brand-placeholder {
+            background: var(--white);
+            padding: 4rem 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--accent-color);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .brand-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .brand-placeholder h1 {
+            font-size: 2rem;
+            color: var(--header-bg);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .brand-placeholder p {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .brand-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-brand-primary {
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 14px 32px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-brand-primary:hover {
+            background: var(--header-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.2);
+        }
+
+        .btn-brand-secondary {
+            background: transparent;
+            color: var(--accent-color);
+            padding: 14px 32px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid var(--accent-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-brand-secondary:hover {
+            background: var(--accent-color);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--header-bg);
+                padding: 1rem 0;
+                gap: 0;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav ul li {
+                text-align: center;
+                padding: 0.75rem 0;
+            }
+
+            .brand-placeholder {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .brand-placeholder h1 {
+                font-size: 1.6rem;
+            }
+
+            .brand-icon {
+                font-size: 3.5rem;
+            }
+
+            .brand-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-brand-primary,
+            .btn-brand-secondary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .brand-placeholder {
+                padding: 2rem 1rem;
+            }
+
+            .back-link {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="logo"><img src="logo.png" alt="YuNur"></a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="index.html#calculator">Калькулятор</a></li>
+                    <li><a href="index.html#how-it-works">Как это работает</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="rates.html">Курсы валют</a></li>
+                    <li><a href="articles.html">Статьи</a></li>
+                </ul>
+            </nav>
+            <a href="index.html#application" class="header-btn">Оставить заявку</a>
+        </div>
+    </header>
+
+    <!-- Страница бренда -->
+    <section class="brand-page">
+        <div class="container">
+            <a href="catalog.html" class="back-link">← Назад к каталогу</a>
+            
+            <div class="brand-placeholder">
+                <span class="brand-icon">🛍️</span>
+                <h1 id="brand-title">Товары скоро появятся</h1>
+                <p>Каталог наполняется. Скоро здесь появятся товары этого бренда.<br>Вы можете оставить заявку или рассказать нам, что вы ищете.</p>
+                
+                <div class="brand-actions">
+                    <a href="index.html#application" class="btn-brand-primary">Оставить заявку</a>
+                    <a href="index.html#application" class="btn-brand-secondary">Рассказать, что ищу</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Мобильное меню
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Получение параметра бренда из URL
+        function getBrandFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('b');
+        }
+
+        // Отображение названия бренда в заголовке
+        function setBrandTitle() {
+            const brand = getBrandFromURL();
+            if (brand) {
+                // Преобразуем slug в читаемое название
+                const brandName = brand.split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+                document.getElementById('brand-title').textContent = brandName;
+                document.title = brandName + ' — YuNur';
+            }
+        }
+
+        // Инициализация при загрузке
+        setBrandTitle();
+    </script>
+</body>
+</html>
