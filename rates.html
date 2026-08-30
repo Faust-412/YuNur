@@ -107,6 +107,165 @@
             opacity: 0.9;
         }
 
+        /* ==================== КАТАЛОГ DROPDOWN ==================== */
+        .catalog-btn {
+            background: transparent;
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .catalog-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .catalog-btn-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .catalog-btn-icon span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 1px;
+        }
+
+        .catalog-dropdown {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--white);
+            border: 1px solid var(--accent-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(27, 67, 50, 0.2);
+            z-index: 999;
+            display: none;
+            overflow: hidden;
+            max-width: 900px;
+            width: calc(100vw - 40px);
+        }
+
+        .catalog-dropdown.active {
+            display: block;
+            animation: dropdownFade 0.2s ease forwards;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .catalog-dropdown-content {
+            display: flex;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .catalog-categories {
+            min-width: 220px;
+            border-right: 1px solid rgba(27, 67, 50, 0.1);
+            padding-right: 1.5rem;
+        }
+
+        .catalog-category {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .catalog-category:hover {
+            background: var(--bg-color);
+        }
+
+        .catalog-category.active {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .catalog-category-icon {
+            font-size: 1.3rem;
+        }
+
+        .catalog-brands {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .catalog-brands-title {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .catalog-brands-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .catalog-brand-btn {
+            background: transparent;
+            color: var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 1px solid var(--accent-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .catalog-brand-btn:hover {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
         /* ==================== СЕКЦИИ ==================== */
         section {
             padding: 60px 0;
@@ -353,13 +512,51 @@
                 <ul id="nav-menu">
                     <li><a href="index.html#calculator">Калькулятор</a></li>
                     <li><a href="index.html#how-it-works">Как это работает</a></li>
-                    <li><a href="catalog.html">Каталог</a></li>
                     <li><a href="rates.html">Курсы валют</a></li>
                 </ul>
             </nav>
+            <button class="catalog-btn" onclick="toggleCatalog()">
+                <span class="catalog-btn-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                Каталог
+            </button>
             <a href="index.html#application" class="header-btn">Оставить заявку</a>
         </div>
     </header>
+
+    <!-- Каталог Dropdown -->
+    <div class="overlay" id="catalog-overlay" onclick="closeCatalog()"></div>
+    <div class="catalog-dropdown" id="catalog-dropdown">
+        <div class="catalog-dropdown-content">
+            <div class="catalog-categories">
+                <div class="catalog-category active" data-category="phones" onclick="selectCategory('phones')">
+                    <span class="catalog-category-icon">📱</span>
+                    <span>Телефоны</span>
+                </div>
+                <div class="catalog-category" data-category="fridge" onclick="selectCategory('fridge')">
+                    <span class="catalog-category-icon">🧊</span>
+                    <span>Холодильники</span>
+                </div>
+                <div class="catalog-category" data-category="washing" onclick="selectCategory('washing')">
+                    <span class="catalog-category-icon">🌀</span>
+                    <span>Стиральные машины</span>
+                </div>
+                <div class="catalog-category" data-category="vacuum" onclick="selectCategory('vacuum')">
+                    <span class="catalog-category-icon">🧹</span>
+                    <span>Пылесосы</span>
+                </div>
+            </div>
+            <div class="catalog-brands">
+                <p class="catalog-brands-title">Бренды</p>
+                <div class="catalog-brands-list" id="brands-container">
+                    <!-- Бренды заполняются JS -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Курсы валют и золото -->
     <section class="rates-section">
@@ -385,6 +582,58 @@
     </footer>
 
     <script>
+        // Каталог
+        const brandsByCategory = {
+            phones: ['iPhone', 'Samsung'],
+            fridge: ['Samsung', 'LG', 'Bosch', 'Haier', 'Indesit'],
+            washing: ['LG', 'Samsung', 'Bosch', 'Haier', 'Indesit'],
+            vacuum: ['Dyson', 'Samsung', 'LG', 'Bosch', 'Philips']
+        };
+
+        let currentCategory = 'phones';
+
+        function toggleCatalog() {
+            const dropdown = document.getElementById('catalog-dropdown');
+            const overlay = document.getElementById('catalog-overlay');
+            dropdown.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeCatalog() {
+            const dropdown = document.getElementById('catalog-dropdown');
+            const overlay = document.getElementById('catalog-overlay');
+            dropdown.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        function selectCategory(category) {
+            currentCategory = category;
+            
+            // Обновляем активную категорию
+            document.querySelectorAll('.catalog-category').forEach(cat => {
+                cat.classList.remove('active');
+                if (cat.dataset.category === category) {
+                    cat.classList.add('active');
+                }
+            });
+            
+            // Заполняем бренды
+            const brandsContainer = document.getElementById('brands-container');
+            brandsContainer.innerHTML = '';
+            brandsByCategory[category].forEach(brand => {
+                const btn = document.createElement('a');
+                btn.className = 'catalog-brand-btn';
+                btn.textContent = brand;
+                btn.href = `brand.html?b=${brand.toLowerCase()}`;
+                brandsContainer.appendChild(btn);
+            });
+        }
+
+        // Инициализация брендов при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            selectCategory('phones');
+        });
+
         // Мобильное меню
         function toggleMenu() {
             const menu = document.getElementById('nav-menu');
