@@ -36,10 +36,10 @@ footer{background:#2b4a3a;color:#dfe9e2;text-align:center;padding:22px;font-size
 <nav>
 <a href="index.html#calculator">Калькулятор</a>
 <a href="index.html#how-it-works">Как это работает</a>
-<a href="catalog.html">Каталог</a>
 <a href="rates.html">Курсы валют</a>
 <a href="articles.html">Статьи</a>
 </nav>
+<button class="catalog-btn" onclick="toggleCatalog()">Каталог</button>
 <a class="btn" href="index.html#application">Оставить заявку</a>
 </header>
 <main>
@@ -47,6 +47,37 @@ footer{background:#2b4a3a;color:#dfe9e2;text-align:center;padding:22px;font-size
 <div id="content"><div class="msg">Загрузка...</div></div>
 </main>
 <footer>© YuNur. Исламская рассрочка без переплат.</footer>
+
+<!-- Каталог Dropdown -->
+<div class="overlay" id="catalog-overlay" onclick="closeCatalog()"></div>
+<div class="catalog-dropdown" id="catalog-dropdown">
+    <div class="catalog-dropdown-content">
+        <div class="catalog-categories">
+            <div class="catalog-category active" data-category="phones" onclick="selectCategory('phones')">
+                <span class="catalog-category-icon">📱</span>
+                <span>Телефоны</span>
+            </div>
+            <div class="catalog-category" data-category="fridge" onclick="selectCategory('fridge')">
+                <span class="catalog-category-icon">🧊</span>
+                <span>Холодильники</span>
+            </div>
+            <div class="catalog-category" data-category="washing" onclick="selectCategory('washing')">
+                <span class="catalog-category-icon">🌀</span>
+                <span>Стиральные машины</span>
+            </div>
+            <div class="catalog-category" data-category="vacuum" onclick="selectCategory('vacuum')">
+                <span class="catalog-category-icon">🧹</span>
+                <span>Пылесосы</span>
+            </div>
+        </div>
+        <div class="catalog-brands">
+            <p class="catalog-brands-title">Бренды</p>
+            <div class="catalog-brands-list" id="brands-container">
+                <!-- Бренды заполняются JS -->
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 const API='https://api.github.com/repos/Faust-412/YuNur/contents/content/articles?ref=main';
 let articles=[];
