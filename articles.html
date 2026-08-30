@@ -12,6 +12,30 @@ header{background:#2b4a3a;padding:14px 22px;display:flex;align-items:center;gap:
 nav{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto}
 nav a{color:#fff;text-decoration:none;font-size:15px}
 .btn{background:#fff;color:#2b4a3a;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600}
+
+/* Каталог кнопка */
+.catalog-btn{background:transparent;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;font-size:15px;transition:all 0.2s ease;border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;gap:8px}
+.catalog-btn:hover{background:rgba(255,255,255,0.1)}
+.catalog-btn-icon{display:flex;flex-direction:column;gap:3px}
+.catalog-btn-icon span{display:block;width:18px;height:2px;background:#fff;border-radius:1px}
+
+/* Каталог Dropdown */
+.catalog-dropdown{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-10px);background:#fff;border:1px solid #2d6a4f;border-radius:20px;box-shadow:0 10px 40px rgba(27,67,50,0.2);z-index:999;display:none;overflow:hidden;max-width:900px;width:calc(100vw - 40px)}
+.catalog-dropdown.active{display:block;animation:dropdownFade 0.2s ease forwards}
+@keyframes dropdownFade{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.catalog-dropdown-content{display:flex;padding:1.5rem;gap:1.5rem}
+.catalog-categories{min-width:220px;border-right:1px solid rgba(27,67,50,0.1);padding-right:1.5rem}
+.catalog-category{display:flex;align-items:center;gap:0.75rem;padding:12px 16px;border-radius:12px;cursor:pointer;transition:all 0.2s ease;font-weight:500;color:#22372e;margin-bottom:0.5rem}
+.catalog-category:hover{background:#f2f7f4}
+.catalog-category.active{background:#2d6a4f;color:#fff}
+.catalog-category-icon{font-size:1.3rem}
+.catalog-brands{flex:1;min-width:200px}
+.catalog-brands-title{font-size:0.85rem;color:#2d6a4f;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:1rem}
+.catalog-brands-list{display:flex;flex-wrap:wrap;gap:0.5rem}
+.catalog-brand-btn{background:transparent;color:#2d6a4f;padding:8px 16px;border-radius:25px;border:1px solid #2d6a4f;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.2s ease;text-decoration:none;display:inline-block}
+.catalog-brand-btn:hover{background:#2d6a4f;color:#fff}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);z-index:998;display:none}
+.overlay.active{display:block}
 main{max-width:1000px;margin:0 auto;padding:34px 18px 70px}
 h1{text-align:center;color:#1f3a2d;margin-bottom:26px;font-size:34px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
@@ -39,7 +63,14 @@ footer{background:#2b4a3a;color:#dfe9e2;text-align:center;padding:22px;font-size
 <a href="rates.html">Курсы валют</a>
 <a href="articles.html">Статьи</a>
 </nav>
-<button class="catalog-btn" onclick="toggleCatalog()">Каталог</button>
+<button class="catalog-btn" onclick="toggleCatalog()">
+    <span class="catalog-btn-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+    </span>
+    Каталог
+</button>
 <a class="btn" href="index.html#application">Оставить заявку</a>
 </header>
 <main>
@@ -130,6 +161,15 @@ window.scrollTo(0,0);
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function fmtDate(d){if(!d)return '';const t=new Date(d);return isNaN(t)?d:t.toLocaleDateString('ru-RU');}
+
+// Каталог
+const brandsByCategory={phones:['iPhone','Samsung'],fridge:['Samsung','LG','Bosch','Haier','Indesit'],washing:['LG','Samsung','Bosch','Haier','Indesit'],vacuum:['Dyson','Samsung','LG','Bosch','Philips']};
+let currentCategory='phones';
+function toggleCatalog(){const dropdown=document.getElementById('catalog-dropdown');const overlay=document.getElementById('catalog-overlay');dropdown.classList.toggle('active');overlay.classList.toggle('active');}
+function closeCatalog(){const dropdown=document.getElementById('catalog-dropdown');const overlay=document.getElementById('catalog-overlay');dropdown.classList.remove('active');overlay.classList.remove('active');}
+function selectCategory(category){currentCategory=category;document.querySelectorAll('.catalog-category').forEach(cat=>{cat.classList.remove('active');if(cat.dataset.category===category){cat.classList.add('active');}});const brandsContainer=document.getElementById('brands-container');brandsContainer.innerHTML='';brandsByCategory[category].forEach(brand=>{const btn=document.createElement('a');btn.className='catalog-brand-btn';btn.textContent=brand;btn.href='brand.html?b='+brand.toLowerCase();brandsContainer.appendChild(btn);});}
+document.addEventListener('DOMContentLoaded',function(){selectCategory('phones');});
+
 loadList();
 </script>
 </body>
