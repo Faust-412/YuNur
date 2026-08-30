@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Статьи — YuNur</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:#eef2ef;color:#22372e}
+header{background:#2b4a3a;padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.logo{background:#f4f1ea;color:#2b4a3a;font-weight:700;padding:8px 14px;border-radius:12px;text-decoration:none}
+nav{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto}
+nav a{color:#fff;text-decoration:none;font-size:15px}
+.btn{background:#fff;color:#2b4a3a;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600}
+main{max-width:1000px;margin:0 auto;padding:34px 18px 70px}
+h1{text-align:center;color:#1f3a2d;margin-bottom:26px;font-size:34px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{background:#fbfcfb;border:1px solid #2b4a3a33;border-radius:16px;padding:20px;cursor:pointer}
+.card:hover{box-shadow:0 6px 18px #2b4a3a22}
+.cat{display:inline-block;font-size:12px;color:#3e6b4f;border:1px solid #3e6b4f55;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.card h3{color:#1f3a2d;margin-bottom:8px}
+.card p{font-size:14px;color:#51655a}
+.date{margin-top:12px;font-size:12px;color:#7d8f85}
+.msg{text-align:center;color:#7d8f85;padding:30px}
+.err{text-align:center;color:#b3372f;padding:30px}
+article{background:#fbfcfb;border:1px solid #2b4a3a33;border-radius:16px;padding:28px}
+article h2{color:#1f3a2d;margin:22px 0 10px}
+article p{margin:10px 0;line-height:1.6}
+.back{display:inline-block;margin-bottom:16px;color:#3e6b4f;cursor:pointer;text-decoration:underline}
+footer{background:#2b4a3a;color:#dfe9e2;text-align:center;padding:22px;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+<a class="logo" href="index.html">YuNur</a>
+<nav>
+<a href="index.html#calculator">Калькулятор</a>
+<a href="index.html#how-it-works">Как это работает</a>
+<a href="index.html#about">О компании</a>
+<a href="rates.html">Курсы валют</a>
+<a href="articles.html">Статьи</a>
+</nav>
+<a class="btn" href="index.html#application">Оставить заявку</a>
+</header>
+<main>
+<h1>Статьи</h1>
+<div id="content"><div class="msg">Загрузка...</div></div>
+</main>
+<footer>© YuNur. Исламская рассрочка без переплат.</footer>
+<script>
+const API='https://api.github.com/repos/Faust-412/YuNur/contents/content/articles?ref=main';
+let articles=[];
+async function loadList(){
+const box=document.getElementById('content');
+try{
+const res=await fetch(API);
+if(res.status===404){box.innerHTML='<div class="msg">Статей пока нет — скоро появятся.</div>';return;}
+if(!res.ok)throw 0;
+const files=(await res.json()).filter(f=>f.name.endsWith('.md')||f.name.endsWith('.txt'));
+if(!files.length){box.innerHTML='<div class="msg">Статей пока нет — скоро появятся.</div>';return;}
+articles=await Promise.all(files.map(async f=>{const raw=await(await fetch(f.download_url)).text();return parse(raw,f.name);}));
+articles.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+renderList();
+}catch(e){box.innerHTML='<div class="err">Не удалось загрузить статьи. Попробуйте позже.</div>';}
+}
+function parse(raw,file){
+const lines=raw.split('\n');
+const a={file,title:file,category:'Статьи',date:'',teaser:'',body:[]};
+let i=0;
+for(;i<lines.length;i++){
+const l=lines[i].trim();
+if(l.startsWith('Название:'))a.title=l.replace('Название:','').trim();
+else if(l.startsWith('Рубрика:'))a.category=l.replace('Рубрика:','').trim();
+else if(l.startsWith('Дата:'))a.date=l.replace('Дата:','').trim();
+else if(l.startsWith('Тизер:'))a.teaser=l.replace('Тизер:','').trim();
+else break;
+}
+a.body=lines.slice(i);
+if(!a.teaser)a.teaser=(a.body.find(l=>l.trim()&&!l.startsWith('#'))||'').trim();
+return a;
+}
+function renderList(){
+const box=document.getElementById('content');
+box.innerHTML='<div class="grid">'+articles.map((a,n)=>'<div class="card" onclick="openArticle('+n+')"><span class="cat">'+esc(a.category)+'</span><h3>'+esc(a.title)+'</h3><p>'+esc(a.teaser)+'</p><div class="date">'+esc(fmtDate(a.date))+'</div></div>').join('')+'</div>';
+}
+function openArticle(n){
+const a=articles[n];
+const html=a.body.map(line=>{
+const l=line.trim();
+if(!l)return '';
+if(l.startsWith('### '))return '<h2>'+esc(l.slice(4))+'</h2>';
+if(l.startsWith('## '))return '<h2>'+esc(l.slice(3))+'</h2>';
+if(l.startsWith('# '))return '<h2>'+esc(l.slice(2))+'</h2>';
+if(l.startsWith('- '))return '<p>• '+esc(l.slice(2))+'</p>';
+return '<p>'+esc(l)+'</p>';
+}).join('');
+document.getElementById('content').innerHTML='<span class="back" onclick="renderList()">← Все статьи</span><article><span class="cat">'+esc(a.category)+'</span><h1 style="text-align:left;font-size:28px;margin:8px 0 4px">'+esc(a.title)+'</h1><div class="date">'+esc(fmtDate(a.date))+'</div>'+html+'</article>';
+window.scrollTo(0,0);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtDate(d){if(!d)return '';const t=new Date(d);return isNaN(t)?d:t.toLocaleDateString('ru-RU');}
+loadList();
+</script>
+</body>
+</html>
