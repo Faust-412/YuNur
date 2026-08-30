@@ -16,6 +16,11 @@
             --text-color: #1b4332;
             --card-bg: #ffffff;
             --white: #ffffff;
+            --gold: #d4af37;
+            --gold-light: #f4e5b0;
+            --deep-green-dark: #0a1f17;
+            --deep-green-mid: #1b4332;
+            --deep-green-light: #2d6a4f;
         }
 
         * {
@@ -107,78 +112,293 @@
 
         /* ==================== ГЛАВНЫЙ ЭКРАН ==================== */
         .hero {
-            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+            background: radial-gradient(ellipse at center, var(--deep-green-light) 0%, var(--deep-green-mid) 40%, var(--deep-green-dark) 100%);
             color: var(--white);
-            padding: 80px 0 120px;
+            padding: 100px 0 120px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
         }
 
+        /* Золотые свечения по углам */
         .hero::before {
             content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 10% 90%, rgba(212, 175, 55, 0.08) 0%, transparent 35%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Исламский звёздный узор с анимацией мерцания */
+        .hero-pattern {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.07) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-                url("data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M90 15 L90 165 M15 90 L165 90 M37 37 L143 143 M37 143 L143 37' stroke='rgba(255,255,255,0.06)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-            background-size: 180px 180px;
-            opacity: 1;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 20 L100 180 M20 100 L180 100 M45 45 L155 155 M45 155 L155 45' stroke='rgba(212, 175, 55, 0.08)' stroke-width='1' fill='none'/%3E%3Ccircle cx='100' cy='100' r='30' stroke='rgba(212, 175, 55, 0.06)' stroke-width='0.8' fill='none'/%3E%3Ccircle cx='100' cy='100' r='15' stroke='rgba(212, 175, 55, 0.04)' stroke-width='0.5' fill='none'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            opacity: 0.6;
+            animation: patternShimmer 8s ease-in-out infinite;
             pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes patternShimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.7; }
         }
 
         .hero-content {
             position: relative;
             z-index: 3;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 3rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        .hero-text {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+            align-items: flex-start;
+            gap: 1.5rem;
         }
 
         .hero h1 {
-            font-size: 58px;
+            font-size: 64px;
             font-weight: 700;
-            letter-spacing: -0.05em;
+            letter-spacing: -0.03em;
             line-height: 1.1;
             color: #ffffff;
-            -webkit-text-stroke: 1.8px #0f2a1e;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            margin-bottom: 0.5rem;
         }
 
-        .hero p {
-            font-size: 1.3rem;
-            opacity: 0.95;
-            max-width: 600px;
-            -webkit-text-stroke: 1.2px #0f2a1e;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--gold-light);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        .btn {
+        .hero-trust-line {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn-hero-primary {
             display: inline-block;
             background-color: var(--white);
             color: var(--header-bg);
-            padding: 15px 40px;
+            padding: 16px 36px;
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             border: none;
             cursor: pointer;
-            transition: opacity 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .btn:hover {
-            opacity: 0.9;
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
-        .btn-primary {
-            background-color: var(--accent-color);
+        .btn-hero-secondary {
+            display: inline-block;
+            background-color: transparent;
+            color: var(--gold);
+            padding: 16px 36px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border: 2px solid var(--gold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-hero-secondary:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Карточка рынков */
+        .markets-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 1.5rem;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            animation: fadeUp 0.8s ease-out 0.3s both;
+        }
+
+        .markets-title {
+            font-size: 0.85rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .market-item:last-child {
+            border-bottom: none;
+        }
+
+        .market-name {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .market-value {
+            text-align: right;
+        }
+
+        .market-price {
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--white);
+            display: block;
+        }
+
+        .market-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .market-change.positive {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.15);
+        }
+
+        .market-change.negative {
+            color: #ef5350;
+            background: rgba(239, 83, 80, 0.15);
+        }
+
+        .market-change.neutral {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Анимация появления */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1,
+        .hero-subtitle,
+        .hero-trust-line,
+        .hero-buttons {
+            animation: fadeUp 0.8s ease-out both;
+        }
+
+        .hero h1 { animation-delay: 0.1s; }
+        .hero-subtitle { animation-delay: 0.2s; }
+        .hero-trust-line { animation-delay: 0.3s; }
+        .hero-buttons { animation-delay: 0.4s; }
+
+        /* Мобильная адаптация */
+        @media (max-width: 900px) {
+            .hero {
+                padding: 60px 0 80px;
+                min-height: auto;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-text {
+                align-items: center;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .markets-card {
+                margin: 0 auto;
+                width: 100%;
+                max-width: 340px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                padding: 14px 24px;
+                font-size: 0.95rem;
+                width: 100%;
+                text-align: center;
+            }
         }
 
         /* ==================== СЕКЦИИ ==================== */
@@ -949,10 +1169,41 @@
 
     <!-- Главный экран -->
     <section class="hero">
-        <div class="container hero-content">
-            <h1>Честная рассрочка для твоей семьи</h1>
-            <p>Фиксированный график, который легко планировать. Без процентов и штрафов.</p>
-            <a href="#calculator" class="btn">Рассчитать рассрочку</a>
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Честная рассрочка для твоей семьи</h1>
+                <p class="hero-subtitle">Без процентов и штрафов. По шариату.</p>
+                <p class="hero-trust-line">0 ₽ скрытых комиссий · фиксированный график · товар сразу твой</p>
+                <div class="hero-buttons">
+                    <a href="#calculator" class="btn-hero-primary">Рассчитать рассрочку</a>
+                    <a href="rates.html" class="btn-hero-secondary">Курсы и золото</a>
+                </div>
+            </div>
+            <div class="markets-card" id="markets-card">
+                <div class="markets-title">Рынки</div>
+                <div class="market-item">
+                    <span class="market-name">Золото (₽/г)</span>
+                    <div class="market-value">
+                        <span class="market-price" id="gold-price">—</span>
+                        <span class="market-change neutral" id="gold-change">—</span>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <span class="market-name">Доллар</span>
+                    <div class="market-value">
+                        <span class="market-price" id="usd-price">—</span>
+                        <span class="market-change neutral" id="usd-change">—</span>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <span class="market-name">Евро</span>
+                    <div class="market-value">
+                        <span class="market-price" id="eur-price">—</span>
+                        <span class="market-change neutral" id="eur-change">—</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1534,6 +1785,76 @@
         }
 
         initAccessibilityToggle();
+
+        // Загрузка данных о рынках из data/rates.json
+        async function loadMarketsData() {
+            try {
+                const response = await fetch('data/rates.json');
+                if (!response.ok) throw new Error('Не удалось загрузить данные о рынках');
+                const data = await response.json();
+                
+                const currencies = data.currencies;
+                
+                // Золото
+                const gold = currencies.find(c => c.code === 'GOLD');
+                if (gold) {
+                    const goldPriceEl = document.getElementById('gold-price');
+                    const goldChangeEl = document.getElementById('gold-change');
+                    const priceFormatted = Math.round(gold.value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                    goldPriceEl.textContent = priceFormatted + ' ₽';
+                    
+                    if (gold.previous !== null && gold.previous !== undefined) {
+                        const change = ((gold.value - gold.previous) / gold.previous) * 100;
+                        const changeFixed = change.toFixed(2);
+                        goldChangeEl.textContent = (change >= 0 ? '+' : '') + changeFixed + '%';
+                        goldChangeEl.className = 'market-change ' + (change >= 0 ? 'positive' : 'negative');
+                    } else {
+                        goldChangeEl.textContent = '—';
+                        goldChangeEl.className = 'market-change neutral';
+                    }
+                }
+                
+                // Доллар
+                const usd = currencies.find(c => c.code === 'USD');
+                if (usd) {
+                    const usdPriceEl = document.getElementById('usd-price');
+                    const usdChangeEl = document.getElementById('usd-change');
+                    usdPriceEl.textContent = usd.value.toFixed(2) + ' ₽';
+                    
+                    if (usd.previous !== null && usd.previous !== undefined) {
+                        const change = ((usd.value - usd.previous) / usd.previous) * 100;
+                        const changeFixed = change.toFixed(2);
+                        usdChangeEl.textContent = (change >= 0 ? '+' : '') + changeFixed + '%';
+                        usdChangeEl.className = 'market-change ' + (change >= 0 ? 'positive' : 'negative');
+                    } else {
+                        usdChangeEl.textContent = '—';
+                        usdChangeEl.className = 'market-change neutral';
+                    }
+                }
+                
+                // Евро
+                const eur = currencies.find(c => c.code === 'EUR');
+                if (eur) {
+                    const eurPriceEl = document.getElementById('eur-price');
+                    const eurChangeEl = document.getElementById('eur-change');
+                    eurPriceEl.textContent = eur.value.toFixed(2) + ' ₽';
+                    
+                    if (eur.previous !== null && eur.previous !== undefined) {
+                        const change = ((eur.value - eur.previous) / eur.previous) * 100;
+                        const changeFixed = change.toFixed(2);
+                        eurChangeEl.textContent = (change >= 0 ? '+' : '') + changeFixed + '%';
+                        eurChangeEl.className = 'market-change ' + (change >= 0 ? 'positive' : 'negative');
+                    } else {
+                        eurChangeEl.textContent = '—';
+                        eurChangeEl.className = 'market-change neutral';
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных о рынках:', error);
+            }
+        }
+
+        loadMarketsData();
     </script>
 </body>
 </html>
