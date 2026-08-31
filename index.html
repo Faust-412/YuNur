@@ -1453,11 +1453,12 @@
   background-size:90px 90px;
   pointer-events:none;
 }
-#calculator [class*="result"]{border:1px solid #c9a227;}
-.flash{animation:goldflash .4s ease;}
-@keyframes goldflash{0%{text-shadow:0 0 14px rgba(201,162,39,.95);}100%{text-shadow:none;}}
-.tell-btn{background:#2b4a3a !important;color:#fff !important;border:none !important;padding:12px 24px;border-radius:999px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;}
-</style>
+#calculator [class*="result"]{
+  border:1px solid #c9a227;
+  border-radius:18px;
+  margin:6px;
+  box-shadow:0 4px 14px rgba(43,74,58,.08);
+}
 <body>
     <!-- Шапка -->
     <header>
