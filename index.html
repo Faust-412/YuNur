@@ -596,8 +596,9 @@
         }
 
         .calculator-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 2rem;
             margin-bottom: 3rem;
         }
@@ -609,19 +610,30 @@
 
         .slider-group {
             position: relative;
+            width: 250px;
+            flex: 0 0 auto;
+        }
+
+        .slider-group:nth-child(3) {
+            margin: 0 auto;
         }
 
         .slider-value-display {
             background: var(--white);
             color: var(--header-bg);
             border-radius: 16px;
-            padding: 15px;
+            padding: 15px 20px;
             margin-bottom: 0.5rem;
             text-align: center;
             font-weight: 700;
             font-size: 1.1rem;
-            min-height: 24px;
+            height: 54px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             border: 1px solid #c9a227;
+            white-space: nowrap;
         }
 
         .cost-input-field {
@@ -1331,7 +1343,17 @@
             }
 
             .calculator-inputs {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .slider-group {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .slider-group:nth-child(3) {
+                margin: 0 auto;
             }
 
             .results-new {
