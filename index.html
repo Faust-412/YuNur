@@ -1444,27 +1444,19 @@
         }
     </style>
 </head>
-    <style>
-/* YuNur: декор калькулятора и зелёная кнопка */
-.calculator-card{
-  background-color:#fbfcfb;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23c9a227' stroke-opacity='0.07' stroke-width='1.2'%3E%3Crect x='25' y='25' width='40' height='40'/%3E%3Crect x='25' y='25' width='40' height='40' transform='rotate(45 45 45)'/%3E%3C/g%3E%3C/svg%3E");
+   <style>
+/* YuNur: декор (безопасная версия) */
+.calculator-card{position:relative;}
+.calculator-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23c9a227' stroke-opacity='0.12' stroke-width='1.2'%3E%3Crect x='25' y='25' width='40' height='40'/%3E%3Crect x='25' y='25' width='40' height='40' transform='rotate(45 45 45)'/%3E%3C/g%3E%3C/svg%3E");
   background-size:90px 90px;
+  pointer-events:none;
 }
-#calculator [class*="result"]{
-  border:1px solid #c9a227;
-  box-shadow:0 0 0 1px rgba(201,162,39,.15);
-}
+#calculator [class*="result"]{border:1px solid #c9a227;}
 .flash{animation:goldflash .4s ease;}
-@keyframes goldflash{
-  0%{text-shadow:0 0 14px rgba(201,162,39,.95);}
-  100%{text-shadow:none;}
-}
-.tell-btn{
-  background:#2b4a3a !important;color:#fff !important;
-  border:none !important;padding:12px 24px;border-radius:999px;
-  font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;
-}
+@keyframes goldflash{0%{text-shadow:0 0 14px rgba(201,162,39,.95);}100%{text-shadow:none;}}
+.tell-btn{background:#2b4a3a !important;color:#fff !important;border:none !important;padding:12px 24px;border-radius:999px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;}
 </style>
 <body>
     <!-- Шапка -->
