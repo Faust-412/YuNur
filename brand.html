@@ -89,7 +89,7 @@ fetch('data/products.json').then(r=>r.json()).then(list=>{products=list;renderCh
 function slug(s){return (s||'').toLowerCase().replace(/\s+/g,'-');}
 function pretty(s){return s.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function norm(s){return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,'');}
+function norm(s){return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,'').replace(/(jpeg|jpg|png|webp|avif)/g,'');}
 async function fixImg(im){
 if(im.dataset.fixed)return;
 im.dataset.fixed='1';
