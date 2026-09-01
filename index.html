@@ -1036,6 +1036,112 @@
             opacity: 0.8;
         }
 
+        /* ==================== КАРТОЧКА ТОВАРА ==================== */
+        .products-section {
+            background-color: var(--bg-color);
+            padding: 60px 0;
+        }
+
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border: 1px solid #c9a227;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .product-card-content {
+            padding: 1.25rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .product-card-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .product-card-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+        }
+
+        .product-card-btn {
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 10px 24px;
+            border-radius: 25px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .product-card-btn:hover {
+            background: var(--header-bg);
+            transform: translateY(-2px);
+        }
+
+        .products-placeholder {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px dashed var(--accent-color);
+        }
+
+        .products-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .products-placeholder h3 {
+            color: var(--header-bg);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .products-placeholder p {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
         /* ==================== ПРОДУКТЫ YUNUR (КАРТОЧКИ-СТОЛПЫ) ==================== */
         .products-yunur-section {
             background-color: var(--white);
@@ -1519,6 +1625,10 @@
                     <span class="catalog-category-icon">📱</span>
                     <span>Телефоны</span>
                 </div>
+                <div class="catalog-category" data-category="audio" onclick="selectCategory('audio')">
+                    <span class="catalog-category-icon">🎧</span>
+                    <span>Наушники и аудио</span>
+                </div>
                 <div class="catalog-category" data-category="fridge" onclick="selectCategory('fridge')">
                     <span class="catalog-category-icon">🧊</span>
                     <span>Холодильники</span>
@@ -1531,9 +1641,13 @@
                     <span class="catalog-category-icon">🧹</span>
                     <span>Пылесосы</span>
                 </div>
-                <div class="catalog-category" data-category="micro" onclick="selectCategory('micro')">
-                    <span class="catalog-category-icon">💳</span>
-                    <span>Микро-рассрочка до 25 000 ₽</span>
+                <div class="catalog-category" data-category="small" onclick="selectCategory('small')">
+                    <span class="catalog-category-icon">☕</span>
+                    <span>Мелкая бытовая техника</span>
+                </div>
+                <div class="catalog-category" data-category="accessories" onclick="selectCategory('accessories')">
+                    <span class="catalog-category-icon">🔌</span>
+                    <span>Аксессуары</span>
                 </div>
             </div>
             <div class="catalog-brands">
@@ -2210,7 +2324,9 @@
             fridge: ['Samsung', 'LG', 'Bosch', 'Haier', 'Indesit'],
             washing: ['LG', 'Samsung', 'Bosch', 'Haier', 'Indesit'],
             vacuum: ['Dyson', 'Samsung', 'LG', 'Bosch', 'Philips'],
-            micro: ['Apple', 'Samsung', 'Sony', 'JBL', 'Чехлы', 'Зарядки', 'Чайники', 'Утюги', 'Фены', 'Zara', 'H&M', 'Uniqlo']
+            audio: ['Sony', 'JBL', 'Bose', 'Sennheiser', 'Apple AirPods'],
+            small: ['Tefal', 'Bosch', 'Philips', 'Redmond', 'Kitfort'],
+            accessories: ['Чехлы', 'Зарядки', 'Кабели', 'Стекла', 'Наушники']
         };
 
         let currentCategory = 'phones';
@@ -2259,6 +2375,100 @@
 
         // Инициализация брендов при загрузке
         renderBrands(currentCategory);
+
+        // ==================== ЗАГРУЗКА ТОВАРОВ ====================
+        let productsData = [];
+        const categoryMap = {
+            'phones': 'Телефоны',
+            'audio': 'Наушники и аудио',
+            'fridge': 'Холодильники',
+            'washing': 'Стиральные машины',
+            'vacuum': 'Пылесосы',
+            'small': 'Мелкая бытовая техника',
+            'accessories': 'Аксессуары'
+        };
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('data/products.json');
+                if (!response.ok) throw new Error('Не удалось загрузить товары');
+                productsData = await response.json();
+                renderProducts(currentCategory);
+            } catch (error) {
+                console.error('Ошибка загрузки товаров:', error);
+            }
+        }
+
+        function renderProducts(category) {
+            const container = document.getElementById('products-display');
+            if (!container) return;
+
+            const categoryProducts = productsData.filter(p => p.category === categoryMap[category]);
+            
+            if (categoryProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="products-placeholder">
+                        <span class="products-placeholder-icon">📦</span>
+                        <h3>Товары скоро появятся</h3>
+                        <p>Мы уже готовим для вас лучшие предложения!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = categoryProducts.map(product => {
+                const imgSrc = `images/products/${encodeURIComponent(product.img)}`;
+                return `
+                    <div class="product-card">
+                        <img src="${imgSrc}" alt="${product.name}" class="product-card-image" loading="lazy">
+                        <div class="product-card-content">
+                            <h3 class="product-card-name">${product.name}</h3>
+                            <span class="product-card-badge">Цена скоро</span>
+                            <button class="product-card-btn" onclick="openOrderModal('${product.name}')">Купить</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== МОДАЛЬНОЕ ОКНО ЗАКАЗА ====================
+        function openOrderModal(productName) {
+            const modal = document.getElementById('order-modal');
+            const overlay = document.getElementById('order-overlay');
+            document.getElementById('order-product-name').textContent = productName;
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            const modal = document.getElementById('order-modal');
+            const overlay = document.getElementById('order-overlay');
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            document.getElementById('order-form').reset();
+        }
+
+        function handleOrderSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('order-name').value.trim();
+            const phone = document.getElementById('order-phone').value.trim();
+            const comment = document.getElementById('order-comment').value.trim();
+            const product = document.getElementById('order-product-name').textContent;
+
+            if (!name || !phone) {
+                alert('Пожалуйста, заполните имя и телефон');
+                return;
+            }
+
+            const message = `Здравствуйте! Хочу оформить заявку:%0AТовар: ${encodeURIComponent(product)}%0AИмя: ${encodeURIComponent(name)}%0AТелефон: ${encodeURIComponent(phone)}${comment ? '%0AКомментарий: ' + encodeURIComponent(comment) : ''}`;
+            window.open(`https://wa.me/79991234567?text=${message}`, '_blank');
+            closeOrderModal();
+        }
+
+        // Загрузка товаров при загрузке страницы
+        loadProducts();
     </script>
 </body>
     <script>
