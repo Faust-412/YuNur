@@ -81,7 +81,7 @@ h1{font-size:2rem;margin-bottom:8px}
 </div>
 <script>
 const CATS={all:'Все товары',phones:'Телефоны',audio:'Наушники и аудио',fridge:'Холодильники',washing:'Стиральные машины',vacuum:'Пылесосы',home:'Мелкая бытовая техника',accessories:'Аксессуары'};
-let products=[],currentList=[],currentProduct='',filter={};
+let products=[],currentList=[],currentProduct='',filter={},dirCache=null;
 const params=new URLSearchParams(location.search);
 if(params.get('b'))filter.b=params.get('b');
 if(params.get('c'))filter.c=params.get('c');
@@ -89,6 +89,17 @@ fetch('data/products.json').then(r=>r.json()).then(list=>{products=list;renderCh
 function slug(s){return (s||'').toLowerCase().replace(/\s+/g,'-');}
 function pretty(s){return s.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function norm(s){return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,'');}
+async function fixImg(im){
+if(im.dataset.fixed)return;
+im.dataset.fixed='1';
+const raw=im.getAttribute('data-raw');
+try{
+if(!dirCache){dirCache=await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/images/products?per_page=100').then(r=>r.json());}
+const hit=(dirCache||[]).find(f=>norm(f.name)===norm(raw));
+if(hit){im.src='images/products/'+encodeURIComponent(hit.name);}
+}catch(e){}
+}
 function renderChips(){
 document.getElementById('chips').innerHTML=Object.keys(CATS).map(k=>'<button class="chip'+((k==='all'&&!filter.c&&!filter.b)||(k===filter.c)?' active':'')+'" onclick="setCat(\''+k+'\')">'+CATS[k]+'</button>').join('');
 }
@@ -100,7 +111,8 @@ else if(filter.c)list=list.filter(p=>p.category===filter.c);
 currentList=list;
 document.getElementById('title').textContent=filter.b?pretty(filter.b):(filter.c?CATS[filter.c]:'Все товары');
 document.getElementById('empty').style.display=list.length?'none':'block';
-document.getElementById('grid').innerHTML=list.map((p,i)=>'<div class="card"><img loading="lazy" src="images/products/'+encodeURIComponent(p.img)+'" alt="'+esc(p.name)+'"><div class="card-body"><div class="card-name">'+esc(p.name)+'</div><span class="badge">Цена скоро</span><button class="buy" onclick="openModal('+i+')">Купить</button></div></div>').join('');
+document.getElementById('grid').innerHTML=list.map((p,i)=>'<div class="card"><img loading="lazy" data-raw="'+esc(p.img)+'" src="images/products/'+encodeURIComponent(p.img)+'" alt="'+esc(p.name)+'"><div class="card-body"><div class="card-name">'+esc(p.name)+'</div><span class="badge">Цена скоро</span><button class="buy" onclick="openModal('+i+')">Купить</button></div></div>').join('');
+document.querySelectorAll('#grid img').forEach(im=>im.addEventListener('error',()=>fixImg(im)));
 }
 function openModal(i){currentProduct=currentList[i].name;document.getElementById('modal-product').textContent=currentProduct;document.getElementById('modal').classList.add('active');}
 function closeModal(){document.getElementById('modal').classList.remove('active');}
