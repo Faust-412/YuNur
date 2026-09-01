@@ -1,681 +1,119 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бренд — YuNur</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&display=swap&subset=cyrillic" rel="stylesheet">
-    <style>
-        /* ==================== НАСТРОЙКИ ==================== */
-        :root {
-            --header-bg: #1b4332;
-            --accent-color: #2d6a4f;
-            --bg-color: #f2f7f4;
-            --text-color: #1b4332;
-            --card-bg: #ffffff;
-            --white: #ffffff;
-            --gold: #d4af37;
-            --deep-green-dark: #0a1f17;
-            --deep-green-mid: #1b4332;
-            --deep-green-light: #2d6a4f;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            font-size: 16px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* ==================== ШАПКА ==================== */
-        header {
-            background-color: var(--header-bg);
-            color: var(--white);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo img {
-            height: 45px;
-            border-radius: 8px;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-
-        nav a:hover {
-            opacity: 0.8;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .header-btn {
-            background: var(--white);
-            color: var(--header-bg);
-            padding: 10px 24px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: opacity 0.3s;
-        }
-
-        .header-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* ==================== КАТАЛОГ DROPDOWN ==================== */
-        .catalog-btn {
-            background: transparent;
-            color: var(--white);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            margin-right: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .catalog-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .catalog-btn-icon {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .catalog-btn-icon span {
-            display: block;
-            width: 18px;
-            height: 2px;
-            background: var(--white);
-            border-radius: 1px;
-        }
-
-        .catalog-dropdown {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            background: var(--white);
-            border: 1px solid var(--accent-color);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(27, 67, 50, 0.2);
-            z-index: 999;
-            display: none;
-            overflow: hidden;
-            max-width: 900px;
-            width: calc(100vw - 40px);
-        }
-
-        .catalog-dropdown.active {
-            display: block;
-            animation: dropdownFade 0.2s ease forwards;
-        }
-
-        @keyframes dropdownFade {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        .catalog-dropdown-content {
-            display: flex;
-            padding: 1.5rem;
-            gap: 1.5rem;
-        }
-
-        .catalog-categories {
-            min-width: 220px;
-            border-right: 1px solid rgba(27, 67, 50, 0.1);
-            padding-right: 1.5rem;
-        }
-
-        .catalog-category {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 12px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            color: var(--text-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .catalog-category:hover {
-            background: var(--bg-color);
-        }
-
-        .catalog-category.active {
-            background: var(--accent-color);
-            color: var(--white);
-        }
-
-        .catalog-category-icon {
-            font-size: 1.3rem;
-        }
-
-        .catalog-brands {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .catalog-brands-title {
-            font-size: 0.85rem;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .catalog-brands-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .catalog-brand-btn {
-            background: transparent;
-            color: var(--accent-color);
-            padding: 8px 16px;
-            border-radius: 25px;
-            border: 1px solid var(--accent-color);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .catalog-brand-btn:hover {
-            background: var(--accent-color);
-            color: var(--white);
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 998;
-            display: none;
-        }
-
-        .overlay.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .catalog-btn {
-                margin-right: 0;
-                padding: 8px 16px;
-                font-size: 0.85rem;
-            }
-
-            .catalog-dropdown {
-                top: 0;
-                left: 0;
-                transform: none;
-                width: 100vw;
-                max-width: none;
-                height: 100vh;
-                border-radius: 0;
-                border: none;
-                box-shadow: none;
-            }
-
-            .catalog-dropdown.active {
-                animation: dropdownFadeMobile 0.2s ease forwards;
-            }
-
-            @keyframes dropdownFadeMobile {
-                from {
-                    opacity: 0;
-                    transform: translateY(-100%);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .catalog-dropdown-content {
-                flex-direction: column;
-                padding: 1rem;
-                gap: 1rem;
-                overflow-y: auto;
-                height: 100%;
-            }
-
-            .catalog-categories {
-                border-right: none;
-                border-bottom: 1px solid rgba(27, 67, 50, 0.1);
-                padding-right: 0;
-                padding-bottom: 1rem;
-                min-width: auto;
-            }
-
-            .catalog-category {
-                padding: 10px 12px;
-            }
-
-            .catalog-brands {
-                min-width: auto;
-            }
-
-            .catalog-categories {
-                display: flex;
-                overflow-x: auto;
-                border-bottom: 1px solid rgba(27, 67, 50, 0.1);
-                padding-bottom: 0.5rem;
-                margin-bottom: 1rem;
-            }
-
-            .catalog-category {
-                white-space: nowrap;
-                margin-bottom: 0;
-            }
-        }
-
-        /* ==================== СЕКЦИИ ==================== */
-        section {
-            padding: 60px 0;
-        }
-
-        /* ==================== СТРАНИЦА БРЕНДА ==================== */
-        .brand-page {
-            min-height: 60vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: 2px solid var(--accent-color);
-            transition: all 0.3s ease;
-        }
-
-        .back-link:hover {
-            background: var(--accent-color);
-            color: var(--white);
-        }
-
-        .brand-placeholder {
-            background: var(--white);
-            padding: 4rem 3rem;
-            border-radius: 30px;
-            border: 1px solid var(--accent-color);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        .brand-icon {
-            font-size: 5rem;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        .brand-placeholder h1 {
-            font-size: 2rem;
-            color: var(--header-bg);
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .brand-placeholder p {
-            font-size: 1.1rem;
-            color: var(--text-color);
-            opacity: 0.8;
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-        }
-
-        .brand-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn-brand-primary {
-            background: var(--accent-color);
-            color: var(--white);
-            padding: 14px 32px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-brand-primary:hover {
-            background: var(--header-bg);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.2);
-        }
-
-        .btn-brand-secondary {
-            background: var(--accent-color);
-            color: var(--white);
-            padding: 14px 32px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            border: 2px solid var(--accent-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-brand-secondary:hover {
-            background: var(--header-bg);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.2);
-        }
-
-        /* Адаптив */
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            nav ul {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: var(--header-bg);
-                padding: 1rem 0;
-                gap: 0;
-            }
-
-            nav ul.active {
-                display: flex;
-            }
-
-            nav ul li {
-                text-align: center;
-                padding: 0.75rem 0;
-            }
-
-            .brand-placeholder {
-                padding: 2.5rem 1.5rem;
-            }
-
-            .brand-placeholder h1 {
-                font-size: 1.6rem;
-            }
-
-            .brand-icon {
-                font-size: 3.5rem;
-            }
-
-            .brand-actions {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .btn-brand-primary,
-            .btn-brand-secondary {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-btn {
-                padding: 8px 16px;
-                font-size: 0.85rem;
-            }
-
-            .brand-placeholder {
-                padding: 2rem 1rem;
-            }
-
-            .back-link {
-                font-size: 0.9rem;
-                padding: 8px 16px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Каталог — YuNur</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--header-bg:#1b4332;--accent:#2d6a4f;--bg:#f2f7f4;--text:#1b4332;--gold:#d4af37;--white:#fff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+header{background:var(--header-bg);padding:1rem 0;position:sticky;top:0;z-index:100}
+.header-content{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo img{height:45px;border-radius:8px}
+nav ul{display:flex;gap:2rem;list-style:none}
+nav a{color:#fff;text-decoration:none;font-weight:500}
+.header-btn{background:#fff;color:var(--header-bg);padding:10px 24px;border-radius:40px;text-decoration:none;font-weight:600;white-space:nowrap}
+main{padding:40px 0 80px}
+h1{font-size:2rem;margin-bottom:8px}
+.sub{opacity:.75;margin-bottom:24px}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:28px}
+.chip{padding:8px 18px;border-radius:25px;border:1px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;font-weight:500;font-size:.9rem}
+.chip.active{background:var(--accent);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.card{background:#fff;border:1px solid var(--gold);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:scale(1.03);box-shadow:0 10px 30px rgba(27,67,50,.18)}
+.card img{width:100%;height:200px;object-fit:cover;background:#eee}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card-name{font-weight:600;font-size:.95rem;line-height:1.35;flex:1}
+.badge{align-self:flex-start;font-size:.75rem;color:var(--gold);border:1px solid var(--gold);padding:3px 10px;border-radius:999px}
+.buy{background:var(--accent);color:#fff;border:none;border-radius:40px;padding:12px;font-weight:600;cursor:pointer;font-size:.95rem}
+.buy:hover{background:var(--header-bg)}
+.empty{background:#fff;border:1px solid var(--accent);border-radius:30px;padding:3rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.empty h2{margin-bottom:10px}
+.empty p{opacity:.8;margin-bottom:20px}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:20px;max-width:420px;width:100%;padding:28px;position:relative}
+.modal-box h3{margin-bottom:6px}
+.modal-product{color:var(--accent);font-weight:600;margin-bottom:16px;font-size:.95rem}
+.modal-box label{display:block;font-size:.85rem;margin:12px 0 4px;font-weight:500}
+.modal-box input,.modal-box textarea{width:100%;padding:10px 14px;border:1px solid #cfd8d3;border-radius:10px;font-family:inherit;font-size:.95rem}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text)}
+.modal-send{width:100%;margin-top:18px}
+@media(max-width:768px){nav{display:none}}
+</style>
 </head>
 <body>
-    <!-- Шапка -->
-    <header>
-        <div class="container header-content">
-            <a href="index.html" class="logo"><img src="logo.png" alt="YuNur"></a>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-            <nav>
-                <ul id="nav-menu">
-                    <li><a href="index.html#calculator">Калькулятор</a></li>
-                    <li><a href="index.html#how-it-works">Как это работает</a></li>
-                    <li><a href="rates.html">Курсы валют</a></li>
-                    <li><a href="articles.html">Статьи</a></li>
-                </ul>
-            </nav>
-            <button class="catalog-btn" onclick="toggleCatalog()">Каталог</button>
-            <a href="index.html#application" class="header-btn">Оставить заявку</a>
-        </div>
-    </header>
-
-    <!-- Каталог Dropdown -->
-    <div class="overlay" id="catalog-overlay" onclick="closeCatalog()"></div>
-    <div class="catalog-dropdown" id="catalog-dropdown">
-        <div class="catalog-dropdown-content">
-            <div class="catalog-categories">
-                <div class="catalog-category active" data-category="phones" onclick="selectCategory('phones')">
-                    <span class="catalog-category-icon">📱</span>
-                    <span>Телефоны</span>
-                </div>
-                <div class="catalog-category" data-category="fridge" onclick="selectCategory('fridge')">
-                    <span class="catalog-category-icon">🧊</span>
-                    <span>Холодильники</span>
-                </div>
-                <div class="catalog-category" data-category="washing" onclick="selectCategory('washing')">
-                    <span class="catalog-category-icon">🌀</span>
-                    <span>Стиральные машины</span>
-                </div>
-                <div class="catalog-category" data-category="vacuum" onclick="selectCategory('vacuum')">
-                    <span class="catalog-category-icon">🧹</span>
-                    <span>Пылесосы</span>
-                </div>
-                <div class="catalog-category" data-category="micro" onclick="selectCategory('micro')">
-                    <span class="catalog-category-icon">💳</span>
-                    <span>Микро-рассрочка до 25 000 ₽</span>
-                </div>
-            </div>
-            <div class="catalog-brands">
-                <p class="catalog-brands-title">Бренды</p>
-                <div class="catalog-brands-list" id="brands-container">
-                    <!-- Бренды заполняются JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Страница бренда -->
-    <section class="brand-page">
-        <div class="container">
-            <a href="index.html" class="back-link" onclick="event.preventDefault(); toggleCatalog(); return false;">← В каталог</a>
-            
-            <div class="brand-placeholder">
-                <span class="brand-icon">🛍️</span>
-                <h1 id="brand-title">Товары скоро появятся</h1>
-                <p>Каталог наполняется. Скоро здесь появятся товары этого бренда.<br>Вы можете оставить заявку или рассказать нам, что вы ищете.</p>
-                
-                <div class="brand-actions">
-                    <a href="index.html#application" class="btn-brand-primary">Оставить заявку</a>
-                    <a href="index.html#application" class="btn-brand-secondary">Рассказать, что ищу</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        // Мобильное меню
-        function toggleMenu() {
-            const menu = document.getElementById('nav-menu');
-            menu.classList.toggle('active');
-        }
-
-        // ==================== КАТАЛОГ DROPDOWN ====================
-        const catalogData = {
-            phones: ['iPhone', 'Samsung'],
-            fridge: ['Samsung', 'LG', 'Bosch', 'Haier', 'Indesit'],
-            washing: ['LG', 'Samsung', 'Bosch', 'Haier', 'Indesit'],
-            vacuum: ['Dyson', 'Samsung', 'LG', 'Bosch', 'Philips'],
-            micro: ['Apple', 'Samsung', 'Sony', 'JBL', 'Чехлы', 'Зарядки', 'Чайники', 'Утюги', 'Фены', 'Zara', 'H&M', 'Uniqlo']
-        };
-
-        let currentCategory = 'phones';
-
-        function toggleCatalog() {
-            const dropdown = document.getElementById('catalog-dropdown');
-            const overlay = document.getElementById('catalog-overlay');
-            dropdown.classList.toggle('active');
-            overlay.classList.toggle('active');
-            
-            if (dropdown.classList.contains('active')) {
-                renderBrands(currentCategory);
-            }
-        }
-
-        function closeCatalog() {
-            const dropdown = document.getElementById('catalog-dropdown');
-            const overlay = document.getElementById('catalog-overlay');
-            dropdown.classList.remove('active');
-            overlay.classList.remove('active');
-        }
-
-        function selectCategory(category) {
-            currentCategory = category;
-            
-            // Обновляем активную категорию
-            document.querySelectorAll('.catalog-category').forEach(cat => {
-                cat.classList.remove('active');
-                if (cat.dataset.category === category) {
-                    cat.classList.add('active');
-                }
-            });
-            
-            renderBrands(category);
-        }
-
-        function renderBrands(category) {
-            const container = document.getElementById('brands-container');
-            const brands = catalogData[category] || [];
-            
-            container.innerHTML = brands.map(brand => {
-                const brandSlug = brand.toLowerCase().replace(/\s+/g, '-');
-                return `<a href="brand.html?b=${brandSlug}" class="catalog-brand-btn" onclick="closeCatalog()">${brand}</a>`;
-            }).join('');
-        }
-
-        // Инициализация брендов при загрузке
-        renderBrands(currentCategory);
-
-        // Получение параметра бренда из URL
-        function getBrandFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('b');
-        }
-
-        // Отображение названия бренда в заголовке
-        function setBrandTitle() {
-            const brand = getBrandFromURL();
-            if (brand) {
-                // Преобразуем slug в читаемое название
-                const brandName = brand.split('-').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ');
-                document.getElementById('brand-title').textContent = brandName;
-                document.title = brandName + ' — YuNur';
-            }
-        }
-
-        // Инициализация при загрузке
-        setBrandTitle();
-    </script>
+<header><div class="container header-content">
+<a href="index.html" class="logo"><img src="logo.png" alt="YuNur"></a>
+<nav><ul>
+<li><a href="index.html#calculator">Калькулятор</a></li>
+<li><a href="rates.html">Курсы валют</a></li>
+<li><a href="articles.html">Статьи</a></li>
+</ul></nav>
+<a href="index.html#application" class="header-btn">Оставить заявку</a>
+</div></header>
+<main><div class="container">
+<h1 id="title">Каталог</h1>
+<p class="sub">Честная рассрочка без процентов и штрафов</p>
+<div class="chips" id="chips"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none">
+<h2>🛍️ Товары скоро появятся</h2>
+<p>Каталог наполняется. Оставьте заявку — и мы сообщим, когда товар приедет.</p>
+<a class="btn" href="index.html#application">Оставить заявку</a>
+</div>
+</div></main>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+<div class="modal-box">
+<button class="modal-close" onclick="closeModal()">×</button>
+<h3>Оформить заявку</h3>
+<p class="modal-product" id="modal-product"></p>
+<label>Имя</label><input id="m-name" placeholder="Как к вам обращаться">
+<label>Телефон / WhatsApp</label><input id="m-phone" placeholder="+7 ___ ___-__-__">
+<label>Комментарий (необязательно)</label><textarea id="m-comment" rows="2"></textarea>
+<button class="buy modal-send" onclick="sendOrder()">Отправить</button>
+</div>
+</div>
+<script>
+const CATS={all:'Все товары',phones:'Телефоны',audio:'Наушники и аудио',fridge:'Холодильники',washing:'Стиральные машины',vacuum:'Пылесосы',home:'Мелкая бытовая техника',accessories:'Аксессуары'};
+let products=[],currentList=[],currentProduct='',filter={};
+const params=new URLSearchParams(location.search);
+if(params.get('b'))filter.b=params.get('b');
+if(params.get('c'))filter.c=params.get('c');
+fetch('data/products.json').then(r=>r.json()).then(list=>{products=list;renderChips();render();}).catch(()=>{document.getElementById('empty').style.display='block';});
+function slug(s){return (s||'').toLowerCase().replace(/\s+/g,'-');}
+function pretty(s){return s.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderChips(){
+document.getElementById('chips').innerHTML=Object.keys(CATS).map(k=>'<button class="chip'+((k==='all'&&!filter.c&&!filter.b)||(k===filter.c)?' active':'')+'" onclick="setCat(\''+k+'\')">'+CATS[k]+'</button>').join('');
+}
+function setCat(k){filter={c:k==='all'?undefined:k};history.replaceState(null,'',k==='all'?'brand.html':'brand.html?c='+k);renderChips();render();}
+function render(){
+let list=products;
+if(filter.b)list=list.filter(p=>slug(p.brand)===filter.b);
+else if(filter.c)list=list.filter(p=>p.category===filter.c);
+currentList=list;
+document.getElementById('title').textContent=filter.b?pretty(filter.b):(filter.c?CATS[filter.c]:'Все товары');
+document.getElementById('empty').style.display=list.length?'none':'block';
+document.getElementById('grid').innerHTML=list.map((p,i)=>'<div class="card"><img loading="lazy" src="images/products/'+encodeURIComponent(p.img)+'" alt="'+esc(p.name)+'"><div class="card-body"><div class="card-name">'+esc(p.name)+'</div><span class="badge">Цена скоро</span><button class="buy" onclick="openModal('+i+')">Купить</button></div></div>').join('');
+}
+function openModal(i){currentProduct=currentList[i].name;document.getElementById('modal-product').textContent=currentProduct;document.getElementById('modal').classList.add('active');}
+function closeModal(){document.getElementById('modal').classList.remove('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function sendOrder(){
+const name=document.getElementById('m-name').value.trim();
+const phone=document.getElementById('m-phone').value.trim();
+if(!name||!phone){alert('Заполните имя и телефон');return;}
+const comment=document.getElementById('m-comment').value.trim();
+const msg='Здравствуйте! Хочу оформить заявку:%0AТовар: '+encodeURIComponent(currentProduct)+'%0AИмя: '+encodeURIComponent(name)+'%0AТелефон: '+encodeURIComponent(phone)+(comment?'%0AКомментарий: '+encodeURIComponent(comment):'');
+window.open('https://wa.me/79991234567?text='+msg,'_blank');
+closeModal();
+}
+</script>
 </body>
 </html>
