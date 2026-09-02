@@ -1,3 +1,18 @@
-(index.html is a source file, so no need to add anything to .gitignore)
+```
+# Logs and temp files
+*.log
+*.tmp
+*.swp
 
-# No changes needed - only source/config files detected
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Original rules preserved
+*.log
+```
