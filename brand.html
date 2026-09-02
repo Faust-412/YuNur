@@ -96,7 +96,7 @@ im.dataset.fixed='1';
 const raw=im.getAttribute('data-raw');
 try{
 if(!dirCache){dirCache=await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/images/products?per_page=100').then(r=>r.json());}
-const hit=(dirCache||[]).find(f=>norm(f.name)===norm(raw));
+const cands=(dirCache||[]).filter(f=>norm(f.name)===norm(raw));const hit=cands.find(f=>/\.jpe?g$/i.test(f.name))||cands[0];
 if(hit){im.src='images/products/'+encodeURIComponent(hit.name);}
 }catch(e){}
 }
