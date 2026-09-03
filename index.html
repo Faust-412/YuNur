@@ -638,7 +638,7 @@
 
         .mini-mode .slider-value-display {
             background: var(--deep-green-mid);
-            color: var(--white);
+            color: #ffffff;
             border-color: var(--gold);
         }
 
@@ -648,6 +648,16 @@
 
         .mini-mode .ruble-subvalue {
             color: var(--deep-green-light);
+        }
+
+        /* Подписи к слайдерам в режиме Мини */
+        .mini-mode .input-group label {
+            color: var(--deep-green-mid);
+        }
+
+        /* Дорожки слайдеров в режиме Мини */
+        .mini-mode input[type="range"] {
+            background: #cfe0d6;
         }
 
         .mini-mode input[type="range"]::-webkit-slider-thumb {
