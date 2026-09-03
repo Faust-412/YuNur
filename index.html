@@ -593,6 +593,80 @@
             border-radius: 30px;
             padding: 3rem;
             color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .calculator-card.mini-mode {
+            background: var(--white);
+            color: var(--deep-green-mid);
+            border: 2px solid var(--gold);
+        }
+
+        .mode-switch-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--white);
+            background: transparent;
+            color: var(--white);
+        }
+
+        .mode-btn.active {
+            background: var(--white);
+            color: var(--deep-green-mid);
+        }
+
+        .mini-mode .mode-btn {
+            border-color: var(--deep-green-mid);
+            color: var(--deep-green-mid);
+        }
+
+        .mini-mode .mode-btn.active {
+            background: var(--deep-green-mid);
+            color: var(--white);
+        }
+
+        .mini-mode .slider-value-display {
+            background: var(--deep-green-mid);
+            color: var(--white);
+            border-color: var(--gold);
+        }
+
+        .mini-mode .cost-input-field {
+            color: var(--deep-green-mid);
+        }
+
+        .mini-mode .ruble-subvalue {
+            color: var(--deep-green-light);
+        }
+
+        .mini-mode input[type="range"]::-webkit-slider-thumb {
+            background: var(--deep-green-mid);
+        }
+
+        .mini-mode input[type="range"]::-moz-range-thumb {
+            background: var(--deep-green-mid);
+        }
+
+        .mini-mode .btn-white {
+            background: var(--deep-green-mid);
+            color: var(--white);
+            border-color: var(--deep-green-mid);
+        }
+
+        .mini-mode .btn-white:hover {
+            background: var(--white);
+            color: var(--deep-green-mid);
         }
 
         .calculator-inputs {
@@ -740,6 +814,11 @@
             font-size: 2rem;
             font-weight: 700;
             line-height: 1.2;
+            transition: transform 0.15s ease;
+        }
+
+        .result-big-value.flash {
+            transform: scale(1.05);
         }
 
         .result-small-percent {
@@ -1727,7 +1806,13 @@
         <div class="container">
             <h2 class="section-title">Калькулятор рассрочки</h2>
             <div class="calculator">
-                <div class="calculator-card">
+                <div class="calculator-card" id="calculator-card">
+                    <!-- Переключатель режимов -->
+                    <div class="mode-switch-container">
+                        <button class="mode-btn active" data-mode="base">База</button>
+                        <button class="mode-btn" data-mode="mini">Мини (до 25 000 ₽)</button>
+                    </div>
+
                     <div class="calculator-inputs">
                         <!-- Стоимость товара -->
                         <div class="input-group slider-group">
@@ -2107,10 +2192,22 @@
             50: 24   // 50% взнос → 24% базовая наценка
         };
         const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
+        
+        // Настройки режима Мини
+        const MINI_MONTHLY_RATE = 0.08;  // 8% в месяц
+        const MINI_MARKUP = {
+            25: 39,  // 25% взнос → 39% базовая наценка (как в Базе)
+            40: 29,  // 40% взнос → 29% базовая наценка
+            50: 24   // 50% взнос → 24% базовая наценка
+        };
 
         // Массивы значений для слайдеров
         const INITIAL_PERCENTS = [25, 40, 50];
         const TERMS = [3, 6, 10];
+        const MINI_TERMS = [1, 2, 3, 4, 5, 6];
+        
+        // Текущий режим
+        let currentMode = 'base';
 
         // Форматирование числа с пробелами (15 745 ₽)
         function formatNumber(num) {
@@ -2137,10 +2234,16 @@
             const initialIndex = parseInt(initialSlider.value);
             const initialPercent = INITIAL_PERCENTS[initialIndex];
 
-            // Получаем срок из слайдера (индекс 0, 1, 2)
+            // Получаем срок из слайдера
             const termSlider = document.getElementById('term-slider');
             const termIndex = parseInt(termSlider.value);
-            const term = TERMS[termIndex];
+            
+            let term;
+            if (currentMode === 'mini') {
+                term = MINI_TERMS[termIndex];
+            } else {
+                term = TERMS[termIndex];
+            }
 
             // Обновляем отображение процента взноса и суммы в рублях
             document.getElementById('initial-display').textContent = initialPercent + '%';
@@ -2153,9 +2256,16 @@
             // Финансирование = стоимость − взнос
             const financing = cost - initialRuble;
 
-            // Итоговая наценка = базовая + срок × 1%
-            const baseMarkupPercent = BASE_MARKUP[initialPercent];
-            const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+            // Итоговая наценка
+            let totalMarkupPercent;
+            if (currentMode === 'mini') {
+                // Мини: 8% в месяц от суммы в рассрочку
+                totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
+            } else {
+                // База: базовая наценка + срок × 1%
+                const baseMarkupPercent = BASE_MARKUP[initialPercent];
+                totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+            }
 
             // Наценка ₽ = финансирование × итоговая наценка %
             const markupRuble = financing * (totalMarkupPercent / 100);
@@ -2187,11 +2297,19 @@
             
             let numValue = parseInt(value);
             
-            // Ограничиваем значениями от 10 000 до 100 000
-            if (numValue < 10000) {
-                numValue = 10000;
-            } else if (numValue > 100000) {
-                numValue = 100000;
+            // Ограничиваем значениями в зависимости от режима
+            if (currentMode === 'mini') {
+                if (numValue < 1000) {
+                    numValue = 1000;
+                } else if (numValue > 25000) {
+                    numValue = 25000;
+                }
+            } else {
+                if (numValue < 10000) {
+                    numValue = 10000;
+                } else if (numValue > 100000) {
+                    numValue = 100000;
+                }
             }
             
             // Обновляем слайдер
@@ -2203,6 +2321,56 @@
             // Пересчитываем
             calculate();
         }
+
+        // Переключение режимов
+        function switchMode(mode) {
+            currentMode = mode;
+            const card = document.getElementById('calculator-card');
+            const buttons = document.querySelectorAll('.mode-btn');
+            
+            // Обновляем активную кнопку
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.mode === mode) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Переключаем класс на карточке
+            if (mode === 'mini') {
+                card.classList.add('mini-mode');
+            } else {
+                card.classList.remove('mini-mode');
+            }
+            
+            // Сбрасываем слайдеры в дефолты режима
+            const costSlider = document.getElementById('cost-slider');
+            const termSlider = document.getElementById('term-slider');
+            
+            if (mode === 'mini') {
+                costSlider.min = 1000;
+                costSlider.max = 25000;
+                costSlider.value = 10000;  // дефолт для Мини
+                termSlider.max = MINI_TERMS.length - 1;  // 0-5 для 6 месяцев
+                termSlider.value = 2;  // дефолт 3 месяца (индекс 2)
+            } else {
+                costSlider.min = 10000;
+                costSlider.max = 100000;
+                costSlider.value = 100000;  // дефолт для Базы
+                termSlider.max = TERMS.length - 1;  // 0-2
+                termSlider.value = 1;  // дефолт 6 месяцев (индекс 1)
+            }
+            
+            // Пересчитываем
+            calculate();
+        }
+
+        // Инициализация обработчиков переключателей режимов
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchMode(btn.dataset.mode);
+            });
+        });
 
         // Инициализация обработчиков слайдеров
         document.getElementById('cost-slider').addEventListener('input', calculate);
@@ -2519,7 +2687,7 @@
   }
   var calc=document.getElementById('calculator');
   function flash(){
-    document.querySelectorAll('#calculator [class*="result"]').forEach(function(el){
+    document.querySelectorAll('#calculator .result-big-value, #calculator .result-small-percent').forEach(function(el){
       el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
     });
   }
