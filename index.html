@@ -1077,15 +1077,15 @@
             margin-bottom: 2rem;
         }
 
-        .map-wrapper {
-            text-align: center;
+        .map-box {
+            position: relative;
+            width: min(90%, 420px);
+            margin: 0 auto;
         }
 
-        .dagistan-map-container {
-            position: relative;
-            display: inline-block;
-            width: 90%;
-            max-width: 600px;
+        .map-box img {
+            width: 100%;
+            display: block;
         }
 
         .dagistan-map-image {
@@ -1207,7 +1207,7 @@
 
         /* Мобильная адаптация карты */
         @media (max-width: 768px) {
-            .dagistan-map-container {
+            .map-box {
                 width: 95%;
             }
         }
@@ -2244,61 +2244,59 @@
     <section id="cities-map" class="cities-map-section">
         <div class="container">
             <h2 class="section-title">Мы уже в этих городах</h2>
-            <div class="map-wrapper">
-                <div class="dagistan-map-container">
-                    <img src="images/dagestan-map.png" alt="Карта Дагестана" class="dagistan-map-image">
-                    
-                    <!-- Точки городов - Работаем (золотые с пульсацией) -->
-                    <!-- Махачкала — центр побережья -->
-                    <div class="city-point working" data-city="Махачкала" data-status="Работаем" style="top: 52%; left: 67%;">
-                        <div class="city-circle"></div>
-                        <div class="city-pulse"></div>
-                    </div>
-                    
-                    <!-- Каспийск — у побережья, сразу южнее Махачкалы -->
-                    <div class="city-point working" data-city="Каспийск" data-status="Работаем" style="top: 55%; left: 71%;">
-                        <div class="city-circle"></div>
-                        <div class="city-pulse"></div>
-                    </div>
-                    
-                    <!-- Хасавюрт — запад, верхняя треть -->
-                    <div class="city-point working" data-city="Хасавюрт" data-status="Работаем" style="top: 46%; left: 40%;">
-                        <div class="city-circle"></div>
-                        <div class="city-pulse"></div>
-                    </div>
-                    
-                    <!-- Дербент — юг, у побережья -->
-                    <div class="city-point working" data-city="Дербент" data-status="Работаем" style="top: 77%; left: 92%;">
-                        <div class="city-circle"></div>
-                        <div class="city-pulse"></div>
-                    </div>
-                    
-                    <!-- Точки городов - Скоро (серые) -->
-                    <!-- Кизляр — самый север -->
-                    <div class="city-point soon" data-city="Кизляр" data-status="Скоро" style="top: 30%; left: 45%;">
-                        <div class="city-circle"></div>
-                    </div>
-                    
-                    <!-- Кизилюрт — центр, западнее Махачкалы -->
-                    <div class="city-point soon" data-city="Кизилюрт" data-status="Скоро" style="top: 48%; left: 49%;">
-                        <div class="city-circle"></div>
-                    </div>
-                    
-                    <!-- Буйнакск — между Хасавюртом и Махачкалой, чуть южнее -->
-                    <div class="city-point soon" data-city="Буйнакск" data-status="Скоро" style="top: 57%; left: 56%;">
-                        <div class="city-circle"></div>
-                    </div>
-                    
-                    <!-- Избербаш — побережье между Каспийском и Дербентом -->
-                    <div class="city-point soon" data-city="Избербаш" data-status="Скоро" style="top: 63%; left: 79%;">
-                        <div class="city-circle"></div>
-                    </div>
-                    
-                    <!-- Подсказка -->
-                    <div class="tooltip" id="map-tooltip" style="display: none;">
-                        <div class="tooltip-city">Город</div>
-                        <div class="tooltip-status">Статус</div>
-                    </div>
+            <div class="map-box">
+                <img src="images/dagestan-map.png" alt="Карта Дагестана">
+                
+                <!-- Точки городов - Работаем (золотые с пульсацией) -->
+                <!-- Махачкала — центр побережья -->
+                <div class="city-point working" data-city="Махачкала" data-status="Работаем" style="top: 52%; left: 67%;">
+                    <div class="city-circle"></div>
+                    <div class="city-pulse"></div>
+                </div>
+                
+                <!-- Каспийск — у побережья, сразу южнее Махачкалы -->
+                <div class="city-point working" data-city="Каспийск" data-status="Работаем" style="top: 55%; left: 71%;">
+                    <div class="city-circle"></div>
+                    <div class="city-pulse"></div>
+                </div>
+                
+                <!-- Хасавюрт — запад, верхняя треть -->
+                <div class="city-point working" data-city="Хасавюрт" data-status="Работаем" style="top: 46%; left: 40%;">
+                    <div class="city-circle"></div>
+                    <div class="city-pulse"></div>
+                </div>
+                
+                <!-- Дербент — юг, у побережья -->
+                <div class="city-point working" data-city="Дербент" data-status="Работаем" style="top: 77%; left: 92%;">
+                    <div class="city-circle"></div>
+                    <div class="city-pulse"></div>
+                </div>
+                
+                <!-- Точки городов - Скоро (серые) -->
+                <!-- Кизляр — самый север -->
+                <div class="city-point soon" data-city="Кизляр" data-status="Скоро" style="top: 30%; left: 45%;">
+                    <div class="city-circle"></div>
+                </div>
+                
+                <!-- Кизилюрт — центр, западнее Махачкалы -->
+                <div class="city-point soon" data-city="Кизилюрт" data-status="Скоро" style="top: 48%; left: 49%;">
+                    <div class="city-circle"></div>
+                </div>
+                
+                <!-- Буйнакск — между Хасавюртом и Махачкалой, чуть южнее -->
+                <div class="city-point soon" data-city="Буйнакск" data-status="Скоро" style="top: 57%; left: 56%;">
+                    <div class="city-circle"></div>
+                </div>
+                
+                <!-- Избербаш — побережье между Каспийском и Дербентом -->
+                <div class="city-point soon" data-city="Избербаш" data-status="Скоро" style="top: 63%; left: 79%;">
+                    <div class="city-circle"></div>
+                </div>
+                
+                <!-- Подсказка -->
+                <div class="tooltip" id="map-tooltip" style="display: none;">
+                    <div class="tooltip-city">Город</div>
+                    <div class="tooltip-status">Статус</div>
                 </div>
             </div>
         </div>
@@ -3114,7 +3112,7 @@
             
             // Позиционируем подсказку рядом с точкой
             const pointRect = pointElement.getBoundingClientRect();
-            const containerRect = document.querySelector('.dagistan-map-container').getBoundingClientRect();
+            const containerRect = document.querySelector('.map-box').getBoundingClientRect();
             
             // Вычисляем относительную позицию точки внутри контейнера
             const relativeX = pointRect.left - containerRect.left + pointRect.width / 2;
