@@ -1067,6 +1067,81 @@
             background-color: var(--bg-color);
         }
 
+        /* ==================== CITIES MAP SECTION ==================== */
+        .cities-map-section {
+            background-color: var(--white);
+            padding: 60px 0;
+        }
+
+        .cities-map-section .section-title {
+            margin-bottom: 2rem;
+        }
+
+        .map-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .dagistan-map {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            filter: drop-shadow(0 4px 12px rgba(27, 67, 50, 0.15));
+        }
+
+        .dagistan-outline {
+            transition: all 0.3s ease;
+        }
+
+        .city-point {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .city-circle {
+            transition: all 0.3s ease;
+        }
+
+        .city-pulse {
+            animation: pulseGold 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGold {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
+            50% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        .city-point:hover .city-circle,
+        .city-point.active .city-circle {
+            transform: scale(1.5);
+            fill: #d4af37;
+            filter: drop-shadow(0 0 8px #d4af37);
+        }
+
+        .city-point.soon:hover .city-circle,
+        .city-point.soon.active .city-circle {
+            fill: #d4af37;
+        }
+
+        .tooltip-bg {
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Мобильная адаптация карты */
+        @media (max-width: 768px) {
+            .dagistan-map {
+                max-width: 100%;
+            }
+        }
+
         .faq-item {
             background: var(--card-bg);
             margin-bottom: 1rem;
@@ -2095,6 +2170,72 @@
         </div>
     </section>
 
+    <!-- Мы уже в этих городах -->
+    <section id="cities-map" class="cities-map-section">
+        <div class="container">
+            <h2 class="section-title">Мы уже в этих городах</h2>
+            <div class="map-wrapper">
+                <svg class="dagistan-map" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Карта Дагестана">
+                    <!-- Силуэт Дагестана -->
+                    <path class="dagistan-outline" d="M 120 80 L 150 70 L 180 65 L 210 68 L 240 75 L 270 85 L 290 100 L 300 120 L 295 145 L 285 170 L 270 190 L 250 210 L 225 225 L 200 235 L 175 240 L 150 235 L 130 225 L 115 210 L 105 190 L 100 170 L 102 150 L 108 130 L 115 110 Z" fill="#e8f0ea" stroke="#1b4332" stroke-width="2.5"/>
+                    
+                    <!-- Точки городов - Работаем (золотые) -->
+                    <!-- Махачкала -->
+                    <g class="city-point working" data-city="Махачкала" data-status="Работаем" style="cursor: pointer;">
+                        <circle class="city-circle" cx="265" cy="115" r="8" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="265" cy="115" r="8" fill="#d4af37" opacity="0.4"/>
+                    </g>
+                    
+                    <!-- Каспийск -->
+                    <g class="city-point working" data-city="Каспийск" data-status="Работаем" style="cursor: pointer;">
+                        <circle class="city-circle" cx="268" cy="128" r="6" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="268" cy="128" r="6" fill="#d4af37" opacity="0.4"/>
+                    </g>
+                    
+                    <!-- Хасавюрт -->
+                    <g class="city-point working" data-city="Хасавюрт" data-status="Работаем" style="cursor: pointer;">
+                        <circle class="city-circle" cx="220" cy="100" r="7" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="220" cy="100" r="7" fill="#d4af37" opacity="0.4"/>
+                    </g>
+                    
+                    <!-- Дербент -->
+                    <g class="city-point working" data-city="Дербент" data-status="Работаем" style="cursor: pointer;">
+                        <circle class="city-circle" cx="275" cy="175" r="7" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="275" cy="175" r="7" fill="#d4af37" opacity="0.4"/>
+                    </g>
+                    
+                    <!-- Точки городов - Скоро (серые) -->
+                    <!-- Буйнакск -->
+                    <g class="city-point soon" data-city="Буйнакск" data-status="Скоро" style="cursor: pointer;">
+                        <circle class="city-circle" cx="245" cy="110" r="6" fill="#888888"/>
+                    </g>
+                    
+                    <!-- Избербаш -->
+                    <g class="city-point soon" data-city="Избербаш" data-status="Скоро" style="cursor: pointer;">
+                        <circle class="city-circle" cx="270" cy="145" r="6" fill="#888888"/>
+                    </g>
+                    
+                    <!-- Кизилюрт -->
+                    <g class="city-point soon" data-city="Кизилюрт" data-status="Скоро" style="cursor: pointer;">
+                        <circle class="city-circle" cx="235" cy="120" r="6" fill="#888888"/>
+                    </g>
+                    
+                    <!-- Кизляр -->
+                    <g class="city-point soon" data-city="Кизляр" data-status="Скоро" style="cursor: pointer;">
+                        <circle class="city-circle" cx="210" cy="75" r="6" fill="#888888"/>
+                    </g>
+                    
+                    <!-- Подсказка -->
+                    <g class="tooltip" id="map-tooltip" style="display: none;">
+                        <rect class="tooltip-bg" x="0" y="0" width="120" height="40" rx="8" fill="#1b4332"/>
+                        <text class="tooltip-city" x="60" y="20" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="600">Город</text>
+                        <text class="tooltip-status" x="60" y="34" text-anchor="middle" fill="#d4af37" font-size="10">Статус</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </section>
+
     <!-- Ищем лучшую цену для вас -->
     <section id="best-price" class="best-price-section">
         <div class="container">
@@ -2891,6 +3032,93 @@
 
         // Загрузка товаров при загрузке страницы
         loadProducts();
+
+        // ==================== ИНТЕРАКТИВНАЯ КАРТА ДАГЕСТАНА ====================
+        const mapTooltip = document.getElementById('map-tooltip');
+        const tooltipCity = document.querySelector('.tooltip-city');
+        const tooltipStatus = document.querySelector('.tooltip-status');
+        const tooltipBg = document.querySelector('.tooltip-bg');
+        let activePoint = null;
+
+        function showTooltip(city, status, x, y) {
+            tooltipCity.textContent = city;
+            tooltipStatus.textContent = status;
+            mapTooltip.style.display = 'block';
+            
+            // Позиционируем подсказку рядом с точкой
+            const svgRect = document.querySelector('.dagistan-map').getBoundingClientRect();
+            const relativeX = x - svgRect.left;
+            const relativeY = y - svgRect.top;
+            
+            // Смещаем подсказку вверх и влево от точки
+            const tooltipX = relativeX - 60;
+            const tooltipY = relativeY - 50;
+            
+            tooltipBg.setAttribute('x', tooltipX);
+            tooltipBg.setAttribute('y', tooltipY);
+        }
+
+        function hideTooltip() {
+            if (!activePoint) {
+                mapTooltip.style.display = 'none';
+            }
+        }
+
+        document.querySelectorAll('.city-point').forEach(point => {
+            // Desktop hover
+            point.addEventListener('mouseenter', function() {
+                const city = this.dataset.city;
+                const status = this.dataset.status;
+                const circle = this.querySelector('.city-circle');
+                const rect = circle.getBoundingClientRect();
+                
+                this.classList.add('active');
+                showTooltip(city, status, rect.left + rect.width / 2, rect.top + rect.height / 2);
+            });
+
+            point.addEventListener('mouseleave', function() {
+                if (!activePoint) {
+                    this.classList.remove('active');
+                    hideTooltip();
+                }
+            });
+
+            // Mobile tap
+            point.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const city = this.dataset.city;
+                const status = this.dataset.status;
+                const circle = this.querySelector('.city-circle');
+                const rect = circle.getBoundingClientRect();
+                
+                // Если уже активна эта точка, снимаем активность
+                if (activePoint === this) {
+                    activePoint.classList.remove('active');
+                    activePoint = null;
+                    mapTooltip.style.display = 'none';
+                } else {
+                    // Снимаем активность с предыдущей точки
+                    if (activePoint) {
+                        activePoint.classList.remove('active');
+                    }
+                    // Активируем новую точку
+                    this.classList.add('active');
+                    activePoint = this;
+                    showTooltip(city, status, rect.left + rect.width / 2, rect.top + rect.height / 2);
+                }
+            });
+        });
+
+        // Закрытие подсказки при клике вне карты
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.city-point')) {
+                if (activePoint) {
+                    activePoint.classList.remove('active');
+                    activePoint = null;
+                }
+                hideTooltip();
+            }
+        });
     </script>
 </body>
     <script>
