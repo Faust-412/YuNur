@@ -424,6 +424,137 @@
             font-size: 1.1rem;
         }
 
+        /* ==================== КОНВЕРТЕР ==================== */
+        .converter-card {
+            background: var(--card-bg);
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .converter-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .converter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .converter-chip {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .converter-chip:hover {
+            background: rgba(45, 106, 79, 0.1);
+        }
+
+        .converter-chip.active {
+            background: var(--accent-color);
+            color: var(--white);
+            border-color: var(--accent-color);
+        }
+
+        .converter-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .converter-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .converter-input {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            padding: 12px 16px;
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            background: var(--card-bg);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .converter-input:focus {
+            border-color: var(--header-bg);
+        }
+
+        .converter-result {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: -0.02em;
+        }
+
+        .converter-rate-info {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .converter-toggle {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            cursor: pointer;
+            align-self: flex-start;
+            transition: all 0.2s ease;
+        }
+
+        .converter-toggle:hover {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .converter-card {
+                padding: 1.5rem;
+            }
+
+            .converter-chip {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+
+            .converter-input {
+                font-size: 1.5rem;
+            }
+
+            .converter-result {
+                font-size: 1.5rem;
+            }
+        }
+
         /* ==================== ПОДВАЛ ==================== */
         footer {
             background-color: var(--header-bg);
@@ -559,6 +690,29 @@
         </div>
     </div>
 
+    <!-- Конвертер валют -->
+    <section class="rates-section">
+        <div class="container">
+            <div class="converter-card">
+                <h3 class="converter-title">Конвертер</h3>
+                <div class="converter-chips">
+                    <button class="converter-chip active" data-currency="USD">USD</button>
+                    <button class="converter-chip" data-currency="EUR">EUR</button>
+                    <button class="converter-chip" data-currency="CNY">CNY</button>
+                    <button class="converter-chip" data-currency="JPY">JPY</button>
+                    <button class="converter-chip" data-currency="GOLD">GOLD</button>
+                </div>
+                <div class="converter-input-group">
+                    <label class="converter-label" id="converter-label">Сумма</label>
+                    <input type="number" class="converter-input" id="converter-input" placeholder="0" step="any">
+                </div>
+                <div class="converter-result" id="converter-result">≈ 0 ₽</div>
+                <div class="converter-rate-info" id="converter-rate-info">Курс: 0 ₽ — обновлено 05.09.2026</div>
+                <button class="converter-toggle" id="converter-toggle" onclick="toggleConverterMode()">₽ → золото</button>
+            </div>
+        </div>
+    </section>
+
     <!-- Курсы валют и золото -->
     <section class="rates-section">
         <div class="container">
@@ -640,6 +794,130 @@
             const menu = document.getElementById('nav-menu');
             menu.classList.toggle('active');
         }
+
+        // ==================== КОНВЕРТЕР ====================
+        let converterData = {};
+        let currentCurrency = 'USD';
+        let converterMode = 'toRub'; // 'toRub' или 'fromRub'
+
+        function initConverter() {
+            const chips = document.querySelectorAll('.converter-chip');
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentCurrency = chip.dataset.currency;
+                    updateConverterLabel();
+                    updateConverterResult();
+                });
+            });
+
+            const input = document.getElementById('converter-input');
+            input.addEventListener('input', updateConverterResult);
+        }
+
+        function updateConverterLabel() {
+            const label = document.getElementById('converter-label');
+            if (currentCurrency === 'GOLD') {
+                label.textContent = converterMode === 'toRub' ? 'Граммы' : 'Сумма';
+            } else {
+                label.textContent = 'Сумма';
+            }
+        }
+
+        function toggleConverterMode() {
+            converterMode = converterMode === 'toRub' ? 'fromRub' : 'toRub';
+            const toggleBtn = document.getElementById('converter-toggle');
+            
+            if (currentCurrency === 'GOLD') {
+                if (converterMode === 'toRub') {
+                    toggleBtn.textContent = '₽ → золото';
+                } else {
+                    toggleBtn.textContent = 'золото → ₽';
+                }
+            } else {
+                if (converterMode === 'toRub') {
+                    toggleBtn.textContent = `₽ → ${currentCurrency}`;
+                } else {
+                    toggleBtn.textContent = `${currentCurrency} → ₽`;
+                }
+            }
+            
+            updateConverterLabel();
+            updateConverterResult();
+        }
+
+        function updateConverterResult() {
+            const input = document.getElementById('converter-input');
+            const resultEl = document.getElementById('converter-result');
+            const rateInfoEl = document.getElementById('converter-rate-info');
+            
+            const inputValue = parseFloat(input.value) || 0;
+            const rateData = converterData[currentCurrency];
+            
+            if (!rateData || !rateData.value) {
+                resultEl.textContent = '≈ 0 ₽';
+                return;
+            }
+            
+            const rate = rateData.value;
+            const updatedAt = converterData.updatedAt;
+            
+            let result, displayRate;
+            
+            if (converterMode === 'toRub') {
+                // Вводим валюту/золото, получаем рубли
+                result = inputValue * rate;
+                displayRate = rate;
+                
+                if (currentCurrency === 'GOLD') {
+                    resultEl.textContent = `≈ ${formatNumber(result)} ₽`;
+                    rateInfoEl.textContent = `Курс: ${formatNumber(displayRate)} ₽ — обновлено ${formatDate(updatedAt)}`;
+                } else {
+                    resultEl.textContent = `≈ ${formatNumber(result)} ₽`;
+                    rateInfoEl.textContent = `Курс: ${formatNumber(displayRate)} ₽ — обновлено ${formatDate(updatedAt)}`;
+                }
+            } else {
+                // Вводим рубли, получаем валюту/золото
+                if (inputValue === 0) {
+                    result = 0;
+                } else {
+                    result = inputValue / rate;
+                }
+                displayRate = 1 / rate;
+                
+                if (currentCurrency === 'GOLD') {
+                    resultEl.textContent = `≈ ${result.toFixed(2)} г золота`;
+                    rateInfoEl.textContent = `Курс: ${result.toFixed(4)} г/₽ — обновлено ${formatDate(updatedAt)}`;
+                } else {
+                    resultEl.textContent = `≈ ${result.toFixed(2)} ${currentCurrency}`;
+                    rateInfoEl.textContent = `Курс: ${displayRate.toFixed(6)} ${currentCurrency}/₽ — обновлено ${formatDate(updatedAt)}`;
+                }
+            }
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('ru-RU', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '05.09.2026';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        // Инициализация брендов при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            selectCategory('phones');
+            initConverter();
+        });
 
         // Иконки для активов
         const assetIcons = {
@@ -927,6 +1205,17 @@
                 });
 
                 container.innerHTML = html;
+
+                // Заполняем данные для конвертера
+                converterData = {};
+                ratesData.currencies.forEach(curr => {
+                    converterData[curr.code] = { value: curr.value };
+                });
+                converterData.updatedAt = ratesData.updatedAt;
+                
+                // Обновляем конвертер с текущей валютой
+                updateConverterLabel();
+                updateConverterResult();
 
                 // Форматируем дату обновления
                 if (ratesData.updatedAt) {
