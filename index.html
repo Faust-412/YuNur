@@ -1407,49 +1407,144 @@
             text-align: center;
         }
 
-        .comparison-table {
-            width: 100%;
-            max-width: 800px;
-            margin: 2rem auto;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        /* ==================== WHY US COMPARISON CARDS ==================== */
+        .why-us-section {
+            background-color: var(--bg-color);
         }
 
-        .comparison-table th,
-        .comparison-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        .why-us-header {
+            text-align: center;
+            margin-bottom: 3rem;
         }
 
-        .comparison-table th {
-            background-color: var(--header-bg);
-            color: var(--white);
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .comparison-table th:first-child {
-            width: 50%;
-        }
-
-        .comparison-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .comparison-table tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        .comparison-table td:nth-child(2) {
+        .why-us-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
             color: var(--header-bg);
-            font-weight: 500;
+            margin-bottom: 0.5rem;
         }
 
-        .best-price-card h2 {
+        .why-us-subtitle {
+            font-size: 1.1rem;
+            color: #777777;
+            font-weight: 400;
+        }
+
+        .comparison-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .comparison-card {
+            border-radius: 20px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .comparison-card.bank {
+            background: #f5f5f5;
+            border: 1px solid #dddddd;
+            color: #777777;
+            opacity: 0.9;
+        }
+
+        .comparison-card.yunur {
+            background: #1b4332;
+            color: #ffffff;
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.25);
+            transform: translateY(-10px);
+            position: relative;
+        }
+
+        .yunur-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1b4332;
+            border: 2px solid #d4af37;
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .comparison-card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .yunur .comparison-card-title {
+            color: #ffffff;
+        }
+
+        .bank .comparison-card-title {
+            color: #777777;
+        }
+
+        .comparison-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .comparison-list li:first-child {
+            padding-top: 0;
+        }
+
+        .comparison-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .comparison-icon.cross {
+            color: #ef5350;
+        }
+
+        .comparison-icon.check {
+            color: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-cards .yunur {
+                order: -1;
+                transform: translateY(0);
+            }
+
+            .why-us-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .best-price-section {
             color: var(--header-bg);
             font-size: 1.8rem;
             margin-bottom: 1rem;
@@ -1936,39 +2031,67 @@
     </section>
 
     <!-- Почему мы, а не банк -->
-    <section id="why-us" class="best-price-section">
+    <section id="why-us" class="why-us-section">
         <div class="container">
-            <h2>Почему мы, а не банк</h2>
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Банк</th>
-                        <th>YuNur</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Процент на остаток (риба)</td>
-                        <td>Фиксированная наценка в цене</td>
-                    </tr>
-                    <tr>
-                        <td>Штрафы за просрочку</td>
-                        <td>Без штрафов</td>
-                    </tr>
-                    <tr>
-                        <td>Скрытые комиссии</td>
-                        <td>0 скрытых комиссий</td>
-                    </tr>
-                    <tr>
-                        <td>10 справок</td>
-                        <td>Паспорт + 2 поручителя</td>
-                    </tr>
-                    <tr>
-                        <td>—</td>
-                        <td>Онлайн по всей России</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="why-us-header">
+                <h2>Почему мы, а не банк</h2>
+                <p class="why-us-subtitle">Честное сравнение за 30 секунд</p>
+            </div>
+            <div class="comparison-cards">
+                <!-- БАНК -->
+                <div class="comparison-card bank">
+                    <h3 class="comparison-card-title">БАНК</h3>
+                    <ul class="comparison-list">
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Процент на остаток (риба)</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Штрафы за просрочку</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Скрытые комиссии</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>10 справок и очередей</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Офис, поездки, прописка</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- YuNur -->
+                <div class="comparison-card yunur">
+                    <span class="yunur-badge">✓ Халяль</span>
+                    <h3 class="comparison-card-title">YuNur</h3>
+                    <ul class="comparison-list">
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Фиксированная наценка в цене</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Без штрафов — сумма не растёт</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>0 скрытых комиссий</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Паспорт + 2 поручителя</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Онлайн по всей России</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
