@@ -690,6 +690,22 @@
         </div>
     </div>
 
+    <!-- Курсы валют и золото -->
+    <section class="rates-section">
+        <div class="container">
+            <h2 class="section-title">Рынки</h2>
+            <div id="assets-container" class="assets-grid">
+                <!-- Карточки будут добавлены через JS -->
+            </div>
+            <div id="rates-update-time" class="rates-update-time"></div>
+            <div id="rates-pending" class="rates-pending" style="display: none;">Загрузка данных...</div>
+            <div id="rates-error" class="rates-error" style="display: none;"></div>
+            <div class="rates-btn-container">
+                <button class="btn-rates" onclick="loadAllData()">Обновить курсы</button>
+            </div>
+        </div>
+    </section>
+
     <!-- Конвертер валют -->
     <section class="rates-section">
         <div class="container">
@@ -709,22 +725,6 @@
                 <div class="converter-result" id="converter-result">≈ 0 ₽</div>
                 <div class="converter-rate-info" id="converter-rate-info">Курс: 0 ₽ — обновлено 05.09.2026</div>
                 <button class="converter-toggle" id="converter-toggle" onclick="toggleConverterMode()">₽ → золото</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Курсы валют и золото -->
-    <section class="rates-section">
-        <div class="container">
-            <h2 class="section-title">Рынки</h2>
-            <div id="assets-container" class="assets-grid">
-                <!-- Карточки будут добавлены через JS -->
-            </div>
-            <div id="rates-update-time" class="rates-update-time"></div>
-            <div id="rates-pending" class="rates-pending" style="display: none;">Загрузка данных...</div>
-            <div id="rates-error" class="rates-error" style="display: none;"></div>
-            <div class="rates-btn-container">
-                <button class="btn-rates" onclick="loadAllData()">Обновить курсы</button>
             </div>
         </div>
     </section>
