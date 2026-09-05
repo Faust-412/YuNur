@@ -1975,6 +1975,12 @@
     </style>
 </head>
     <style>
+/* Фикс карты: обёртка равна картинке */
+#cities-map .map-box{ position:relative; width:min(90%, 420px); margin:0 auto !important; }
+#cities-map .map-box img{ width:100% !important; height:auto !important; display:block !important; margin:0 !important; }
+#cities-map .city-point{ position:absolute; transform:translate(-50%,-50%); }
+</style>
+    <style>
 #how-it-works{padding:40px 0 !important;}
 #how-it-works [class*="icon"]{display:none !important;height:0 !important;}
 #how-it-works .steps-grid{margin-top:0 !important;padding-top:0 !important;}
