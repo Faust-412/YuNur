@@ -1086,7 +1086,7 @@
 
         .dagistan-map {
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             height: auto;
             filter: drop-shadow(0 4px 12px rgba(27, 67, 50, 0.15));
         }
@@ -1105,6 +1105,7 @@
         }
 
         .city-pulse {
+            transform-origin: center;
             animation: pulseGold 2s ease-in-out infinite;
         }
 
@@ -1114,21 +1115,26 @@
                 opacity: 0.4;
             }
             50% {
-                transform: scale(1.6);
+                transform: scale(1.8);
                 opacity: 0;
             }
         }
 
         .city-point:hover .city-circle,
         .city-point.active .city-circle {
-            transform: scale(1.5);
+            transform: scale(1.6);
             fill: #d4af37;
-            filter: drop-shadow(0 0 8px #d4af37);
+            filter: drop-shadow(0 0 10px #d4af37);
+        }
+
+        .city-point.soon .city-circle {
+            fill: #888888;
         }
 
         .city-point.soon:hover .city-circle,
         .city-point.soon.active .city-circle {
             fill: #d4af37;
+            filter: drop-shadow(0 0 10px #d4af37);
         }
 
         .tooltip-bg {
@@ -2175,61 +2181,61 @@
         <div class="container">
             <h2 class="section-title">Мы уже в этих городах</h2>
             <div class="map-wrapper">
-                <svg class="dagistan-map" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Карта Дагестана">
-                    <!-- Силуэт Дагестана -->
-                    <path class="dagistan-outline" d="M 120 80 L 150 70 L 180 65 L 210 68 L 240 75 L 270 85 L 290 100 L 300 120 L 295 145 L 285 170 L 270 190 L 250 210 L 225 225 L 200 235 L 175 240 L 150 235 L 130 225 L 115 210 L 105 190 L 100 170 L 102 150 L 108 130 L 115 110 Z" fill="#e8f0ea" stroke="#1b4332" stroke-width="2.5"/>
+                <svg class="dagistan-map" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" aria-label="Карта Дагестана">
+                    <!-- Силуэт Дагестана (упрощённый контур по реальным координатам) -->
+                    <path class="dagistan-outline" d="M 85 60 L 95 58 L 108 57 L 122 58 L 138 62 L 155 68 L 172 76 L 188 86 L 202 98 L 215 112 L 226 128 L 235 145 L 242 163 L 247 182 L 250 201 L 251 220 L 249 238 L 244 255 L 236 271 L 225 285 L 211 297 L 195 306 L 177 312 L 158 315 L 139 314 L 121 310 L 105 302 L 91 291 L 80 277 L 72 261 L 67 244 L 65 226 L 66 208 L 70 191 L 76 175 L 84 160 L 94 146 L 105 133 L 117 122 L 129 112 L 140 104 L 150 97 L 158 91 L 164 85 L 167 78 L 166 71 L 162 65 L 155 61 L 146 59 L 135 58 L 122 59 L 108 61 L 95 65 L 85 70 Z" fill="#e8f0ea" stroke="#1b4332" stroke-width="2.5"/>
                     
-                    <!-- Точки городов - Работаем (золотые) -->
-                    <!-- Махачкала -->
+                    <!-- Точки городов - Работаем (золотые с пульсацией) -->
+                    <!-- Махачкала: 47.50, 42.98 -->
                     <g class="city-point working" data-city="Махачкала" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="265" cy="115" r="8" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="265" cy="115" r="8" fill="#d4af37" opacity="0.4"/>
+                        <circle class="city-circle" cx="252" cy="195" r="8" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="252" cy="195" r="8" fill="#d4af37" opacity="0.4"/>
                     </g>
                     
-                    <!-- Каспийск -->
+                    <!-- Каспийск: 47.64, 42.88 -->
                     <g class="city-point working" data-city="Каспийск" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="268" cy="128" r="6" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="268" cy="128" r="6" fill="#d4af37" opacity="0.4"/>
+                        <circle class="city-circle" cx="262" cy="205" r="7" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="262" cy="205" r="7" fill="#d4af37" opacity="0.4"/>
                     </g>
                     
-                    <!-- Хасавюрт -->
+                    <!-- Хасавюрт: 46.69, 43.25 -->
                     <g class="city-point working" data-city="Хасавюрт" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="220" cy="100" r="7" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="220" cy="100" r="7" fill="#d4af37" opacity="0.4"/>
+                        <circle class="city-circle" cx="195" cy="168" r="7" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="195" cy="168" r="7" fill="#d4af37" opacity="0.4"/>
                     </g>
                     
-                    <!-- Дербент -->
+                    <!-- Дербент: 48.29, 42.07 -->
                     <g class="city-point working" data-city="Дербент" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="275" cy="175" r="7" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="275" cy="175" r="7" fill="#d4af37" opacity="0.4"/>
+                        <circle class="city-circle" cx="295" cy="275" r="7" fill="#d4af37"/>
+                        <circle class="city-pulse" cx="295" cy="275" r="7" fill="#d4af37" opacity="0.4"/>
                     </g>
                     
                     <!-- Точки городов - Скоро (серые) -->
-                    <!-- Буйнакск -->
+                    <!-- Буйнакск: 47.12, 42.82 -->
                     <g class="city-point soon" data-city="Буйнакск" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="245" cy="110" r="6" fill="#888888"/>
+                        <circle class="city-circle" cx="228" cy="208" r="6" fill="#888888"/>
                     </g>
                     
-                    <!-- Избербаш -->
+                    <!-- Избербаш: 47.87, 42.57 -->
                     <g class="city-point soon" data-city="Избербаш" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="270" cy="145" r="6" fill="#888888"/>
+                        <circle class="city-circle" cx="275" cy="232" r="6" fill="#888888"/>
                     </g>
                     
-                    <!-- Кизилюрт -->
+                    <!-- Кизилюрт: 46.98, 43.20 -->
                     <g class="city-point soon" data-city="Кизилюрт" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="235" cy="120" r="6" fill="#888888"/>
+                        <circle class="city-circle" cx="212" cy="175" r="6" fill="#888888"/>
                     </g>
                     
-                    <!-- Кизляр -->
+                    <!-- Кизляр: 46.71, 43.85 -->
                     <g class="city-point soon" data-city="Кизляр" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="210" cy="75" r="6" fill="#888888"/>
+                        <circle class="city-circle" cx="198" cy="115" r="6" fill="#888888"/>
                     </g>
                     
                     <!-- Подсказка -->
                     <g class="tooltip" id="map-tooltip" style="display: none;">
-                        <rect class="tooltip-bg" x="0" y="0" width="120" height="40" rx="8" fill="#1b4332"/>
-                        <text class="tooltip-city" x="60" y="20" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="600">Город</text>
-                        <text class="tooltip-status" x="60" y="34" text-anchor="middle" fill="#d4af37" font-size="10">Статус</text>
+                        <rect class="tooltip-bg" x="0" y="0" width="130" height="45" rx="8" fill="#1b4332"/>
+                        <text class="tooltip-city" x="65" y="22" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">Город</text>
+                        <text class="tooltip-status" x="65" y="38" text-anchor="middle" fill="#d4af37" font-size="11">Статус</text>
                     </g>
                 </svg>
             </div>
