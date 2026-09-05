@@ -1084,67 +1084,132 @@
             overflow: hidden;
         }
 
-        .dagistan-map {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
-            filter: drop-shadow(0 4px 12px rgba(27, 67, 50, 0.15));
+        .dagistan-map-container {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1.2;
         }
 
-        .dagistan-outline {
-            transition: all 0.3s ease;
+        .dagistan-map-image {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .city-point {
+            position: absolute;
             cursor: pointer;
             transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
         }
 
         .city-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #d4af37;
+            position: relative;
+            z-index: 2;
             transition: all 0.3s ease;
         }
 
+        .city-point.working .city-circle {
+            width: 16px;
+            height: 16px;
+        }
+
+        .city-point.soon .city-circle {
+            width: 12px;
+            height: 12px;
+            background: #888888;
+        }
+
         .city-pulse {
-            transform-origin: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #d4af37;
+            opacity: 0.4;
+            z-index: 1;
             animation: pulseGold 2s ease-in-out infinite;
+        }
+
+        .city-point.working .city-pulse {
+            width: 18px;
+            height: 18px;
+        }
+
+        .city-point.soon .city-pulse {
+            display: none;
         }
 
         @keyframes pulseGold {
             0%, 100% {
-                transform: scale(1);
+                transform: translate(-50%, -50%) scale(1);
                 opacity: 0.4;
             }
             50% {
-                transform: scale(1.8);
+                transform: translate(-50%, -50%) scale(2);
                 opacity: 0;
             }
         }
 
+        .city-point:hover,
+        .city-point.active {
+            transform: translate(-50%, -50%) scale(1.4);
+        }
+
         .city-point:hover .city-circle,
         .city-point.active .city-circle {
-            transform: scale(1.6);
-            fill: #d4af37;
+            background: #d4af37;
             filter: drop-shadow(0 0 10px #d4af37);
         }
 
-        .city-point.soon .city-circle {
-            fill: #888888;
+        .city-point.soon:hover,
+        .city-point.soon.active {
+            transform: translate(-50%, -50%) scale(1.4);
         }
 
         .city-point.soon:hover .city-circle,
         .city-point.soon.active .city-circle {
-            fill: #d4af37;
+            background: #d4af37;
             filter: drop-shadow(0 0 10px #d4af37);
         }
 
-        .tooltip-bg {
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        /* Tooltip styling */
+        .tooltip {
+            position: absolute;
+            background: #1b4332;
+            border-radius: 8px;
+            padding: 10px 15px;
+            min-width: 120px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+        }
+
+        .tooltip-city {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-status {
+            color: #d4af37;
+            font-size: 11px;
         }
 
         /* Мобильная адаптация карты */
         @media (max-width: 768px) {
-            .dagistan-map {
-                max-width: 100%;
+            .dagistan-map-container {
+                width: 95%;
             }
         }
 
@@ -2181,63 +2246,61 @@
         <div class="container">
             <h2 class="section-title">Мы уже в этих городах</h2>
             <div class="map-wrapper">
-                <svg class="dagistan-map" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" aria-label="Карта Дагестана">
-                    <!-- Силуэт Дагестана (упрощённый контур по реальным координатам) -->
-                    <path class="dagistan-outline" d="M 85 60 L 95 58 L 108 57 L 122 58 L 138 62 L 155 68 L 172 76 L 188 86 L 202 98 L 215 112 L 226 128 L 235 145 L 242 163 L 247 182 L 250 201 L 251 220 L 249 238 L 244 255 L 236 271 L 225 285 L 211 297 L 195 306 L 177 312 L 158 315 L 139 314 L 121 310 L 105 302 L 91 291 L 80 277 L 72 261 L 67 244 L 65 226 L 66 208 L 70 191 L 76 175 L 84 160 L 94 146 L 105 133 L 117 122 L 129 112 L 140 104 L 150 97 L 158 91 L 164 85 L 167 78 L 166 71 L 162 65 L 155 61 L 146 59 L 135 58 L 122 59 L 108 61 L 95 65 L 85 70 Z" fill="#e8f0ea" stroke="#1b4332" stroke-width="2.5"/>
+                <div class="dagistan-map-container">
+                    <img src="images/dagestan-map.png" alt="Карта Дагестана" class="dagistan-map-image">
                     
                     <!-- Точки городов - Работаем (золотые с пульсацией) -->
-                    <!-- Махачкала: 47.50, 42.98 -->
-                    <g class="city-point working" data-city="Махачкала" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="252" cy="195" r="8" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="252" cy="195" r="8" fill="#d4af37" opacity="0.4"/>
-                    </g>
+                    <!-- Махачкала — центр побережья -->
+                    <div class="city-point working" data-city="Махачкала" data-status="Работаем" style="top: 42%; left: 72%;">
+                        <div class="city-circle"></div>
+                        <div class="city-pulse"></div>
+                    </div>
                     
-                    <!-- Каспийск: 47.64, 42.88 -->
-                    <g class="city-point working" data-city="Каспийск" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="262" cy="205" r="7" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="262" cy="205" r="7" fill="#d4af37" opacity="0.4"/>
-                    </g>
+                    <!-- Каспийск — у побережья, сразу южнее Махачкалы -->
+                    <div class="city-point working" data-city="Каспийск" data-status="Работаем" style="top: 45%; left: 74%;">
+                        <div class="city-circle"></div>
+                        <div class="city-pulse"></div>
+                    </div>
                     
-                    <!-- Хасавюрт: 46.69, 43.25 -->
-                    <g class="city-point working" data-city="Хасавюрт" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="195" cy="168" r="7" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="195" cy="168" r="7" fill="#d4af37" opacity="0.4"/>
-                    </g>
+                    <!-- Хасавюрт — запад, верхняя треть -->
+                    <div class="city-point working" data-city="Хасавюрт" data-status="Работаем" style="top: 28%; left: 52%;">
+                        <div class="city-circle"></div>
+                        <div class="city-pulse"></div>
+                    </div>
                     
-                    <!-- Дербент: 48.29, 42.07 -->
-                    <g class="city-point working" data-city="Дербент" data-status="Работаем" style="cursor: pointer;">
-                        <circle class="city-circle" cx="295" cy="275" r="7" fill="#d4af37"/>
-                        <circle class="city-pulse" cx="295" cy="275" r="7" fill="#d4af37" opacity="0.4"/>
-                    </g>
+                    <!-- Дербент — юг, у побережья -->
+                    <div class="city-point working" data-city="Дербент" data-status="Работаем" style="top: 78%; left: 80%;">
+                        <div class="city-circle"></div>
+                        <div class="city-pulse"></div>
+                    </div>
                     
                     <!-- Точки городов - Скоро (серые) -->
-                    <!-- Буйнакск: 47.12, 42.82 -->
-                    <g class="city-point soon" data-city="Буйнакск" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="228" cy="208" r="6" fill="#888888"/>
-                    </g>
+                    <!-- Кизляр — самый север -->
+                    <div class="city-point soon" data-city="Кизляр" data-status="Скоро" style="top: 12%; left: 48%;">
+                        <div class="city-circle"></div>
+                    </div>
                     
-                    <!-- Избербаш: 47.87, 42.57 -->
-                    <g class="city-point soon" data-city="Избербаш" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="275" cy="232" r="6" fill="#888888"/>
-                    </g>
+                    <!-- Кизилюрт — центр, западнее Махачкалы -->
+                    <div class="city-point soon" data-city="Кизилюрт" data-status="Скоро" style="top: 35%; left: 46%;">
+                        <div class="city-circle"></div>
+                    </div>
                     
-                    <!-- Кизилюрт: 46.98, 43.20 -->
-                    <g class="city-point soon" data-city="Кизилюрт" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="212" cy="175" r="6" fill="#888888"/>
-                    </g>
+                    <!-- Буйнакск — между Хасавюртом и Махачкалой, чуть южнее -->
+                    <div class="city-point soon" data-city="Буйнакск" data-status="Скоро" style="top: 38%; left: 58%;">
+                        <div class="city-circle"></div>
+                    </div>
                     
-                    <!-- Кизляр: 46.71, 43.85 -->
-                    <g class="city-point soon" data-city="Кизляр" data-status="Скоро" style="cursor: pointer;">
-                        <circle class="city-circle" cx="198" cy="115" r="6" fill="#888888"/>
-                    </g>
+                    <!-- Избербаш — побережье между Каспийском и Дербентом -->
+                    <div class="city-point soon" data-city="Избербаш" data-status="Скоро" style="top: 58%; left: 76%;">
+                        <div class="city-circle"></div>
+                    </div>
                     
                     <!-- Подсказка -->
-                    <g class="tooltip" id="map-tooltip" style="display: none;">
-                        <rect class="tooltip-bg" x="0" y="0" width="130" height="45" rx="8" fill="#1b4332"/>
-                        <text class="tooltip-city" x="65" y="22" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">Город</text>
-                        <text class="tooltip-status" x="65" y="38" text-anchor="middle" fill="#d4af37" font-size="11">Статус</text>
-                    </g>
-                </svg>
+                    <div class="tooltip" id="map-tooltip" style="display: none;">
+                        <div class="tooltip-city">Город</div>
+                        <div class="tooltip-status">Статус</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -3043,25 +3106,27 @@
         const mapTooltip = document.getElementById('map-tooltip');
         const tooltipCity = document.querySelector('.tooltip-city');
         const tooltipStatus = document.querySelector('.tooltip-status');
-        const tooltipBg = document.querySelector('.tooltip-bg');
         let activePoint = null;
 
-        function showTooltip(city, status, x, y) {
+        function showTooltip(city, status, pointElement) {
             tooltipCity.textContent = city;
             tooltipStatus.textContent = status;
             mapTooltip.style.display = 'block';
             
             // Позиционируем подсказку рядом с точкой
-            const svgRect = document.querySelector('.dagistan-map').getBoundingClientRect();
-            const relativeX = x - svgRect.left;
-            const relativeY = y - svgRect.top;
+            const pointRect = pointElement.getBoundingClientRect();
+            const containerRect = document.querySelector('.dagistan-map-container').getBoundingClientRect();
             
-            // Смещаем подсказку вверх и влево от точки
+            // Вычисляем относительную позицию точки внутри контейнера
+            const relativeX = pointRect.left - containerRect.left + pointRect.width / 2;
+            const relativeY = pointRect.top - containerRect.top;
+            
+            // Смещаем подсказку вверх от точки
             const tooltipX = relativeX - 60;
-            const tooltipY = relativeY - 50;
+            const tooltipY = relativeY - 55;
             
-            tooltipBg.setAttribute('x', tooltipX);
-            tooltipBg.setAttribute('y', tooltipY);
+            mapTooltip.style.left = tooltipX + 'px';
+            mapTooltip.style.top = tooltipY + 'px';
         }
 
         function hideTooltip() {
@@ -3075,11 +3140,9 @@
             point.addEventListener('mouseenter', function() {
                 const city = this.dataset.city;
                 const status = this.dataset.status;
-                const circle = this.querySelector('.city-circle');
-                const rect = circle.getBoundingClientRect();
                 
                 this.classList.add('active');
-                showTooltip(city, status, rect.left + rect.width / 2, rect.top + rect.height / 2);
+                showTooltip(city, status, this);
             });
 
             point.addEventListener('mouseleave', function() {
@@ -3094,8 +3157,6 @@
                 e.stopPropagation();
                 const city = this.dataset.city;
                 const status = this.dataset.status;
-                const circle = this.querySelector('.city-circle');
-                const rect = circle.getBoundingClientRect();
                 
                 // Если уже активна эта точка, снимаем активность
                 if (activePoint === this) {
@@ -3110,7 +3171,7 @@
                     // Активируем новую точку
                     this.classList.add('active');
                     activePoint = this;
-                    showTooltip(city, status, rect.left + rect.width / 2, rect.top + rect.height / 2);
+                    showTooltip(city, status, this);
                 }
             });
         });
