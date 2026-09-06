@@ -869,6 +869,9 @@
         });
         // Show cabinet with client data
         function showCabinet(client, contractCode) {
+            // Activate cabinet container
+            document.getElementById('cabinet').classList.add('active');
+            
             // Header info
             document.getElementById('client-name').textContent = client.name;
             document.getElementById('client-item').textContent = client.item;
