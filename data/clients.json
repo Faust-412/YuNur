@@ -1,0 +1,17 @@
+[
+  {
+    "hash": "d1e5f0139c985b45f29411912bc84cb4871b641c6f9f87473a25257e759b9157",
+    "name": "Магомед",
+    "item": "iPhone 15",
+    "total": 108750,
+    "schedule": [
+      {"date": "2026-10-05", "sum": 18125, "paid": true},
+      {"date": "2026-11-05", "sum": 18125, "paid": true},
+      {"date": "2026-12-05", "sum": 18125, "paid": true},
+      {"date": "2027-01-05", "sum": 18125, "paid": false},
+      {"date": "2027-02-05", "sum": 18125, "paid": false},
+      {"date": "2027-03-05", "sum": 18125, "paid": false}
+    ],
+    "bonus": 290
+  }
+]
