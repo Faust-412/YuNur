@@ -363,9 +363,15 @@
 
         <!-- Payments Tab -->
         <div id="paymentsTab" class="tab-content">
-            <div class="form-group">
-                <label>Код клиента</label>
-                <input type="text" id="payCode" placeholder="YN-XXXX-XXXX">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="payPhone" placeholder="+7 (___) ___-__-__">
+                </div>
+                <div class="form-group">
+                    <label>Код</label>
+                    <input type="text" id="payCode" placeholder="YN-XXXX-XXXX">
+                </div>
             </div>
             <button class="btn btn-primary" onclick="findClient()">Найти</button>
 
@@ -590,9 +596,11 @@
         }
 
         async function findClient() {
+            const phone = document.getElementById('payPhone').value.trim();
             const code = document.getElementById('payCode').value.trim();
-            if (!code) {
-                alert('Введите код клиента');
+            
+            if (!phone || !code) {
+                alert('Введите телефон и код клиента');
                 return;
             }
 
@@ -606,8 +614,15 @@
                 return;
             }
 
-            // Find client by code
-            const foundClient = clients.find(c => c.code === code);
+            // Compute SHA-256(phone + code)
+            const encoder = new TextEncoder();
+            const data = encoder.encode(phone + code);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const computedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // Find client by hash
+            const foundClient = clients.find(c => c.hash === computedHash);
 
             if (!foundClient) {
                 alert('Клиент не найден');
