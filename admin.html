@@ -281,15 +281,15 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Стоимость (₽)</label>
-                    <input type="number" id="ncCost" placeholder="100000">
+                    <input type="number" id="ncCost" placeholder="100000" oninput="calculatePreview()">
                 </div>
                 <div class="form-group">
-                    <label>Взнос (₽)</label>
-                    <select id="ncDeposit" onchange="updateMarkup()">
+                    <label>Взнос (%)</label>
+                    <select id="ncDepositPercent" onchange="updateMarkupFromPercent(); calculatePreview()">
                         <option value="">Выбрать...</option>
-                        <option value="25000">25 000</option>
-                        <option value="40000">40 000</option>
-                        <option value="50000">50 000</option>
+                        <option value="25">25%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -300,14 +300,51 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Срок (мес)</label>
-                    <input type="number" id="ncTerm" placeholder="6">
+                    <select id="ncTerm" onchange="calculatePreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="3">3</option>
+                        <option value="6">6</option>
+                        <option value="10">10</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Дата старта</label>
                     <input type="date" id="ncStartDate">
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="generateClient()">Сгенерировать</button>
+            
+            <!-- Preview Section -->
+            <div id="calcPreview" class="result-box hidden" style="margin-top: 20px; background: #f8f9fa;">
+                <h3>📊 Расчёт</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Взнос в рублях</label>
+                        <input type="text" id="prevDepositRuble" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Сумма в рассрочку</label>
+                        <input type="text" id="prevFinancing" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Наценка (₽)</label>
+                        <input type="text" id="prevMarkupRuble" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Общая сумма</label>
+                        <input type="text" id="prevTotal" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Платёж в месяц</label>
+                        <input type="text" id="prevMonthly" readonly>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateClient()" style="margin-top: 20px;">Сгенерировать</button>
 
             <div id="ncResult" class="result-box hidden">
                 <h3>✅ Клиент создан</h3>
@@ -386,13 +423,52 @@
             }
         }
 
-        function updateMarkup() {
-            const deposit = parseInt(document.getElementById('ncDeposit').value) || 0;
+        function updateMarkupFromPercent() {
+            const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
             const markupField = document.getElementById('ncMarkup');
             
-            if (deposit === 25000) markupField.value = 45;
-            else if (deposit === 40000) markupField.value = 35;
-            else if (deposit === 50000) markupField.value = 30;
+            if (depositPercent === 25) markupField.value = 45;
+            else if (depositPercent === 40) markupField.value = 35;
+            else if (depositPercent === 50) markupField.value = 30;
+        }
+
+        function formatNumber(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        function calculatePreview() {
+            const cost = parseFloat(document.getElementById('ncCost').value) || 0;
+            const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
+            const term = parseInt(document.getElementById('ncTerm').value) || 0;
+            const markupPercent = parseFloat(document.getElementById('ncMarkup').value) || 0;
+
+            if (!cost || !depositPercent || !term) {
+                document.getElementById('calcPreview').classList.add('hidden');
+                return;
+            }
+
+            // Взнос в рублях
+            const depositRuble = cost * (depositPercent / 100);
+            
+            // Финансирование (сумма в рассрочку) = стоимость - взнос
+            const financing = cost - depositRuble;
+            
+            // Наценка ₽ = финансирование × наценка %
+            const markupRuble = financing * (markupPercent / 100);
+            
+            // Общая сумма = финансирование + наценка ₽
+            const total = financing + markupRuble;
+            
+            // Платёж в месяц = общая сумма ÷ срок
+            const monthly = total / term;
+
+            document.getElementById('prevDepositRuble').value = formatNumber(depositRuble) + ' ₽';
+            document.getElementById('prevFinancing').value = formatNumber(financing) + ' ₽';
+            document.getElementById('prevMarkupRuble').value = formatNumber(markupRuble) + ' ₽';
+            document.getElementById('prevTotal').value = formatNumber(total) + ' ₽';
+            document.getElementById('prevMonthly').value = formatNumber(monthly) + ' ₽';
+            
+            document.getElementById('calcPreview').classList.remove('hidden');
         }
 
         function generateCode() {
@@ -407,15 +483,18 @@
             const name = document.getElementById('ncName').value.trim();
             const item = document.getElementById('ncItem').value.trim();
             const cost = parseFloat(document.getElementById('ncCost').value);
-            const deposit = parseFloat(document.getElementById('ncDeposit').value);
+            const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
             const markup = parseFloat(document.getElementById('ncMarkup').value);
             const term = parseInt(document.getElementById('ncTerm').value);
             const startDate = document.getElementById('ncStartDate').value;
 
-            if (!phone || !name || !item || !cost || !deposit || !markup || !term || !startDate) {
+            if (!phone || !name || !item || !cost || !depositPercent || !markup || !term || !startDate) {
                 alert('Заполните все поля');
                 return;
             }
+
+            // Calculate deposit in rubles from percent
+            const depositRuble = cost * (depositPercent / 100);
 
             const code = generateCode();
             
@@ -427,10 +506,15 @@
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            // Calculate total with markup
-            const total = cost * (1 + markup / 100);
-            const remaining = total - deposit;
-            const monthlyPayment = remaining / term;
+            // Calculate total with markup (same formula as calculator)
+            // Financing = cost - deposit
+            const financing = cost - depositRuble;
+            // Markup ruble = financing × markup%
+            const markupRuble = financing * (markup / 100);
+            // Total = financing + markup ruble
+            const total = financing + markupRuble;
+            // Monthly = total / term
+            const monthlyPayment = total / term;
 
             // Generate schedule
             const schedule = [];
