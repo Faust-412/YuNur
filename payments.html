@@ -670,6 +670,10 @@
                         <label for="code">Код договора</label>
                         <input type="text" id="code" placeholder="YN-XXXX-XXXX" required>
                     </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="remember-me" style="width: auto;">
+                        <label for="remember-me" style="margin-bottom: 0; cursor: pointer;">Запомнить меня</label>
+                    </div>
                     <button type="submit" class="btn-login">Войти</button>
                     <div class="error-message" id="error-message">
                         Проверьте данные или напишите нам в WhatsApp
@@ -795,27 +799,74 @@
         // Login form handler
         document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const phone = formatPhone(document.getElementById('phone').value);
             const code = document.getElementById('code').value.trim();
+            const rememberMe = document.getElementById('remember-me').checked;
             const errorMessage = document.getElementById('error-message');
-            
+
             // Generate hash
             const hash = await sha256(phone + code);
-            
+
             // Find client
             const client = await findClient(hash);
-            
+
             if (client) {
+                // Save to localStorage if rememberMe is checked
+                if (rememberMe) {
+                    localStorage.setItem('yunnur_loginHash', hash);
+                    localStorage.setItem('yunnur_rememberMe', 'true');
+                    localStorage.setItem('yunnur_phone', phone);
+                    localStorage.setItem('yunnur_code', code);
+                }
+
                 // Show cabinet
                 showCabinet(client, code);
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('cabinet-section').style.display = 'block';
+                errorMessage.classList.remove('show');
             } else {
                 errorMessage.classList.add('show');
             }
         });
 
+        // Check localStorage on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const savedHash = localStorage.getItem('yunnur_loginHash');
+            const rememberMe = localStorage.getItem('yunnur_rememberMe') === 'true';
+            const savedPhone = localStorage.getItem('yunnur_phone');
+            const savedCode = localStorage.getItem('yunnur_code');
+
+            if (savedHash && rememberMe && savedPhone && savedCode) {
+                const client = await findClient(savedHash);
+                if (client) {
+                    document.getElementById('phone').value = '+' + savedPhone;
+                    document.getElementById('code').value = savedCode;
+                    document.getElementById('remember-me').checked = true;
+
+                    // Auto-login
+                    showCabinet(client, savedCode);
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('cabinet-section').style.display = 'block';
+                } else {
+                    localStorage.removeItem('yunnur_loginHash');
+                    localStorage.removeItem('yunnur_rememberMe');
+                    localStorage.removeItem('yunnur_phone');
+                    localStorage.removeItem('yunnur_code');
+                }
+            }
+        });
+
+        // Clear localStorage when leaving page if rememberMe is not checked
+        window.addEventListener('beforeunload', function() {
+            const rememberMe = document.getElementById('remember-me');
+            if (rememberMe && !rememberMe.checked) {
+                localStorage.removeItem('yunnur_loginHash');
+                localStorage.removeItem('yunnur_rememberMe');
+                localStorage.removeItem('yunnur_phone');
+                localStorage.removeItem('yunnur_code');
+            }
+        });
         // Show cabinet with client data
         function showCabinet(client, contractCode) {
             // Header info
