@@ -6,256 +6,70 @@
     <title>YuNur Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #f8f9fa;
-            color: #1a1a1a;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        .login-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-        }
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-        .login-box h1 {
-            color: #1b5e20;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'DM Sans', sans-serif;
-            margin-bottom: 20px;
-            transition: border-color 0.3s;
-        }
-        .login-box input:focus {
-            outline: none;
-            border-color: #c9a227;
-        }
-        .btn {
-            width: 100%;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'DM Sans', sans-serif;
-        }
-        .btn-primary {
-            background: #1b5e20;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #2e7d32;
-        }
-        .btn-secondary {
-            background: #c9a227;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: #d4af37;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #1b5e20;
-            color: #1b5e20;
-        }
-        .btn-outline:hover {
-            background: #1b5e20;
-            color: white;
-        }
-        .error-msg {
-            color: #d32f2f;
-            text-align: center;
-            margin-top: 15px;
-            font-weight: 500;
-            display: none;
-        }
-        .admin-panel {
-            display: none;
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
-        }
-        .tab {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            color: #666;
-            border-radius: 8px 8px 0 0;
-            transition: all 0.3s;
-            font-family: 'DM Sans', sans-serif;
-        }
-        .tab.active {
-            background: #1b5e20;
-            color: white;
-        }
-        .tab:hover:not(.active) {
-            background: #e8f5e9;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            font-family: 'DM Sans', sans-serif;
-        }
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #c9a227;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .result-box {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        .result-box h3 {
-            color: #1b5e20;
-            margin-bottom: 15px;
-        }
-        .result-box pre {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 13px;
-            margin-bottom: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .result-box .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .result-box .actions button {
-            flex: 1;
-            min-width: 150px;
-        }
-        .whatsapp-text {
-            background: #e8f5e9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #1b5e20;
-        }
-        .schedule-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        .schedule-table th, .schedule-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .schedule-table th {
-            background: #1b5e20;
-            color: white;
-        }
-        .schedule-table tr:hover {
-            background: #f5f5f5;
-        }
-        .schedule-table .paid {
-            color: #1b5e20;
-            font-weight: 500;
-        }
-        .schedule-table .unpaid {
-            color: #d32f2f;
-            cursor: pointer;
-        }
-        .schedule-table .unpaid:hover {
-            text-decoration: underline;
-        }
-        .client-info {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .client-info p {
-            margin-bottom: 10px;
-        }
-        .client-info strong {
-            color: #1b5e20;
-        }
-        .gold-accent {
-            color: #c9a227;
-        }
-        .hidden {
-            display: none !important;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f8f9fa; color: #1a1a1a; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%); }
+        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
+        .login-box h1 { color: #1b5e20; text-align: center; margin-bottom: 30px; font-size: 28px; }
+        .login-box input { width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; font-family: 'DM Sans', sans-serif; margin-bottom: 20px; transition: border-color 0.3s; }
+        .login-box input:focus { outline: none; border-color: #c9a227; }
+        .btn { width: 100%; padding: 14px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s; font-family: 'DM Sans', sans-serif; }
+        .btn-primary { background: #1b5e20; color: white; }
+        .btn-primary:hover { background: #2e7d32; }
+        .btn-secondary { background: #c9a227; color: white; }
+        .btn-secondary:hover { background: #d4af37; }
+        .btn-outline { background: transparent; border: 2px solid #1b5e20; color: #1b5e20; }
+        .btn-outline:hover { background: #1b5e20; color: white; }
+        .error-msg { color: #d32f2f; text-align: center; margin-top: 15px; font-weight: 500; display: none; }
+        .admin-panel { display: none; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        .tab { padding: 12px 24px; background: transparent; border: none; font-size: 16px; font-weight: 500; cursor: pointer; color: #666; border-radius: 8px 8px 0 0; transition: all 0.3s; font-family: 'DM Sans', sans-serif; }
+        .tab.active { background: #1b5e20; color: white; }
+        .tab:hover:not(.active) { background: #e8f5e9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: 'DM Sans', sans-serif; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #c9a227; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .result-box { background: white; padding: 25px; border-radius: 12px; margin-top: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .result-box h3 { color: #1b5e20; margin-bottom: 15px; }
+        .result-box pre { background: #f5f5f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .result-box .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .result-box .actions button { flex: 1; min-width: 150px; }
+        .whatsapp-text { background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #1b5e20; }
+        .schedule-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .schedule-table th, .schedule-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        .schedule-table th { background: #1b5e20; color: white; }
+        .schedule-table tr:hover { background: #f5f5f5; }
+        .schedule-table .paid { color: #1b5e20; font-weight: 500; }
+        .schedule-table .unpaid { color: #d32f2f; cursor: pointer; }
+        .schedule-table .unpaid:hover { text-decoration: underline; }
+        .client-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .client-info p { margin-bottom: 10px; }
+        .client-info strong { color: #1b5e20; }
+        .gold-accent { color: #c9a227; }
+        .hidden { display: none !important; }
+        .remember-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #666; font-size: 14px; }
+        .remember-row input { width: auto !important; padding: 0 !important; margin: 0 !important; }
     </style>
 </head>
 <body>
     <!-- Login Section -->
-            <div class="login-box">
+    <div id="loginSection" class="login-wrapper">
+        <div class="login-box">
             <h1>🔐 YuNur Admin</h1>
             <input type="password" id="masterCode" placeholder="Мастер-код">
-            <input type="password" id="githubToken" placeholder="GitHub-токен (опционально, для автосохранения)">
-            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #666; font-size: 14px;">
+            <input type="password" id="githubToken" placeholder="GitHub-токен (для автосохранения)">
+            <label class="remember-row">
                 <input type="checkbox" id="rememberToken"> Запомнить токен в этом браузере
             </label>
             <button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
             <p id="errorMsg" class="error-msg">Доступ запрещён</p>
         </div>
+    </div>
 
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel container">
@@ -314,7 +128,7 @@
                     <input type="date" id="ncStartDate">
                 </div>
             </div>
-            
+
             <!-- Preview Section -->
             <div id="calcPreview" class="result-box hidden" style="margin-top: 20px; background: #f8f9fa;">
                 <h3>📊 Расчёт</h3>
@@ -345,7 +159,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <button class="btn btn-primary" onclick="generateClient()" style="margin-top: 20px;">Сгенерировать</button>
 
             <div id="ncResult" class="result-box hidden">
@@ -397,11 +211,12 @@
     </div>
 
     <script>
-        // Master code hash: SHA-256 of "<Tvoi_pakhan12_18.lol>"
+        // Хеш мастер-кода. САМ код в файле не хранится.
         const MASTER_HASH = "c3c9f2e5d969113b78111826c4e33854e6e223d00d48d8476bcd488a62461663";
-        
+
         let actualMasterHash = MASTER_HASH;
-                // === GitHub API для автосохранения ===
+
+        // === GitHub API: автосохранение базы ===
         function loadToken() {
             const saved = localStorage.getItem('yunur_token');
             if (saved) {
@@ -421,18 +236,14 @@
         }
 
         async function commitToGithub(jsonContent, message) {
-            const token = document.getElementById('githubToken').value.trim();
+            const token = document.getElementById('githubToken').value.trim() || localStorage.getItem('yunur_token') || '';
             if (!token) return false;
-            
             try {
-                // Сначала получаем SHA текущего файла
                 const getResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/clients.json', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
+                if (!getResp.ok) return false;
                 const current = await getResp.json();
-                const sha = current.sha;
-                
-                // PUT — обновление файла
                 const putResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/clients.json', {
                     method: 'PUT',
                     headers: {
@@ -442,7 +253,7 @@
                     body: JSON.stringify({
                         message: message,
                         content: btoa(unescape(encodeURIComponent(jsonContent))),
-                        sha: sha
+                        sha: current.sha
                     })
                 });
                 return putResp.ok;
@@ -451,11 +262,9 @@
             }
         }
 
-        // Загрузить токен при старте
         window.addEventListener('DOMContentLoaded', loadToken);
 
-        async function checkMasterCode() 
-                        saveToken();{
+        async function checkMasterCode() {
             const code = document.getElementById('masterCode').value;
             const encoder = new TextEncoder();
             const data = encoder.encode(code);
@@ -466,6 +275,7 @@
             if (inputHash === actualMasterHash) {
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
+                saveToken();
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
             }
@@ -474,7 +284,7 @@
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
+
             if (tabName === 'newClient') {
                 document.querySelector('.tab:first-child').classList.add('active');
                 document.getElementById('newClientTab').classList.add('active');
@@ -487,7 +297,7 @@
         function updateMarkupFromPercent() {
             const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
             const markupField = document.getElementById('ncMarkup');
-            
+
             if (depositPercent === 25) markupField.value = 45;
             else if (depositPercent === 40) markupField.value = 35;
             else if (depositPercent === 50) markupField.value = 30;
@@ -508,19 +318,10 @@
                 return;
             }
 
-            // Взнос в рублях
             const depositRuble = cost * (depositPercent / 100);
-            
-            // Финансирование (сумма в рассрочку) = стоимость - взнос
             const financing = cost - depositRuble;
-            
-            // Наценка ₽ = финансирование × наценка %
             const markupRuble = financing * (markupPercent / 100);
-            
-            // Общая сумма = финансирование + наценка ₽
             const total = financing + markupRuble;
-            
-            // Платёж в месяц = общая сумма ÷ срок
             const monthly = total / term;
 
             document.getElementById('prevDepositRuble').value = formatNumber(depositRuble) + ' ₽';
@@ -528,7 +329,7 @@
             document.getElementById('prevMarkupRuble').value = formatNumber(markupRuble) + ' ₽';
             document.getElementById('prevTotal').value = formatNumber(total) + ' ₽';
             document.getElementById('prevMonthly').value = formatNumber(monthly) + ' ₽';
-            
+
             document.getElementById('calcPreview').classList.remove('hidden');
         }
 
@@ -539,14 +340,7 @@
             return `YN-${hex.slice(0,4).toUpperCase()}-${hex.slice(4,8).toUpperCase()}`;
         }
 
-        async function generateClient()
-                    // Попытка автосохранения через GitHub API
-            const autoSaved = await commitToGithub(jsonStr, `client: add ${name}`);
-            if (autoSaved) {
-                document.getElementById('jsonOutput').textContent = '✅ Клиент автосохранён в базе! Можно закрыть окно.';
-            } else {
-                document.getElementById('jsonOutput').textContent = jsonStr;
-            }{
+        async function generateClient() {
             const phone = document.getElementById('ncPhone').value.trim();
             const name = document.getElementById('ncName').value.trim();
             const item = document.getElementById('ncItem').value.trim();
@@ -561,30 +355,25 @@
                 return;
             }
 
-            // Calculate deposit in rubles from percent
             const depositRuble = cost * (depositPercent / 100);
-
             const code = generateCode();
-            
-            // Calculate hash
-            const hashStr = phone + code;
+
+            // Нормализация: телефон только цифрами, код заглавными
+            const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+            const normCode = code.toUpperCase().replace(/\s/g, '');
+
+            const hashStr = normPhone + normCode;
             const encoder = new TextEncoder();
             const data = encoder.encode(hashStr);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const hashArray = new Uint8Array(hashBuffer);
+            const hash = Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
 
-            // Calculate total with markup (same formula as calculator)
-            // Financing = cost - deposit
             const financing = cost - depositRuble;
-            // Markup ruble = financing × markup%
             const markupRuble = financing * (markup / 100);
-            // Total = financing + markup ruble
             const total = financing + markupRuble;
-            // Monthly = total / term
             const monthlyPayment = total / term;
 
-            // Generate schedule
             const schedule = [];
             const start = new Date(startDate);
             for (let i = 0; i < term; i++) {
@@ -597,19 +386,16 @@
                 });
             }
 
-            // Fetch current clients.json
             let clients = [];
             try {
-                const response = await fetch('data/clients.json');
+                const response = await fetch('data/clients.json?' + Date.now());
                 clients = await response.json();
             } catch (e) {
                 clients = [];
             }
 
-            // Add new client
             const newClient = {
                 hash: hash,
-                code: code,
                 name: name,
                 item: item,
                 total: Math.round(total),
@@ -618,18 +404,23 @@
             };
             clients.push(newClient);
 
-            // Display results
             const jsonStr = JSON.stringify(clients, null, 2);
-            document.getElementById('jsonOutput').textContent = jsonStr;
-            
+
             const waText = `Здравствуйте, ${name}! Ваша рассрочка YuNur оформлена. Код для входа в «Мои платежи»: ${code}. Введите телефон и код на сайте.`;
             document.getElementById('waText').textContent = waText;
-            
+
             document.getElementById('ncResult').classList.remove('hidden');
-            
-            // Store for later use
+
             window.currentClients = clients;
             window.currentCode = code;
+
+            // Автосохранение в GitHub
+            const autoSaved = await commitToGithub(jsonStr, 'client: add ' + name);
+            if (autoSaved) {
+                document.getElementById('jsonOutput').textContent = '✅ Клиент АВТОСОХРАНЁН в базе! Файл копировать не нужно.';
+            } else {
+                document.getElementById('jsonOutput').textContent = jsonStr + '\n\n⚠️ Автосохранение не сработало (нет токена или он невалиден). Скопируй файл и вставь в GitHub вручную.';
+            }
         }
 
         function copyWaText() {
@@ -660,13 +451,12 @@
         async function findClient() {
             const phone = document.getElementById('payPhone').value.trim();
             const code = document.getElementById('payCode').value.trim();
-            
+
             if (!phone || !code) {
                 alert('Введите телефон и код клиента');
                 return;
             }
 
-            // Fetch clients
             let clients = [];
             try {
                 const response = await fetch('data/clients.json?' + Date.now());
@@ -676,14 +466,16 @@
                 return;
             }
 
-            // Compute SHA-256(phone + code)
-            const encoder = new TextEncoder();
-            const data = encoder.encode(phone + code);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const computedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            // Нормализация та же, что при генерации
+            const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+            const normCode = code.toUpperCase().replace(/\s/g, '');
 
-            // Find client by hash
+            const encoder = new TextEncoder();
+            const data = encoder.encode(normPhone + normCode);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = new Uint8Array(hashBuffer);
+            const computedHash = Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
+
             const foundClient = clients.find(c => c.hash === computedHash);
 
             if (!foundClient) {
@@ -705,13 +497,13 @@
 
             const tbody = document.getElementById('scheduleBody');
             tbody.innerHTML = '';
-            
+
             client.schedule.forEach((payment, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${payment.date}</td>
                     <td>${payment.sum} ₽</td>
-                    <td class="${payment.paid ? 'paid' : 'unpaid'}" 
+                    <td class="${payment.paid ? 'paid' : 'unpaid'}"
                         ${!payment.paid ? `onclick="markPaid(${index})"` : ''}>
                         ${payment.paid ? '✓ Оплачен' : '○ Не оплачен'}
                     </td>
@@ -730,33 +522,18 @@
             const bonusAdd = client.schedule[index].sum * 0.008;
             client.bonus = Math.round((client.bonus + bonusAdd) * 100) / 100;
 
-            // Update display
             displayClient(client);
-            
-            // Store updated clients
-                        // Автосохранение платежа
-            fetch('data/clients.json')
+
+            // Автосохранение платежа в GitHub
+            fetch('data/clients.json?' + Date.now())
                 .then(r => r.json())
                 .then(async (clients) => {
                     const idx = clients.findIndex(c => c.hash === client.hash);
                     if (idx !== -1) {
                         clients[idx] = client;
-                        const jsonStr = JSON.stringify(clients, null, 2);
-                        await commitToGithub(jsonStr, `payment: ${client.name} index ${index}`);
-                        window.currentClients = clients;
-                    }
-                });
-            updateClientsInStorage(client);
-        }
-
-        function updateClientsInStorage(updatedClient) {
-            // Re-fetch and update
-            fetch('data/clients.json')
-                .then(r => r.json())
-                .then(clients => {
-                    const idx = clients.findIndex(c => c.hash === updatedClient.hash);
-                    if (idx !== -1) {
-                        clients[idx] = updatedClient;
+                        const ok = await commitToGithub(JSON.stringify(clients, null, 2), 'payment: ' + client.name);
+                        if (ok) alert('Платёж отмечен и сохранён в базе ✅');
+                        else alert('Платёж отмечен, но НЕ сохранён в базу (нет токена). Скачай файл вручную.');
                         window.currentClients = clients;
                     }
                 });
@@ -764,8 +541,7 @@
 
         function downloadUpdatedJson() {
             if (window.currentPayClient) {
-                // Re-fetch latest
-                fetch('data/clients.json')
+                fetch('data/clients.json?' + Date.now())
                     .then(r => r.json())
                     .then(clients => {
                         const jsonStr = JSON.stringify(clients, null, 2);
