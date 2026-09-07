@@ -293,13 +293,50 @@
             }
         }
 
+        // НАСТРОЙКИ: базовая наценка в зависимости от взноса (как в index.html режим "База")
+        const BASE_MARKUP = {
+            25: 39,  // 25% взнос → 39% базовая наценка
+            40: 29,  // 40% взнос → 29% базовая наценка
+            50: 24   // 50% взнос → 24% базовая наценка
+        };
+        const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
+
+        function calculatePhoneHash(phone) {
+            const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+            const encoder = new TextEncoder();
+            const data = encoder.encode(normPhone);
+            return crypto.subtle.digest('SHA-256', data).then(hashBuffer => {
+                return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            });
+        }
+
+        async function checkDuplicatePhone(phone, name) {
+            const phoneHash = await calculatePhoneHash(phone);
+            
+            let clients = [];
+            try {
+                const response = await fetch('data/clients.json?' + Date.now());
+                clients = await response.json();
+            } catch (e) {
+                return false;
+            }
+            
+            const existingClients = clients.filter(c => c.phoneHash === phoneHash);
+            if (existingClients.length > 0) {
+                const clientNames = existingClients.map(c => c.name).join(', ');
+                const count = existingClients.length;
+                return confirm(`Этот номер уже зарегистрирован: ${clientNames}, договоров: ${count}. Оформить ещё один договор?`);
+            }
+            return true;
+        }
+
         function updateMarkupFromPercent() {
             const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
             const markupField = document.getElementById('ncMarkup');
 
-            if (depositPercent === 25) markupField.value = 45;
-            else if (depositPercent === 40) markupField.value = 35;
-            else if (depositPercent === 50) markupField.value = 30;
+            if (depositPercent === 25) markupField.value = BASE_MARKUP[25];
+            else if (depositPercent === 40) markupField.value = BASE_MARKUP[40];
+            else if (depositPercent === 50) markupField.value = BASE_MARKUP[50];
         }
 
         function formatNumber(num) {
@@ -310,16 +347,19 @@
             const cost = parseFloat(document.getElementById('ncCost').value) || 0;
             const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
             const term = parseInt(document.getElementById('ncTerm').value) || 0;
-            const markupPercent = parseFloat(document.getElementById('ncMarkup').value) || 0;
 
             if (!cost || !depositPercent || !term) {
                 document.getElementById('calcPreview').classList.add('hidden');
                 return;
             }
 
+            // Расчёт по формуле из index.html (режим "База"): базовая наценка + срок × 1%
+            const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+            const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+
             const depositRuble = cost * (depositPercent / 100);
             const financing = cost - depositRuble;
-            const markupRuble = financing * (markupPercent / 100);
+            const markupRuble = financing * (totalMarkupPercent / 100);
             const total = financing + markupRuble;
             const monthly = total / term;
 
@@ -345,14 +385,21 @@
             const item = document.getElementById('ncItem').value.trim();
             const cost = parseFloat(document.getElementById('ncCost').value);
             const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
-            const markup = parseFloat(document.getElementById('ncMarkup').value);
             const term = parseInt(document.getElementById('ncTerm').value);
             const startDate = document.getElementById('ncStartDate').value;
 
-            if (!phone || !name || !item || !cost || !depositPercent || !markup || !term || !startDate) {
+            if (!phone || !name || !item || !cost || !depositPercent || !term || !startDate) {
                 alert('Заполните все поля');
                 return;
             }
+
+            // Проверка дубликата телефона
+            const allowDuplicate = await checkDuplicatePhone(phone, name);
+            if (!allowDuplicate) return;
+
+            // Расчёт по формуле из index.html (режим "База"): базовая наценка + срок × 1%
+            const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+            const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
 
             const depositRuble = cost * (depositPercent / 100);
             const code = generateCode();
@@ -368,8 +415,11 @@
             const hashArray = new Uint8Array(hashBuffer);
             const hash = Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
 
+            // Считаем phoneHash для новой записи
+            const phoneHash = await calculatePhoneHash(phone);
+
             const financing = cost - depositRuble;
-            const markupRuble = financing * (markup / 100);
+            const markupRuble = financing * (totalMarkupPercent / 100);
             const total = financing + markupRuble;
             const monthlyPayment = total / term;
 
@@ -395,6 +445,7 @@
 
             const newClient = {
                 hash: hash,
+                phoneHash: phoneHash,
                 name: name,
                 item: item,
                 total: Math.round(total),
