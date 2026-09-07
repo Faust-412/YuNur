@@ -217,14 +217,15 @@
                 <button class="btn btn-outline" onclick="exportCollectionsCSV()" style="min-width:auto; width:auto;">Экспорт CSV</button>
             </div>
             <div id="collectionsSummary" style="background:#fff3cd; padding:15px; border-radius:8px; margin-bottom:20px; border-left:4px solid #ffc107;"></div>
+            <button class="btn btn-outline" id="showCompletedBtn" onclick="toggleCompletedClients()" style="margin-bottom:15px; display:none;">Показать завершённых (<span id="completedCount">0</span>)</button>
             <table class="schedule-table" id="collectionsTable">
                 <thead>
                     <tr>
                         <th>Клиент</th>
                         <th>Хвост</th>
-                        <th>Дата платежа</th>
-                        <th>Сумма</th>
                         <th>Статус</th>
+                        <th>Бейджи</th>
+                        <th>Ближайший платёж</th>
                     </tr>
                 </thead>
                 <tbody id="collectionsBody"></tbody>
@@ -702,13 +703,21 @@
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     
-                    const allPayments = [];
                     let overdueCount = 0, overdueSum = 0;
                     let weekCount = 0, weekSum = 0;
+                    
+                    const clientData = [];
+                    let completedClients = [];
                     
                     clients.forEach(client => {
                         const status = getClientStatus(client);
                         const tail = (client.phoneTail || '???');
+                        
+                        let clientOverdueCount = 0, clientOverdueSum = 0;
+                        let clientWeekCount = 0, clientWeekSum = 0;
+                        let nearestPayment = null;
+                        let nearestDate = null;
+                        const unpaidPayments = [];
                         
                         client.schedule.forEach(p => {
                             if (p.paid) return;
@@ -718,11 +727,14 @@
                             deadline.setDate(deadline.getDate() + 3);
                             
                             let label = 'запланирован';
-                            let sortKey = 2;
+                            let isOverdue = false;
+                            let isWeek = false;
                             
                             if (today > deadline) {
                                 label = 'просрочен';
-                                sortKey = 0;
+                                isOverdue = true;
+                                clientOverdueCount++;
+                                clientOverdueSum += p.sum;
                                 overdueCount++;
                                 overdueSum += p.sum;
                             } else {
@@ -730,52 +742,226 @@
                                 weekLater.setDate(weekLater.getDate() + 7);
                                 if (pd <= weekLater) {
                                     label = 'на этой неделе';
-                                    sortKey = 1;
+                                    isWeek = true;
+                                    clientWeekCount++;
+                                    clientWeekSum += p.sum;
                                     weekCount++;
                                     weekSum += p.sum;
                                 }
                             }
                             
-                            allPayments.push({
-                                name: client.name,
-                                tail: tail,
-                                date: p.date,
-                                sum: p.sum,
-                                label: label,
-                                sortKey: sortKey,
-                                client: client
-                            });
+                            unpaidPayments.push({ ...p, label, isOverdue, isWeek });
+                            
+                            if (nearestDate === null || pd < nearestDate) {
+                                nearestDate = pd;
+                                nearestPayment = p;
+                            }
                         });
+                        
+                        const clientRow = {
+                            name: client.name,
+                            tail: tail,
+                            status: status,
+                            overdueCount: clientOverdueCount,
+                            overdueSum: clientOverdueSum,
+                            weekCount: clientWeekCount,
+                            weekSum: clientWeekSum,
+                            nearestPayment: nearestPayment,
+                            unpaidPayments: unpaidPayments,
+                            client: client
+                        };
+                        
+                        if (status === 'завершён') {
+                            completedClients.push(clientRow);
+                        } else {
+                            clientData.push(clientRow);
+                        }
                     });
                     
-                    allPayments.sort((a, b) => {
-                        if (a.sortKey !== b.sortKey) return a.sortKey - b.sortKey;
-                        return new Date(a.date) - new Date(b.date);
+                    // Сортировка: сначала просрочка, затем неделя, потом по дате ближайшего платежа
+                    clientData.sort((a, b) => {
+                        const aHasOverdue = a.overdueCount > 0 ? 1 : 0;
+                        const bHasOverdue = b.overdueCount > 0 ? 1 : 0;
+                        if (aHasOverdue !== bHasOverdue) return bHasOverdue - aHasOverdue;
+                        
+                        const aHasWeek = a.weekCount > 0 ? 1 : 0;
+                        const bHasWeek = b.weekCount > 0 ? 1 : 0;
+                        if (aHasWeek !== bHasWeek) return bHasWeek - aHasWeek;
+                        
+                        if (a.nearestPayment && b.nearestPayment) {
+                            return new Date(a.nearestPayment.date) - new Date(b.nearestPayment.date);
+                        }
+                        return 0;
                     });
                     
                     document.getElementById('collectionsSummary').innerHTML = 
                         `<strong>Просрочено:</strong> ${overdueCount} плат. на ${overdueSum.toLocaleString()} ₽ · ` +
                         `<strong>На этой неделе:</strong> ${weekCount} плат. на ${weekSum.toLocaleString()} ₽`;
                     
-                    const tbody = document.getElementById('collectionsBody');
-                    tbody.innerHTML = '';
+                    // Показываем кнопку для завершённых если они есть
+                    const showCompletedBtn = document.getElementById('showCompletedBtn');
+                    const completedCountSpan = document.getElementById('completedCount');
+                    if (completedClients.length > 0) {
+                        completedCountSpan.textContent = completedClients.length;
+                        showCompletedBtn.style.display = 'inline-block';
+                    } else {
+                        showCompletedBtn.style.display = 'none';
+                    }
                     
-                    allPayments.forEach(p => {
-                        const tr = document.createElement('tr');
-                        let color = '#000';
-                        if (p.label === 'просрочен') color = '#d32f2f';
-                        else if (p.label === 'на этой неделе') color = '#f57f17';
-                        
-                        tr.innerHTML = `
-                            <td>${p.name}</td>
-                            <td>…${p.tail}</td>
-                            <td>${p.date}</td>
-                            <td>${p.sum.toLocaleString()} ₽</td>
-                            <td style="color:${color}; font-weight:500;">${p.label}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
+                    // Сохраняем данные для переключения
+                    window.activeClientData = clientData;
+                    window.showingCompleted = false;
+                    
+                    renderClientRows(clientData);
                 });
+        }
+        
+        function toggleCompletedClients() {
+            if (window.showingCompleted) {
+                window.showingCompleted = false;
+                renderClientRows(window.activeClientData);
+                document.getElementById('showCompletedBtn').style.display = 'inline-block';
+            } else {
+                // Получаем завершённых клиентов из allClients
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const completedClients = window.allClients.filter(c => getClientStatus(c) === 'завершён').map(client => {
+                    const tail = (client.phoneTail || '???');
+                    const paidSum = client.schedule.filter(p => p.paid).reduce((s, p) => s + p.sum, 0);
+                    const remainder = client.total - paidSum;
+                    const unpaid = client.schedule.filter(p => !p.paid);
+                    unpaid.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    const nextPayment = unpaid.length > 0 ? unpaid[0].date : '-';
+                    
+                    return {
+                        name: client.name,
+                        tail: tail,
+                        status: 'завершён',
+                        overdueCount: 0,
+                        overdueSum: 0,
+                        weekCount: 0,
+                        weekSum: 0,
+                        nearestPayment: { date: nextPayment, sum: remainder },
+                        unpaidPayments: [],
+                        client: client
+                    };
+                });
+                
+                window.showingCompleted = true;
+                renderClientRows(completedClients);
+                document.getElementById('showCompletedBtn').style.display = 'none';
+            }
+        }
+        
+        function renderClientRows(clientData) {
+            const tbody = document.getElementById('collectionsBody');
+            tbody.innerHTML = '';
+            
+            clientData.forEach(c => {
+                // Основная строка клиента
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                
+                let statusColor = '#000';
+                if (c.status === 'просрочен') statusColor = '#d32f2f';
+                else if (c.status === 'активен') statusColor = '#1b5e20';
+                else if (c.status === 'завершён') statusColor = '#9e9e9e';
+                
+                // Формируем бейджи
+                let badgesHtml = '';
+                if (c.overdueCount > 0) {
+                    badgesHtml += `<span style="background:#ffcdd2; color:#c62828; padding:4px 8px; border-radius:4px; font-size:12px; margin-right:5px;">просрочка: ${c.overdueCount} плат., ${c.overdueSum.toLocaleString()} ₽</span>`;
+                }
+                if (c.weekCount > 0) {
+                    badgesHtml += `<span style="background:#fff9c4; color:#f57f17; padding:4px 8px; border-radius:4px; font-size:12px;">на неделе: ${c.weekCount} плат., ${c.weekSum.toLocaleString()} ₽</span>`;
+                }
+                if (badgesHtml === '') badgesHtml = '<span style="color:#9e9e9e;">—</span>';
+                
+                // Ближайший платёж
+                let nearestText = '—';
+                if (c.nearestPayment && c.nearestPayment.date) {
+                    const dateStr = typeof c.nearestPayment.date === 'string' ? c.nearestPayment.date : c.nearestPayment.date.toISOString().split('T')[0];
+                    const sumStr = c.nearestPayment.sum ? c.nearestPayment.sum.toLocaleString() : '0';
+                    nearestText = `${dateStr} / ${sumStr} ₽`;
+                }
+                
+                tr.innerHTML = `
+                    <td style="font-weight:500;">${c.name}</td>
+                    <td>…${c.tail}</td>
+                    <td style="color:${statusColor}; font-weight:500;">${c.status}</td>
+                    <td>${badgesHtml}</td>
+                    <td>${nearestText}</td>
+                `;
+                
+                tbody.appendChild(tr);
+                
+                // Строка-аккордеон для платежей
+                const accordionTr = document.createElement('tr');
+                accordionTr.id = `accordion-${c.name.replace(/\s+/g, '-')}`;
+                accordionTr.style.display = 'none';
+                accordionTr.innerHTML = `
+                    <td colspan="5" style="padding:15px; background:#f5f5f5;">
+                        <div style="font-weight:500; margin-bottom:10px; color:#1b5e20;">Неоплаченные платежи:</div>
+                        ${c.unpaidPayments.length > 0 ? `
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#e0e0e0;">
+                                    <th style="padding:8px; text-align:left;">Дата</th>
+                                    <th style="padding:8px; text-align:left;">Сумма</th>
+                                    <th style="padding:8px; text-align:left;">Метка</th>
+                                    <th style="padding:8px; text-align:left;">Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${c.unpaidPayments.map(p => {
+                                    let labelColor = '#000';
+                                    if (p.label === 'просрочен') labelColor = '#d32f2f';
+                                    else if (p.label === 'на этой неделе') labelColor = '#f57f17';
+                                    
+                                    return `
+                                    <tr>
+                                        <td style="padding:8px;">${p.date}</td>
+                                        <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
+                                        <td style="padding:8px; color:${labelColor}; font-weight:500;">${p.label}</td>
+                                        <td style="padding:8px;">
+                                            <button class="btn btn-primary" onclick="goToPayment('${c.client.hash}')" style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">Отметить в Платежах</button>
+                                        </td>
+                                    </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                        ` : '<div style="color:#9e9e9e;">Нет неоплаченных платежей</div>'}
+                    </td>
+                `;
+                
+                tbody.appendChild(accordionTr);
+                
+                // Обработчик клика для аккордеона
+                tr.onclick = () => {
+                    const acc = document.getElementById(`accordion-${c.name.replace(/\s+/g, '-')}`);
+                    if (acc.style.display === 'none') {
+                        acc.style.display = 'table-row';
+                        tr.style.background = '#e8f5e9';
+                    } else {
+                        acc.style.display = 'none';
+                        tr.style.background = '';
+                    }
+                };
+            });
+        }
+        
+        function goToPayment(clientHash) {
+            // Переключаемся на вкладку "Платежи"
+            switchTab('payments');
+            
+            // Находим клиента по хешу и заполняем поле поиска
+            const client = window.allClients.find(c => c.hash === clientHash);
+            if (client) {
+                // В payments.html поиск по hash не реализован напрямую через UI
+                // Поэтому просто покажем сообщение или можно добавить функционал
+                alert(`Клиент найден: ${client.name}. Используйте поиск по телефону/коду во вкладке "Платежи".`);
+            }
         }
 
         function exportCollectionsCSV() {
