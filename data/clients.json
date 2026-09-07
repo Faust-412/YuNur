@@ -1,38 +1,58 @@
- {
-    "hash": "bdc2c3dcebf7cf278199d4f24606b67e6cd78f9a2db4254a2ddbf018e27736f3",
-    "code": "YN-FAB8-568F",
+[
+  {
+    "hash": "56dce43c344e1cef76804501bb84df4475357c251804a371e822427a4f98b39c",
     "name": "Тест",
     "item": "Айфон 15 про 256 гб",
-    "total": 68850,
+    "total": 72090,
     "schedule": [
       {
-        "date": "2026-09-06",
-        "sum": 11475,
+        "date": "2026-09-07",
+        "sum": 7209,
         "paid": false
       },
       {
-        "date": "2026-10-06",
-        "sum": 11475,
+        "date": "2026-10-07",
+        "sum": 7209,
         "paid": false
       },
       {
-        "date": "2026-11-06",
-        "sum": 11475,
+        "date": "2026-11-07",
+        "sum": 7209,
         "paid": false
       },
       {
-        "date": "2026-12-06",
-        "sum": 11475,
+        "date": "2026-12-07",
+        "sum": 7209,
         "paid": false
       },
       {
-        "date": "2027-01-06",
-        "sum": 11475,
+        "date": "2027-01-07",
+        "sum": 7209,
         "paid": false
       },
       {
-        "date": "2027-02-06",
-        "sum": 11475,
+        "date": "2027-02-07",
+        "sum": 7209,
+        "paid": false
+      },
+      {
+        "date": "2027-03-07",
+        "sum": 7209,
+        "paid": false
+      },
+      {
+        "date": "2027-04-07",
+        "sum": 7209,
+        "paid": false
+      },
+      {
+        "date": "2027-05-07",
+        "sum": 7209,
+        "paid": false
+      },
+      {
+        "date": "2027-06-07",
+        "sum": 7209,
         "paid": false
       }
     ],
