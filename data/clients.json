@@ -57,5 +57,44 @@
       }
     ],
     "bonus": 0
+  },
+  {
+    "hash": "bcddd99e95963f8a0a7824297f970a607a4e08ed13ef91e892564f5ee34eab4d",
+    "name": "Тест",
+    "item": "Айфон 15 про 256 гб",
+    "total": 69660,
+    "schedule": [
+      {
+        "date": "2026-09-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2026-10-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2026-11-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2026-12-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2027-01-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2027-02-07",
+        "sum": 11610,
+        "paid": false
+      }
+    ],
+    "bonus": 0
   }
 ]
