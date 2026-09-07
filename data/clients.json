@@ -174,5 +174,44 @@
       }
     ],
     "bonus": 0
+  },
+  {
+    "hash": "9ce022b956d8659e4b38e70a355e0dc2ab34b32e6891d3d915dedb22ef091044",
+    "name": "gh",
+    "item": "Айфон 15 про 256 гб",
+    "total": 81000,
+    "schedule": [
+      {
+        "date": "2026-07-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-08-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-09-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-10-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-11-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-12-06",
+        "sum": 13500,
+        "paid": false
+      }
+    ],
+    "bonus": 0
   }
 ]
