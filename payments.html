@@ -766,9 +766,18 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Format phone number
+        // Format phone number: keep only digits, replace leading 8 with 7
         function formatPhone(phone) {
-            return phone.replace(/\D/g, '');
+            let digits = phone.replace(/\D/g, '');
+            if (digits.startsWith('8')) {
+                digits = '7' + digits.slice(1);
+            }
+            return digits;
+        }
+
+        // Normalize code: uppercase, no spaces
+        function normalizeCode(code) {
+            return code.toUpperCase().replace(/\s/g, '');
         }
 
         // Load clients data and find by hash
@@ -801,7 +810,7 @@
             e.preventDefault();
 
             const phone = formatPhone(document.getElementById('phone').value);
-            const code = document.getElementById('code').value.trim();
+            const code = normalizeCode(document.getElementById('code').value.trim());
             const rememberMe = document.getElementById('remember-me').checked;
             const errorMessage = document.getElementById('error-message');
 
