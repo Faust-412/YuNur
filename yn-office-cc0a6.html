@@ -116,7 +116,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Срок (мес)</label>
-                    <select id="ncTerm" onchange="calculatePreview()">
+                    <select id="ncTerm" onchange="updateMarkupFromPercent(); calculatePreview()">
                         <option value="">Выбрать...</option>
                         <option value="3">3</option>
                         <option value="6">6</option>
@@ -332,11 +332,14 @@
 
         function updateMarkupFromPercent() {
             const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
+            const term = parseInt(document.getElementById('ncTerm').value) || 0;
             const markupField = document.getElementById('ncMarkup');
 
-            if (depositPercent === 25) markupField.value = BASE_MARKUP[25];
-            else if (depositPercent === 40) markupField.value = BASE_MARKUP[40];
-            else if (depositPercent === 50) markupField.value = BASE_MARKUP[50];
+            if (!depositPercent) return;
+            
+            const baseMarkup = BASE_MARKUP[depositPercent] || 0;
+            const totalMarkup = baseMarkup + (term * MONTHLY_ADDITION);
+            markupField.value = totalMarkup;
         }
 
         function formatNumber(num) {
