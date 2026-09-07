@@ -246,14 +246,16 @@
 </head>
 <body>
     <!-- Login Section -->
-    <div id="loginSection" class="login-wrapper">
-        <div class="login-box">
+            <div class="login-box">
             <h1>🔐 YuNur Admin</h1>
             <input type="password" id="masterCode" placeholder="Мастер-код">
+            <input type="password" id="githubToken" placeholder="GitHub-токен (опционально, для автосохранения)">
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #666; font-size: 14px;">
+                <input type="checkbox" id="rememberToken"> Запомнить токен в этом браузере
+            </label>
             <button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
             <p id="errorMsg" class="error-msg">Доступ запрещён</p>
         </div>
-    </div>
 
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel container">
@@ -399,8 +401,61 @@
         const MASTER_HASH = "c3c9f2e5d969113b78111826c4e33854e6e223d00d48d8476bcd488a62461663";
         
         let actualMasterHash = MASTER_HASH;
+                // === GitHub API для автосохранения ===
+        function loadToken() {
+            const saved = localStorage.getItem('yunur_token');
+            if (saved) {
+                document.getElementById('githubToken').value = saved;
+                document.getElementById('rememberToken').checked = true;
+            }
+        }
 
-        async function checkMasterCode() {
+        function saveToken() {
+            const token = document.getElementById('githubToken').value.trim();
+            const remember = document.getElementById('rememberToken').checked;
+            if (remember && token) {
+                localStorage.setItem('yunur_token', token);
+            } else {
+                localStorage.removeItem('yunur_token');
+            }
+        }
+
+        async function commitToGithub(jsonContent, message) {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token) return false;
+            
+            try {
+                // Сначала получаем SHA текущего файла
+                const getResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/clients.json', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const current = await getResp.json();
+                const sha = current.sha;
+                
+                // PUT — обновление файла
+                const putResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/clients.json', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        content: btoa(unescape(encodeURIComponent(jsonContent))),
+                        sha: sha
+                    })
+                });
+                return putResp.ok;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Загрузить токен при старте
+        window.addEventListener('DOMContentLoaded', loadToken);
+
+        async function checkMasterCode() 
+                        saveToken();{
             const code = document.getElementById('masterCode').value;
             const encoder = new TextEncoder();
             const data = encoder.encode(code);
@@ -484,7 +539,14 @@
             return `YN-${hex.slice(0,4).toUpperCase()}-${hex.slice(4,8).toUpperCase()}`;
         }
 
-        async function generateClient() {
+        async function generateClient()
+                    // Попытка автосохранения через GitHub API
+            const autoSaved = await commitToGithub(jsonStr, `client: add ${name}`);
+            if (autoSaved) {
+                document.getElementById('jsonOutput').textContent = '✅ Клиент автосохранён в базе! Можно закрыть окно.';
+            } else {
+                document.getElementById('jsonOutput').textContent = jsonStr;
+            }{
             const phone = document.getElementById('ncPhone').value.trim();
             const name = document.getElementById('ncName').value.trim();
             const item = document.getElementById('ncItem').value.trim();
@@ -672,6 +734,18 @@
             displayClient(client);
             
             // Store updated clients
+                        // Автосохранение платежа
+            fetch('data/clients.json')
+                .then(r => r.json())
+                .then(async (clients) => {
+                    const idx = clients.findIndex(c => c.hash === client.hash);
+                    if (idx !== -1) {
+                        clients[idx] = client;
+                        const jsonStr = JSON.stringify(clients, null, 2);
+                        await commitToGithub(jsonStr, `payment: ${client.name} index ${index}`);
+                        window.currentClients = clients;
+                    }
+                });
             updateClientsInStorage(client);
         }
 
