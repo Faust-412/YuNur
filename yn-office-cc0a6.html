@@ -76,6 +76,7 @@
         <div class="tabs">
             <button class="tab active" onclick="switchTab('newClient')">Новый клиент</button>
             <button class="tab" onclick="switchTab('payments')">Платежи</button>
+            <button class="tab" onclick="switchTab('collections')">Сборы</button>
         </div>
 
         <!-- New Client Tab -->
@@ -208,6 +209,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- Collections Tab -->
+        <div id="collectionsTab" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>📊 Сборы</h2>
+                <button class="btn btn-outline" onclick="exportCollectionsCSV()" style="min-width:auto; width:auto;">Экспорт CSV</button>
+            </div>
+            <div id="collectionsSummary" style="background:#fff3cd; padding:15px; border-radius:8px; margin-bottom:20px; border-left:4px solid #ffc107;"></div>
+            <table class="schedule-table" id="collectionsTable">
+                <thead>
+                    <tr>
+                        <th>Клиент</th>
+                        <th>Хвост</th>
+                        <th>Дата платежа</th>
+                        <th>Сумма</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody id="collectionsBody"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -285,11 +307,15 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
 
             if (tabName === 'newClient') {
-                document.querySelector('.tab:first-child').classList.add('active');
+                document.querySelectorAll('.tab')[0].classList.add('active');
                 document.getElementById('newClientTab').classList.add('active');
-            } else {
-                document.querySelector('.tab:last-child').classList.add('active');
+            } else if (tabName === 'payments') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('paymentsTab').classList.add('active');
+            } else if (tabName === 'collections') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('collectionsTab').classList.add('active');
+                renderCollections();
             }
         }
 
@@ -571,11 +597,23 @@
             const client = window.currentPayClient;
             if (!client || client.schedule[index].paid) return;
 
-            client.schedule[index].paid = true;
-            const bonusAdd = client.schedule[index].sum * 0.008;
-            client.bonus = Math.round((client.bonus + bonusAdd) * 100) / 100;
+            const paymentDate = new Date(client.schedule[index].date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const deadline = new Date(paymentDate);
+            deadline.setDate(deadline.getDate() + 3);
+            
+            let bonusAdd = 0;
+            let isLate = false;
+            
+            if (today <= deadline) {
+                bonusAdd = client.schedule[index].sum * 0.008;
+                client.bonus = Math.round((client.bonus + bonusAdd) * 100) / 100;
+            } else {
+                isLate = true;
+            }
 
-            displayClient(client);
+            displayClient(client, index, isLate);
 
             // Автосохранение платежа в GitHub
             fetch('data/clients.json?' + Date.now())
@@ -592,21 +630,186 @@
                 });
         }
 
-        function downloadUpdatedJson() {
-            if (window.currentPayClient) {
-                fetch('data/clients.json?' + Date.now())
-                    .then(r => r.json())
-                    .then(clients => {
-                        const jsonStr = JSON.stringify(clients, null, 2);
-                        const blob = new Blob([jsonStr], {type: 'application/json'});
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'clients.json';
-                        a.click();
-                        URL.revokeObjectURL(url);
+        function displayClient(client, justPaidIndex = -1, isLatePayment = false) {
+            document.getElementById('clientInfo').innerHTML = `
+                <p><strong>Имя:</strong> ${client.name}</p>
+                <p><strong>Товар:</strong> ${client.item}</p>
+                <p><strong>Общая сумма:</strong> ${client.total} ₽</p>
+                <p><strong>Бонус:</strong> ${client.bonus} ₽ <span style="font-size:12px; color:#666;">(начисляется за оплату вовремя, выплачивается на мобильный)</span></p>
+            `;
+
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = '';
+
+            client.schedule.forEach((payment, i) => {
+                const tr = document.createElement('tr');
+                let statusText = payment.paid ? '✓ Оплачен' : '○ Не оплачен';
+                
+                if (i === justPaidIndex && isLatePayment) {
+                    statusText += ' — без бонуса (просрочка)';
+                }
+                
+                tr.innerHTML = `
+                    <td>${payment.date}</td>
+                    <td>${payment.sum} ₽</td>
+                    <td class="${payment.paid ? 'paid' : 'unpaid'}"
+                        ${!payment.paid ? `onclick="markPaid(${i})"` : ''}>
+                        ${statusText}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('payResult').classList.remove('hidden');
+        }
+
+        function getClientStatus(client) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const hasUnpaidOld = client.schedule.some(p => {
+                if (p.paid) return false;
+                const pd = new Date(p.date);
+                const deadline = new Date(pd);
+                deadline.setDate(deadline.getDate() + 3);
+                return today > deadline;
+            });
+            if (hasUnpaidOld) return 'просрочен';
+            
+            const allPaid = client.schedule.every(p => p.paid);
+            if (allPaid) return 'завершён';
+            
+            return 'активен';
+        }
+
+        function getPhoneTail(phoneHash, clients) {
+            for (const c of clients) {
+                if (c.phoneHash === phoneHash && c.name) {
+                    const normPhone = Object.keys(window.allClients || {}).find(k => {
+                        const h = calculatePhoneHashSync(k);
+                        return h === phoneHash;
                     });
+                    if (normPhone) return normPhone.slice(-3);
+                }
             }
+            return '???';
+        }
+
+        function renderCollections() {
+            fetch('data/clients.json?' + Date.now())
+                .then(r => r.json())
+                .then(clients => {
+                    window.allClients = clients;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const allPayments = [];
+                    let overdueCount = 0, overdueSum = 0;
+                    let weekCount = 0, weekSum = 0;
+                    
+                    clients.forEach(client => {
+                        const status = getClientStatus(client);
+                        const tail = (client.phoneTail || '???');
+                        
+                        client.schedule.forEach(p => {
+                            if (p.paid) return;
+                            
+                            const pd = new Date(p.date);
+                            const deadline = new Date(pd);
+                            deadline.setDate(deadline.getDate() + 3);
+                            
+                            let label = 'запланирован';
+                            let sortKey = 2;
+                            
+                            if (today > deadline) {
+                                label = 'просрочен';
+                                sortKey = 0;
+                                overdueCount++;
+                                overdueSum += p.sum;
+                            } else {
+                                const weekLater = new Date(today);
+                                weekLater.setDate(weekLater.getDate() + 7);
+                                if (pd <= weekLater) {
+                                    label = 'на этой неделе';
+                                    sortKey = 1;
+                                    weekCount++;
+                                    weekSum += p.sum;
+                                }
+                            }
+                            
+                            allPayments.push({
+                                name: client.name,
+                                tail: tail,
+                                date: p.date,
+                                sum: p.sum,
+                                label: label,
+                                sortKey: sortKey,
+                                client: client
+                            });
+                        });
+                    });
+                    
+                    allPayments.sort((a, b) => {
+                        if (a.sortKey !== b.sortKey) return a.sortKey - b.sortKey;
+                        return new Date(a.date) - new Date(b.date);
+                    });
+                    
+                    document.getElementById('collectionsSummary').innerHTML = 
+                        `<strong>Просрочено:</strong> ${overdueCount} плат. на ${overdueSum.toLocaleString()} ₽ · ` +
+                        `<strong>На этой неделе:</strong> ${weekCount} плат. на ${weekSum.toLocaleString()} ₽`;
+                    
+                    const tbody = document.getElementById('collectionsBody');
+                    tbody.innerHTML = '';
+                    
+                    allPayments.forEach(p => {
+                        const tr = document.createElement('tr');
+                        let color = '#000';
+                        if (p.label === 'просрочен') color = '#d32f2f';
+                        else if (p.label === 'на этой неделе') color = '#f57f17';
+                        
+                        tr.innerHTML = `
+                            <td>${p.name}</td>
+                            <td>…${p.tail}</td>
+                            <td>${p.date}</td>
+                            <td>${p.sum.toLocaleString()} ₽</td>
+                            <td style="color:${color}; font-weight:500;">${p.label}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        function exportCollectionsCSV() {
+            fetch('data/clients.json?' + Date.now())
+                .then(r => r.json())
+                .then(clients => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    let csv = '\uFEFF'; // BOM for UTF-8
+                    csv += 'имя;хвост;статус;остаток;ближайший платеж\n';
+                    
+                    clients.forEach(client => {
+                        const status = getClientStatus(client);
+                        const tail = client.phoneTail || '???';
+                        
+                        const paidSum = client.schedule.filter(p => p.paid).reduce((s, p) => s + p.sum, 0);
+                        const remainder = client.total - paidSum;
+                        
+                        const unpaid = client.schedule.filter(p => !p.paid);
+                        unpaid.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        const nextPayment = unpaid.length > 0 ? unpaid[0].date : '-';
+                        
+                        csv += `${client.name};${tail};${status};${remainder};${nextPayment}\n`;
+                    });
+                    
+                    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'yunur-clients.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
         }
     </script>
 </body>

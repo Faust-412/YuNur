@@ -2,6 +2,7 @@
   {
     "hash": "d1e5f0139c985b45f29411912bc84cb4871b641c6f9f87473a25257e759b9157",
     "phoneHash": "3ea3b0328a0f8f8056414a434a80f7625bfe7f5317c055fac455076b255e6716",
+    "phoneTail": "567",
     "name": "Магомед",
     "item": "Айфон 15 про 256 гб",
     "total": 72090,
@@ -62,6 +63,7 @@
   {
     "hash": "bdc2c3dcebf7cf278199d4f24606b67e6cd78f9a2db4254a2ddbf018e27736f3",
     "phoneHash": "a826b41de5a5c4297168c0293802f598325f2da8488d6ada4255160bed5cdc6a",
+    "phoneTail": "222",
     "name": "Тест",
     "item": "Айфон 15 про 256 гб",
     "total": 69660,
