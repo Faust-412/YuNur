@@ -106,6 +106,13 @@
             </div>
             <div class="form-row">
                 <div class="form-group">
+                    <label>Реферальный код (необязательно)</label>
+                    <input type="text" id="ncRefCode" placeholder="RF-XXXX" oninput="checkRefCodeInput()">
+                    <p id="refCodeWarning" style="color:#f57c00; font-size:13px; margin-top:5px; display:none;">Код не найден, клиент будет без привязки</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
                     <label>Стоимость (₽)</label>
                     <input type="number" id="ncCost" placeholder="100000" oninput="handleCostInput(); calculatePreview()">
                 </div>
@@ -256,6 +263,29 @@
         const MASTER_HASH = "e00ea505e2fb83fa48766a618f62ba5f6596040630908fbcc6b70d8b0e03829e";
 
         let actualMasterHash = MASTER_HASH;
+        
+        // === Генерация уникального реферального кода ===
+        function generateRefCode() {
+            return 'RF-' + Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+        
+        // === Проверка реферального кода при вводе ===
+        function checkRefCodeInput() {
+            const inputCode = document.getElementById('ncRefCode').value.trim().toUpperCase();
+            const warningEl = document.getElementById('refCodeWarning');
+            if (!inputCode) {
+                warningEl.style.display = 'none';
+                return;
+            }
+            // Проверяем, есть ли такой код среди существующих клиентов
+            const clientsData = window.currentClients || [];
+            const found = clientsData.some(c => c.refCode && c.refCode.toUpperCase() === inputCode);
+            if (!found) {
+                warningEl.style.display = 'block';
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
 
         // === GitHub API: автосохранение базы ===
         function loadToken() {
@@ -313,13 +343,43 @@
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            if (inputHash === actualMasterHash) {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                saveToken();
-            } else {
+            if (inputHash !== actualMasterHash) {
                 document.getElementById('errorMsg').style.display = 'block';
+                return;
             }
+            
+            // Проверка токена GitHub API
+            const token = document.getElementById('githubToken').value.trim() || localStorage.getItem('yunur_token') || '';
+            if (token) {
+                try {
+                    const resp = await fetch('https://api.github.com/user', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (!resp.ok && resp.status === 401) {
+                        showErrorBanner('Токен истёк или невалиден — создай новый и войди снова');
+                        return;
+                    }
+                } catch (e) {
+                    showErrorBanner('Токен истёк или невалиден — создай новый и войди снова');
+                    return;
+                }
+            }
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            saveToken();
+        }
+        
+        function showErrorBanner(message) {
+            let banner = document.getElementById('tokenErrorBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'tokenErrorBanner';
+                banner.style.cssText = 'background:#d32f2f; color:white; padding:15px; text-align:center; font-weight:500; border-radius:8px; margin-bottom:20px;';
+                document.querySelector('.login-box').insertBefore(banner, document.querySelector('.login-box input'));
+            }
+            banner.textContent = message;
+            banner.style.display = 'block';
         }
 
         function switchTab(tabName) {
@@ -589,6 +649,17 @@
                 clients = [];
             }
 
+            // Проверка реферального кода
+            const inputRefCode = document.getElementById('ncRefCode').value.trim().toUpperCase();
+            let refByValue = '';
+            if (inputRefCode) {
+                const foundClient = clients.find(c => c.refCode && c.refCode.toUpperCase() === inputRefCode);
+                if (foundClient) {
+                    refByValue = inputRefCode;
+                }
+                // Если не найден - предупреждение уже показано, но создаём без привязки
+            }
+
             const newClient = {
                 hash: hash,
                 phoneHash: phoneHash,
@@ -597,7 +668,9 @@
                 total: Math.round(total),
                 schedule: schedule,
                 bonus: 0,
-                mode: currentMode
+                mode: currentMode,
+                refCode: generateRefCode(),
+                refBy: refByValue
             };
             clients.push(newClient);
 
@@ -685,11 +758,32 @@
         }
 
         function displayClient(client) {
+            // Находим кто привёл этого клиента и сколько он привёл
+            const referrer = client.refBy ? window.allClients.find(c => c.refCode === client.refBy) : null;
+            const referredCount = window.allClients.filter(c => c.refBy === client.refCode).length;
+            
+            let refInfoHtml = '';
+            if (client.refBy) {
+                const referrerName = referrer ? referrer.name : 'не найден';
+                refInfoHtml = `<p><strong>Привёл:</strong> ${referrerName}</p>`;
+            }
+            if (referredCount > 0) {
+                refInfoHtml += `<p><strong>Приведено клиентов:</strong> ${referredCount}</p>`;
+            }
+            
+            // Реферальный бонус
+            let refBonusHtml = '';
+            if (client.refBonusGiven) {
+                refBonusHtml = `<p style="color:#1b5e20;"><strong>Реферальный бонус:</strong> +500 ₽ (получен)</p>`;
+            }
+            
             document.getElementById('clientInfo').innerHTML = `
                 <p><strong>Имя:</strong> ${client.name}</p>
                 <p><strong>Товар:</strong> ${client.item}</p>
                 <p><strong>Общая сумма:</strong> ${client.total} ₽</p>
                 <p><strong>Бонус:</strong> ${client.bonus} ₽</p>
+                ${refInfoHtml}
+                ${refBonusHtml}
             `;
 
             const tbody = document.getElementById('scheduleBody');
@@ -697,12 +791,28 @@
 
             client.schedule.forEach((payment, index) => {
                 const tr = document.createElement('tr');
+                
+                // Определяем статус по paidSum
+                const paidSum = payment.paidSum || 0;
+                const planSum = payment.sum;
+                let statusClass = payment.paid ? 'paid' : 'unpaid';
+                let statusText = payment.paid ? '✓ Оплачен' : '○ Не оплачен';
+                
+                if (payment.paid && paidSum > 0) {
+                    if (paidSum >= planSum) {
+                        statusText = `✓ Оплачен (${paidSum.toLocaleString()} ₽)`;
+                    } else if (paidSum > 0 && paidSum < planSum) {
+                        statusClass = 'partial';
+                        statusText = `◐ Частично (${paidSum.toLocaleString()} из ${planSum.toLocaleString()} ₽)`;
+                    }
+                }
+                
                 tr.innerHTML = `
                     <td>${payment.date}</td>
                     <td>${payment.sum} ₽</td>
-                    <td class="${payment.paid ? 'paid' : 'unpaid'}"
+                    <td class="${statusClass}"
                         ${!payment.paid ? `onclick="markPaid(${index})"` : ''}>
-                        ${payment.paid ? '✓ Оплачен' : '○ Не оплачен'}
+                        ${statusText}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -714,38 +824,152 @@
         function markPaid(index) {
             const client = window.currentPayClient;
             if (!client || client.schedule[index].paid) return;
-
-            const paymentDate = new Date(client.schedule[index].date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const deadline = new Date(paymentDate);
-            deadline.setDate(deadline.getDate() + 3);
             
-            let bonusAdd = 0;
-            let isLate = false;
+            // Открываем inline-поле ввода суммы (аналогично collections)
+            const payment = client.schedule[index];
+            const planSum = payment.sum;
             
-            if (today <= deadline) {
-                bonusAdd = client.schedule[index].sum * 0.008;
-                client.bonus = Math.round((client.bonus + bonusAdd) * 100) / 100;
-            } else {
-                isLate = true;
-            }
-
-            displayClient(client, index, isLate);
-
-            // Автосохранение платежа в GitHub
-            fetch('data/clients.json?' + Date.now())
-                .then(r => r.json())
-                .then(async (clients) => {
-                    const idx = clients.findIndex(c => c.hash === client.hash);
-                    if (idx !== -1) {
-                        clients[idx] = client;
-                        const ok = await commitToGithub(JSON.stringify(clients, null, 2), 'payment: ' + client.name);
-                        if (ok) alert('Платёж отмечен и сохранён в базе ✅');
-                        else alert('Платёж отмечен, но НЕ сохранён в базу (нет токена). Скачай файл вручную.');
-                        window.currentClients = clients;
+            // Создаём временный UI для ввода суммы
+            const tbody = document.getElementById('scheduleBody');
+            const row = tbody.rows[index];
+            const originalCellHtml = row.cells[2].innerHTML;
+            
+            row.cells[2].innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:12px; color:#666;">Получено:</span>
+                    <input type="number" id="inline-pay-input-${index}" value="${planSum}" min="0" step="100" 
+                        style="width:100px; padding:4px 8px; font-size:12px; border:1px solid #ccc; border-radius:4px;" />
+                    <button id="inline-confirm-${index}" class="btn btn-primary" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">Подтвердить</button>
+                    <button id="inline-cancel-${index}" class="btn btn-outline" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">✕</button>
+                </div>
+            `;
+            
+            const inputEl = document.getElementById(`inline-pay-input-${index}`);
+            const confirmBtn = document.getElementById(`inline-confirm-${index}`);
+            const cancelBtn = document.getElementById(`inline-cancel-${index}`);
+            
+            if (!inputEl || !confirmBtn || !cancelBtn) return;
+            
+            inputEl.focus();
+            inputEl.select();
+            
+            cancelBtn.onclick = () => {
+                row.cells[2].innerHTML = originalCellHtml;
+            };
+            
+            confirmBtn.onclick = async () => {
+                const enteredSum = parseFloat(inputEl.value) || 0;
+                if (enteredSum < 0) {
+                    alert('Сумма не может быть отрицательной');
+                    return;
+                }
+                
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Сохранение…';
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const paymentDate = new Date(payment.date);
+                const deadline = new Date(paymentDate);
+                deadline.setDate(deadline.getDate() + 3);
+                const isOnTime = today <= deadline;
+                
+                // Сохраняем исходное состояние
+                const originalBonus = client.bonus;
+                const originalSchedule = JSON.parse(JSON.stringify(client.schedule));
+                
+                let bonusChange = 0;
+                
+                payment.paid = true;
+                payment.paidSum = enteredSum;
+                
+                // Начисление бонуса только если вовремя и ещё не был начислен
+                if (isOnTime && !payment.bonusGiven) {
+                    bonusChange = Math.round(enteredSum * 0.008 * 100) / 100;
+                    payment.bonusGiven = true;
+                }
+                
+                // Проверяем реферальный бонус (+500 за первого платежа приведённого клиента)
+                let refBonusApplied = false;
+                if (client.refBy && !client.refBonusGiven) {
+                    // Ищем приведшего по refCode
+                    const referrer = window.allClients.find(c => c.refCode === client.refBy);
+                    if (referrer) {
+                        referrer.bonus = Math.round((referrer.bonus + 500) * 100) / 100;
+                        client.refBonusGiven = true;
+                        refBonusApplied = true;
                     }
-                });
+                }
+                
+                // Обработка переплаты
+                let overflow = 0;
+                if (payment.paidSum > planSum) {
+                    overflow = payment.paidSum - planSum;
+                }
+                
+                if (overflow > 0) {
+                    for (let i = index + 1; i < client.schedule.length && overflow > 0; i++) {
+                        const nextP = client.schedule[i];
+                        if (!nextP.paid || (nextP.paid && (nextP.paidSum || 0) < nextP.sum)) {
+                            const currentNextPaid = nextP.paidSum || 0;
+                            const remainingNeeded = nextP.sum - currentNextPaid;
+                            
+                            if (remainingNeeded > 0) {
+                                const applyOverflow = Math.min(overflow, remainingNeeded);
+                                nextP.paid = true;
+                                nextP.paidSum = currentNextPaid + applyOverflow;
+                                overflow -= applyOverflow;
+                                
+                                // Бонус за переплаченный следующий платёж если вовремя
+                                if (nextP.paidSum >= nextP.sum) {
+                                    const nextDate = new Date(nextP.date);
+                                    const nextDeadline = new Date(nextDate);
+                                    nextDeadline.setDate(nextDeadline.getDate() + 3);
+                                    if (today <= nextDeadline && !nextP.bonusGiven) {
+                                        const nextBonus = Math.round(nextP.paidSum * 0.008 * 100) / 100;
+                                        client.bonus = Math.round((client.bonus + nextBonus) * 100) / 100;
+                                        nextP.bonusGiven = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                client.bonus = Math.round((client.bonus + bonusChange) * 100) / 100;
+                
+                // Автосохранение
+                const jsonStr = JSON.stringify(window.allClients, null, 2);
+                const commitMsg = refBonusApplied 
+                    ? `payment: ${client.name} - первый платёж (реферальный бонус)`
+                    : `payment: ${client.name} - ${payment.date}`;
+                
+                const saved = await commitToGithub(jsonStr, commitMsg);
+                
+                if (saved) {
+                    showInlineMessage(confirmBtn.parentElement, 'Сохранено ✓', false);
+                    setTimeout(() => displayClient(client), 1000);
+                } else {
+                    // Откат
+                    client.bonus = originalBonus;
+                    client.schedule = originalSchedule;
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Подтвердить';
+                    showInlineMessage(confirmBtn.parentElement, 'НЕ СОХРАНЕНО — повтори', true, true);
+                }
+            };
+        }
+        
+        function showInlineMessage(parentEl, text, isError, stay = false) {
+            const msgEl = document.createElement('span');
+            msgEl.style.cssText = `font-size:11px; margin-left:8px; color:${isError ? '#d32f2f' : '#1b5e20'}; font-weight:500;`;
+            msgEl.textContent = text;
+            parentEl.appendChild(msgEl);
+            if (!stay) {
+                setTimeout(() => msgEl.remove(), 3000);
+            }
         }
 
         function displayClient(client, justPaidIndex = -1, isLatePayment = false) {
