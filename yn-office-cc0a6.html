@@ -1016,10 +1016,38 @@
                 const accordionTr = document.createElement('tr');
                 accordionTr.id = `accordion-${c.name.replace(/\s+/g, '-')}`;
                 accordionTr.style.display = 'none';
+                
+                // Создаём все платежи (и оплаченные, и нет) для аккордеона
+                const allPaymentsForAccordion = c.client.schedule.map((p, idx) => {
+                    let label = 'запланирован';
+                    if (!p.paid) {
+                        const pd = new Date(p.date);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const deadline = new Date(pd);
+                        deadline.setDate(deadline.getDate() + 3);
+                        if (today > deadline) {
+                            label = 'просрочен';
+                        } else {
+                            const weekLater = new Date(today);
+                            weekLater.setDate(weekLater.getDate() + 7);
+                            if (pd <= weekLater) label = 'на этой неделе';
+                        }
+                    }
+                    return { ...p, label, originalIndex: idx };
+                });
+                
                 accordionTr.innerHTML = `
                     <td colspan="5" style="padding:15px; background:#f5f5f5;">
-                        <div style="font-weight:500; margin-bottom:10px; color:#1b5e20;">Неоплаченные платежи:</div>
-                        ${c.unpaidPayments.length > 0 ? `
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div style="font-weight:500; color:#1b5e20;">Платежи:</div>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer;">
+                                <input type="checkbox" id="onlyUnpaidToggle-${c.client.hash.replace(/[^a-z0-9]/g,'')}" onchange="toggleOnlyUnpaid('${c.client.hash.replace(/[^a-z0-9]/g,'')}')" style="width:auto;">
+                                Только неоплаченные
+                            </label>
+                        </div>
+                        <div id="payments-list-${c.client.hash.replace(/[^a-z0-9]/g,'')}">
+                        ${allPaymentsForAccordion.length > 0 ? `
                         <table style="width:100%; border-collapse:collapse;">
                             <thead>
                                 <tr style="background:#e0e0e0;">
@@ -1029,35 +1057,12 @@
                                     <th style="padding:8px; text-align:left;">Действие</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                ${c.unpaidPayments.map((p, idx) => {
-                                    let labelColor = '#000';
-                                    if (p.label === 'просрочен') labelColor = '#d32f2f';
-                                    else if (p.label === 'на этой неделе') labelColor = '#f57f17';
-                                    
-                                    // Проверяем, есть ли у платежа bonusGiven (значит он уже был оплачен и отменён)
-                                    const originalPayment = c.client.schedule.find(sp => sp.date === p.date);
-                                    const isPaid = originalPayment && originalPayment.paid;
-                                    const bonusGiven = originalPayment && originalPayment.bonusGiven;
-                                    
-                                    return `
-                                    <tr id="payment-row-${c.client.hash.replace(/[^a-z0-9]/g,'')}-${idx}" style="${isPaid ? 'background:#e8f5e9;' : ''}">
-                                        <td style="padding:8px;">${isPaid ? '✓ ' : ''}${p.date}</td>
-                                        <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
-                                        <td style="padding:8px; color:${labelColor}; font-weight:500;">${p.label}${isPaid && !bonusGiven ? ' — без бонуса (просрочка)' : ''}</td>
-                                        <td style="padding:8px;">
-                                            <button class="btn ${isPaid ? 'btn-outline' : 'btn-primary'}" 
-                                                onclick="togglePaymentFromCollections('${c.client.hash}', ${idx})" 
-                                                style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
-                                                ${isPaid ? '↺ Отменить' : '✓ Оплачен'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    `;
-                                }).join('')}
+                            <tbody class="payments-tbody" data-client-hash="${c.client.hash.replace(/[^a-z0-9]/g,'')}">
+                                ${renderPaymentsRows(allPaymentsForAccordion, c.client.hash)}
                             </tbody>
                         </table>
-                        ` : '<div style="color:#9e9e9e;">Нет неоплаченных платежей</div>'}
+                        ` : '<div style="color:#9e9e9e;">Нет платежей</div>'}
+                        </div>
                     </td>
                 `;
                 
@@ -1077,7 +1082,7 @@
             });
         }
         
-        function togglePaymentFromCollections(clientHash, paymentIndex) {
+        function togglePaymentFromCollections(clientHash, scheduleIndex) {
             // Находим клиента в глобальном массиве
             const client = window.allClients.find(c => c.hash === clientHash);
             if (!client) {
@@ -1085,22 +1090,14 @@
                 return;
             }
             
-            // Находим конкретный платёж (индекс среди неоплаченных в аккордеоне)
-            const unpaidPayments = client.schedule.filter(p => !p.paid);
-            if (paymentIndex >= unpaidPayments.length) {
+            // Находим конкретный платёж по индексу в расписании
+            if (scheduleIndex >= client.schedule.length || scheduleIndex < 0) {
                 alert('Платёж не найден');
-                return;
-            }
-            const targetPayment = unpaidPayments[paymentIndex];
-            
-            // Находим индекс платежа в общем расписании
-            const scheduleIndex = client.schedule.findIndex(p => p.date === targetPayment.date);
-            if (scheduleIndex === -1) {
-                alert('Платёж не найден в расписании');
                 return;
             }
             
             const currentPayment = client.schedule[scheduleIndex];
+            const targetPayment = currentPayment;
             
             // Проверяем, вовремя ли оплата (не позже даты + 3 дня)
             const today = new Date();
@@ -1161,6 +1158,79 @@
                     }
                 });
             }
+        }
+        
+        // Рендер строк платежей для аккордеона
+        function renderPaymentsRows(payments, clientHash) {
+            const onlyUnpaid = document.getElementById(`onlyUnpaidToggle-${clientHash.replace(/[^a-z0-9]/g,'')}`)?.checked || false;
+            
+            return payments.map(p => {
+                const isPaid = p.paid;
+                const bonusGiven = p.bonusGiven;
+                
+                // Если включён фильтр "Только неоплаченные", пропускаем оплаченные
+                if (onlyUnpaid && isPaid) return '';
+                
+                let labelColor = '#000';
+                if (!isPaid) {
+                    if (p.label === 'просрочен') labelColor = '#d32f2f';
+                    else if (p.label === 'на этой неделе') labelColor = '#f57f17';
+                } else {
+                    labelColor = '#1b5e20';
+                }
+                
+                const rowStyle = isPaid ? 'background:#e8f5e9;' : '';
+                const datePrefix = isPaid ? '✓ ' : '';
+                const labelText = `${p.label}${isPaid && !bonusGiven ? ' — без бонуса (просрочка)' : ''}`;
+                const btnClass = isPaid ? 'btn-outline' : 'btn-primary';
+                const btnText = isPaid ? '↺ Отменить' : '✓ Оплачен';
+                
+                return `
+                <tr style="${rowStyle}">
+                    <td style="padding:8px;">${datePrefix}${p.date}</td>
+                    <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
+                    <td style="padding:8px; color:${labelColor}; font-weight:500;">${labelText}</td>
+                    <td style="padding:8px;">
+                        <button class="btn ${btnClass}" 
+                            onclick="togglePaymentFromCollections('${clientHash}', ${p.originalIndex})" 
+                            style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
+                            ${btnText}
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+        
+        // Переключатель "Только неоплаченные"
+        function toggleOnlyUnpaid(clientHash) {
+            const tbody = document.querySelector(`.payments-tbody[data-client-hash="${clientHash.replace(/[^a-z0-9]/g,'')}"]`);
+            if (!tbody) return;
+            
+            // Перерисовываем строки платежей
+            const client = window.allClients.find(c => c.hash === clientHash);
+            if (!client) return;
+            
+            const allPaymentsForAccordion = client.schedule.map((p, idx) => {
+                let label = 'запланирован';
+                if (!p.paid) {
+                    const pd = new Date(p.date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const deadline = new Date(pd);
+                    deadline.setDate(deadline.getDate() + 3);
+                    if (today > deadline) {
+                        label = 'просрочен';
+                    } else {
+                        const weekLater = new Date(today);
+                        weekLater.setDate(weekLater.getDate() + 7);
+                        if (pd <= weekLater) label = 'на этой неделе';
+                    }
+                }
+                return { ...p, label, originalIndex: idx };
+            });
+            
+            tbody.innerHTML = renderPaymentsRows(allPaymentsForAccordion, clientHash);
         }
 
         function goToPayment(clientHash) {
