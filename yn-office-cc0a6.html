@@ -1104,6 +1104,7 @@
             
             btnElement.outerHTML = `
                 <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:12px; color:#666;">Получено:</span>
                     <input type="number" id="${inputId}" value="${defaultVal}" min="0" step="100" 
                         style="width:100px; padding:4px 8px; font-size:12px; border:1px solid #ccc; border-radius:4px;" />
                     <button id="${confirmId}" class="btn btn-primary" 
@@ -1473,8 +1474,6 @@
                     a.click();
                     URL.revokeObjectURL(url);
                 });
-        });
-        });
         }
     </script>
 </body>
