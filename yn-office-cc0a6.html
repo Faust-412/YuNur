@@ -118,6 +118,11 @@
                         <option value="50">50%</option>
                     </select>
                 </div>
+                <!-- Поле взноса для Мини режима (скрыто по умолчанию) -->
+                <div class="form-group hidden" id="miniDepositGroup">
+                    <label>Взнос для Мини (₽)</label>
+                    <input type="number" id="ncMiniDeposit" placeholder="0" min="0" oninput="calculatePreview()">
+                </div>
                 <div class="form-group">
                     <label>Наценка (%)</label>
                     <input type="number" id="ncMarkup" placeholder="45" readonly>
@@ -345,6 +350,7 @@
             const baseBtn = document.getElementById('modeBase');
             const miniBtn = document.getElementById('modeMini');
             const depositGroup = document.getElementById('depositGroup');
+            const miniDepositGroup = document.getElementById('miniDepositGroup');
             
             if (mode === 'base') {
                 baseBtn.classList.remove('btn-outline');
@@ -352,6 +358,7 @@
                 miniBtn.classList.remove('btn-primary');
                 miniBtn.classList.add('btn-outline');
                 depositGroup.style.display = 'block';
+                miniDepositGroup.classList.add('hidden');
                 document.getElementById('ncMarkup').readOnly = false;
             } else {
                 miniBtn.classList.remove('btn-outline');
@@ -359,6 +366,7 @@
                 baseBtn.classList.remove('btn-primary');
                 baseBtn.classList.add('btn-outline');
                 depositGroup.style.display = 'none';
+                miniDepositGroup.classList.remove('hidden');
                 document.getElementById('ncDepositPercent').value = '';
                 document.getElementById('ncMarkup').readOnly = true;
             }
@@ -437,9 +445,10 @@
                     document.getElementById('calcPreview').classList.add('hidden');
                     return;
                 }
+                const miniDeposit = parseFloat(document.getElementById('ncMiniDeposit').value) || 0;
                 const markupPercent = 8 * term; // 8% в месяц × количество месяцев
-                depositRuble = 0; // В мини режиме взнос не требуется
-                financing = cost;
+                depositRuble = miniDeposit;
+                financing = cost - depositRuble;
                 markupRuble = financing * (markupPercent / 100);
                 total = financing + markupRuble;
                 monthly = total / term;
@@ -516,9 +525,10 @@
             
             if (currentMode === 'mini') {
                 // Режим Мини: 8% в месяц
+                const miniDeposit = parseFloat(document.getElementById('ncMiniDeposit').value) || 0;
                 const markupPercent = 8 * term;
-                depositRuble = 0;
-                financing = cost;
+                depositRuble = miniDeposit;
+                financing = cost - depositRuble;
                 markupRuble = financing * (markupPercent / 100);
                 total = financing + markupRuble;
                 totalMarkupPercent = markupPercent;
@@ -1017,13 +1027,22 @@
                                     if (p.label === 'просрочен') labelColor = '#d32f2f';
                                     else if (p.label === 'на этой неделе') labelColor = '#f57f17';
                                     
+                                    // Проверяем, есть ли у платежа bonusGiven (значит он уже был оплачен и отменён)
+                                    const originalPayment = client.schedule.find(sp => sp.date === p.date);
+                                    const isPaid = originalPayment && originalPayment.paid;
+                                    const bonusGiven = originalPayment && originalPayment.bonusGiven;
+                                    
                                     return `
-                                    <tr>
-                                        <td style="padding:8px;">${p.date}</td>
+                                    <tr id="payment-row-${client.hash.replace(/[^a-z0-9]/g,'')}-${idx}" style="${isPaid ? 'background:#e8f5e9;' : ''}">
+                                        <td style="padding:8px;">${isPaid ? '✓ ' : ''}${p.date}</td>
                                         <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
-                                        <td style="padding:8px; color:${labelColor}; font-weight:500;">${p.label}</td>
+                                        <td style="padding:8px; color:${labelColor}; font-weight:500;">${p.label}${isPaid && !bonusGiven ? ' — без бонуса (просрочка)' : ''}</td>
                                         <td style="padding:8px;">
-                                            <button class="btn btn-primary" onclick="markPaymentFromCollections('${c.client.hash}', ${idx})" style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">✓ Оплачен</button>
+                                            <button class="btn ${isPaid ? 'btn-outline' : 'btn-primary'}" 
+                                                onclick="togglePaymentFromCollections('${c.client.hash}', ${idx})" 
+                                                style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
+                                                ${isPaid ? '↺ Отменить' : '✓ Оплачен'}
+                                            </button>
                                         </td>
                                     </tr>
                                     `;
@@ -1050,7 +1069,7 @@
             });
         }
         
-        function markPaymentFromCollections(clientHash, paymentIndex) {
+        function togglePaymentFromCollections(clientHash, paymentIndex) {
             // Находим клиента в глобальном массиве
             const client = window.allClients.find(c => c.hash === clientHash);
             if (!client) {
@@ -1058,7 +1077,7 @@
                 return;
             }
             
-            // Находим конкретный неоплаченный платёж (индекс среди неоплаченных)
+            // Находим конкретный платёж (индекс среди неоплаченных в аккордеоне)
             const unpaidPayments = client.schedule.filter(p => !p.paid);
             if (paymentIndex >= unpaidPayments.length) {
                 alert('Платёж не найден');
@@ -1067,11 +1086,13 @@
             const targetPayment = unpaidPayments[paymentIndex];
             
             // Находим индекс платежа в общем расписании
-            const scheduleIndex = client.schedule.findIndex(p => p.date === targetPayment.date && !p.paid);
+            const scheduleIndex = client.schedule.findIndex(p => p.date === targetPayment.date);
             if (scheduleIndex === -1) {
                 alert('Платёж не найден в расписании');
                 return;
             }
+            
+            const currentPayment = client.schedule[scheduleIndex];
             
             // Проверяем, вовремя ли оплата (не позже даты + 3 дня)
             const today = new Date();
@@ -1081,34 +1102,57 @@
             deadline.setDate(deadline.getDate() + 3);
             
             const isOnTime = today <= deadline;
-            let bonusAmount = 0;
-            let bonusNote = '';
             
-            if (isOnTime) {
-                // Начисляем бонус: 0.8% от суммы платежа
-                bonusAmount = Math.round(targetPayment.sum * 0.008 * 100) / 100;
-                client.bonus = Math.round((client.bonus + bonusAmount) * 100) / 100;
-                bonusNote = `Бонус: +${bonusAmount.toFixed(2)} ₽`;
-            } else {
-                bonusNote = 'без бонуса (просрочка)';
-            }
-            
-            // Отмечаем платёж как оплаченный
-            client.schedule[scheduleIndex].paid = true;
-            
-            // Сохраняем в clients.json
-            const jsonStr = JSON.stringify(window.allClients, null, 2);
-            
-            // Автосохранение через GitHub API
-            commitToGithub(jsonStr, `payment: ${client.name} - ${targetPayment.date}`).then(saved => {
-                if (saved) {
-                    alert(`✅ Платёж отмечен! ${bonusNote}\nСохранено — клиент видит платёж оплаченным`);
-                    // Перерисовываем вкладку "Сборы"
-                    renderCollections();
-                } else {
-                    alert('⚠️ Платёж отмечен локально, но автосохранение не сработало (нет токена).');
+            if (currentPayment.paid) {
+                // ОТМЕНА оплаты
+                // Если был начислен бонус (bonusGiven=true), вычитаем его
+                if (currentPayment.bonusGiven) {
+                    const bonusToSubtract = Math.round(targetPayment.sum * 0.008 * 100) / 100;
+                    client.bonus = Math.round((client.bonus - bonusToSubtract) * 100) / 100;
+                    delete currentPayment.bonusGiven;
                 }
-            });
+                currentPayment.paid = false;
+                
+                // Сохраняем
+                const jsonStr = JSON.stringify(window.allClients, null, 2);
+                commitToGithub(jsonStr, `payment: ${client.name} - отмена`).then(saved => {
+                    if (saved) {
+                        alert('✅ Оплата отменена. Сохранено.');
+                        renderCollections();
+                    } else {
+                        alert('⚠️ Отмена отмечена локально, но автосохранение не сработало.');
+                    }
+                });
+            } else {
+                // ОТМЕТКА оплаты
+                let bonusAmount = 0;
+                let bonusNote = '';
+                
+                if (isOnTime) {
+                    // Начисляем бонус: 0.8% от суммы платежа
+                    bonusAmount = Math.round(targetPayment.sum * 0.008 * 100) / 100;
+                    client.bonus = Math.round((client.bonus + bonusAmount) * 100) / 100;
+                    currentPayment.bonusGiven = true;
+                    bonusNote = `Бонус: +${bonusAmount.toFixed(2)} ₽`;
+                } else {
+                    bonusNote = 'без бонуса (просрочка)';
+                }
+                
+                currentPayment.paid = true;
+                
+                // Сохраняем в clients.json
+                const jsonStr = JSON.stringify(window.allClients, null, 2);
+                
+                // Автосохранение через GitHub API
+                commitToGithub(jsonStr, `payment: ${client.name} - ${targetPayment.date}`).then(saved => {
+                    if (saved) {
+                        alert(`✅ Платёж отмечен! ${bonusNote}\nСохранено — клиент видит платёж оплаченным`);
+                        renderCollections();
+                    } else {
+                        alert('⚠️ Платёж отмечен локально, но автосохранение не сработало (нет токена).');
+                    }
+                });
+            }
         }
 
         function goToPayment(clientHash) {
