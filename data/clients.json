@@ -120,12 +120,15 @@
       {
         "date": "2026-09-07",
         "sum": 11556,
-        "paid": false
+        "paid": true,
+        "paidSum": 11559,
+        "bonusGiven": true
       },
       {
         "date": "2026-10-07",
         "sum": 11556,
-        "paid": false
+        "paid": true,
+        "paidSum": 3
       },
       {
         "date": "2026-11-07",
@@ -148,7 +151,7 @@
         "paid": false
       }
     ],
-    "bonus": 0
+    "bonus": 92.47
   },
   {
     "hash": "45e8ff0f6edf487578fa6ea8d3b582dbffdf7dddb199792ab13e1b94995cc89f",
