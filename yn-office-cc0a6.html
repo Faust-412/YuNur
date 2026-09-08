@@ -1082,22 +1082,24 @@
             });
         }
         
-        function togglePaymentFromCollections(clientHash, scheduleIndex) {
+        function togglePaymentFromCollections(clientHash, scheduleIndex, btnElement) {
             // Находим клиента в глобальном массиве
             const client = window.allClients.find(c => c.hash === clientHash);
-            if (!client) {
-                alert('Клиент не найден');
-                return;
-            }
+            if (!client) return;
             
             // Находим конкретный платёж по индексу в расписании
-            if (scheduleIndex >= client.schedule.length || scheduleIndex < 0) {
-                alert('Платёж не найден');
-                return;
-            }
+            if (scheduleIndex >= client.schedule.length || scheduleIndex < 0) return;
             
             const currentPayment = client.schedule[scheduleIndex];
             const targetPayment = currentPayment;
+            
+            // Защита от повторного нажатия: если уже идёт сохранение — игнорируем
+            if (btnElement.disabled) return;
+            
+            // Блокируем кнопку на время сохранения
+            const originalBtnText = btnElement.textContent;
+            btnElement.disabled = true;
+            btnElement.textContent = 'Сохранение…';
             
             // Проверяем, вовремя ли оплата (не позже даты + 3 дня)
             const today = new Date();
@@ -1107,6 +1109,11 @@
             deadline.setDate(deadline.getDate() + 3);
             
             const isOnTime = today <= deadline;
+            
+            // Сохраняем исходное состояние для отката при ошибке
+            const originalPaid = currentPayment.paid;
+            const originalBonusGiven = !!currentPayment.bonusGiven;
+            const originalClientBonus = client.bonus;
             
             if (currentPayment.paid) {
                 // ОТМЕНА оплаты
@@ -1118,32 +1125,45 @@
                 }
                 currentPayment.paid = false;
                 
+                // Мгновенное обновление UI (строка и дата)
+                updatePaymentRowVisuals(btnElement, false);
+                
                 // Сохраняем
                 const jsonStr = JSON.stringify(window.allClients, null, 2);
                 commitToGithub(jsonStr, `payment: ${client.name} - отмена`).then(saved => {
                     if (saved) {
-                        alert('✅ Оплата отменена. Сохранено.');
-                        renderCollections();
+                        showInlineMessage(btnElement, 'Отменено', false);
+                        // Разблокируем кнопку с новым текстом
+                        btnElement.disabled = false;
+                        btnElement.className = 'btn btn-primary';
+                        btnElement.textContent = '✓ Оплачен';
                     } else {
-                        alert('⚠️ Отмена отмечена локально, но автосохранение не сработало.');
+                        // Откат при ошибке
+                        currentPayment.paid = originalPaid;
+                        if (originalBonusGiven) currentPayment.bonusGiven = true;
+                        client.bonus = originalClientBonus;
+                        updatePaymentRowVisuals(btnElement, true);
+                        btnElement.disabled = false;
+                        btnElement.className = 'btn btn-outline';
+                        btnElement.textContent = '↺ Отменить';
+                        showInlineMessage(btnElement, 'Не сохранено, повтори', true, true);
                     }
                 });
             } else {
                 // ОТМЕТКА оплаты
                 let bonusAmount = 0;
-                let bonusNote = '';
                 
-                if (isOnTime) {
-                    // Начисляем бонус: 0.8% от суммы платежа
+                if (isOnTime && !currentPayment.bonusGiven) {
+                    // Начисляем бонус: 0.8% от суммы платежа (только если ещё не был начислен)
                     bonusAmount = Math.round(targetPayment.sum * 0.008 * 100) / 100;
                     client.bonus = Math.round((client.bonus + bonusAmount) * 100) / 100;
                     currentPayment.bonusGiven = true;
-                    bonusNote = `Бонус: +${bonusAmount.toFixed(2)} ₽`;
-                } else {
-                    bonusNote = 'без бонуса (просрочка)';
                 }
                 
                 currentPayment.paid = true;
+                
+                // Мгновенное обновление UI (строка и дата)
+                updatePaymentRowVisuals(btnElement, true);
                 
                 // Сохраняем в clients.json
                 const jsonStr = JSON.stringify(window.allClients, null, 2);
@@ -1151,12 +1171,69 @@
                 // Автосохранение через GitHub API
                 commitToGithub(jsonStr, `payment: ${client.name} - ${targetPayment.date}`).then(saved => {
                     if (saved) {
-                        alert(`✅ Платёж отмечен! ${bonusNote}\nСохранено — клиент видит платёж оплаченным`);
-                        renderCollections();
+                        showInlineMessage(btnElement, 'Сохранено ✓', false);
+                        // Разблокируем кнопку с новым текстом
+                        btnElement.disabled = false;
+                        btnElement.className = 'btn btn-outline';
+                        btnElement.textContent = '↺ Отменить';
                     } else {
-                        alert('⚠️ Платёж отмечен локально, но автосохранение не сработало (нет токена).');
+                        // Откат при ошибке
+                        currentPayment.paid = originalPaid;
+                        if (originalBonusGiven && !isOnTime) {
+                            // бонус не начислялся, ничего не делаем
+                        } else if (originalBonusGiven) {
+                            // был бонус — возвращаем
+                        } else if (isOnTime) {
+                            // отменяем начисленный бонус
+                            const bonusToRevert = Math.round(targetPayment.sum * 0.008 * 100) / 100;
+                            client.bonus = Math.round((client.bonus - bonusToRevert) * 100) / 100;
+                            delete currentPayment.bonusGiven;
+                        }
+                        updatePaymentRowVisuals(btnElement, false);
+                        btnElement.disabled = false;
+                        btnElement.className = 'btn btn-primary';
+                        btnElement.textContent = '✓ Оплачен';
+                        showInlineMessage(btnElement, 'Не сохранено, повтори', true, true);
                     }
                 });
+            }
+        }
+        
+        // Обновление визуалов строки платежа (фон, дата) мгновенно
+        function updatePaymentRowVisuals(btnElement, isPaid) {
+            const row = btnElement.closest('tr');
+            if (!row) return;
+            
+            const dateCell = row.cells[0];
+            
+            if (isPaid) {
+                row.style.background = '#e8f5e9';
+                if (dateCell && !dateCell.textContent.trim().startsWith('✓')) {
+                    dateCell.textContent = '✓ ' + dateCell.textContent.replace(/^✓\s*/, '');
+                }
+            } else {
+                row.style.background = '';
+                if (dateCell) {
+                    dateCell.textContent = dateCell.textContent.replace(/^✓\s*/, '');
+                }
+            }
+        }
+        
+        // Показ inline-сообщения рядом с кнопкой
+        function showInlineMessage(btnElement, text, isError, permanent = false) {
+            const existingMsg = btnElement.parentElement.querySelector('.inline-msg');
+            if (existingMsg) existingMsg.remove();
+            
+            const msgSpan = document.createElement('span');
+            msgSpan.className = 'inline-msg';
+            msgSpan.textContent = text;
+            msgSpan.style.cssText = 'margin-left:8px; font-size:11px; color:' + (isError ? '#d32f2f' : '#1b5e20') + '; font-weight:500;';
+            btnElement.parentElement.appendChild(msgSpan);
+            
+            if (!permanent) {
+                setTimeout(() => {
+                    if (msgSpan.parentElement) msgSpan.remove();
+                }, 3000);
             }
         }
         
@@ -1192,7 +1269,7 @@
                     <td style="padding:8px; color:${labelColor}; font-weight:500;">${labelText}</td>
                     <td style="padding:8px;">
                         <button class="btn ${btnClass}" 
-                            onclick="togglePaymentFromCollections('${clientHash}', ${p.originalIndex})" 
+                            onclick="togglePaymentFromCollections('${clientHash}', ${p.originalIndex}, this)" 
                             style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
                             ${btnText}
                         </button>
