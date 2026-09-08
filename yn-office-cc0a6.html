@@ -81,6 +81,15 @@
 
         <!-- New Client Tab -->
         <div id="newClientTab" class="tab-content active">
+            <!-- Режимы: База / Мини -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Режим расчёта</label>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn btn-primary" id="modeBase" onclick="setMode('base')">База</button>
+                    <button type="button" class="btn btn-outline" id="modeMini" onclick="setMode('mini')">Мини (до 25 000 ₽)</button>
+                </div>
+            </div>
+            
             <div class="form-row">
                 <div class="form-group">
                     <label>Телефон</label>
@@ -98,9 +107,9 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Стоимость (₽)</label>
-                    <input type="number" id="ncCost" placeholder="100000" oninput="calculatePreview()">
+                    <input type="number" id="ncCost" placeholder="100000" oninput="handleCostInput(); calculatePreview()">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="depositGroup">
                     <label>Взнос (%)</label>
                     <select id="ncDepositPercent" onchange="updateMarkupFromPercent(); calculatePreview()">
                         <option value="">Выбрать...</option>
@@ -111,7 +120,7 @@
                 </div>
                 <div class="form-group">
                     <label>Наценка (%)</label>
-                    <input type="number" id="ncMarkup" placeholder="45">
+                    <input type="number" id="ncMarkup" placeholder="45" readonly>
                 </div>
             </div>
             <div class="form-row">
@@ -327,6 +336,44 @@
             50: 24   // 50% взнос → 24% базовая наценка
         };
         const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
+        
+        // Режим расчёта: 'base' или 'mini'
+        let currentMode = 'base';
+        
+        function setMode(mode) {
+            currentMode = mode;
+            const baseBtn = document.getElementById('modeBase');
+            const miniBtn = document.getElementById('modeMini');
+            const depositGroup = document.getElementById('depositGroup');
+            
+            if (mode === 'base') {
+                baseBtn.classList.remove('btn-outline');
+                baseBtn.classList.add('btn-primary');
+                miniBtn.classList.remove('btn-primary');
+                miniBtn.classList.add('btn-outline');
+                depositGroup.style.display = 'block';
+                document.getElementById('ncMarkup').readOnly = false;
+            } else {
+                miniBtn.classList.remove('btn-outline');
+                miniBtn.classList.add('btn-primary');
+                baseBtn.classList.remove('btn-primary');
+                baseBtn.classList.add('btn-outline');
+                depositGroup.style.display = 'none';
+                document.getElementById('ncDepositPercent').value = '';
+                document.getElementById('ncMarkup').readOnly = true;
+            }
+            calculatePreview();
+        }
+        
+        function handleCostInput() {
+            const cost = parseFloat(document.getElementById('ncCost').value) || 0;
+            // Авто-переключение на Мини при стоимости <= 25000
+            if (cost > 0 && cost <= 25000 && currentMode !== 'mini') {
+                setMode('mini');
+            } else if (cost > 25000 && currentMode !== 'base') {
+                setMode('base');
+            }
+        }
 
         function calculatePhoneHash(phone) {
             const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
@@ -375,30 +422,55 @@
 
         function calculatePreview() {
             const cost = parseFloat(document.getElementById('ncCost').value) || 0;
-            const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
-            const term = parseInt(document.getElementById('ncTerm').value) || 0;
-
-            if (!cost || !depositPercent || !term) {
+            
+            if (!cost) {
                 document.getElementById('calcPreview').classList.add('hidden');
                 return;
             }
-
-            // Расчёт по формуле из index.html (режим "База"): базовая наценка + срок × 1%
-            const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
-            const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
-
-            const depositRuble = cost * (depositPercent / 100);
-            const financing = cost - depositRuble;
-            const markupRuble = financing * (totalMarkupPercent / 100);
-            const total = financing + markupRuble;
-            const monthly = total / term;
-
+            
+            let depositRuble, financing, markupRuble, total, monthly;
+            
+            if (currentMode === 'mini') {
+                // Режим Мини: 8% в месяц, срок до 6 мес, стоимость 1000-25000
+                const term = parseInt(document.getElementById('ncTerm').value) || 0;
+                if (!term || term > 6) {
+                    document.getElementById('calcPreview').classList.add('hidden');
+                    return;
+                }
+                const markupPercent = 8 * term; // 8% в месяц × количество месяцев
+                depositRuble = 0; // В мини режиме взнос не требуется
+                financing = cost;
+                markupRuble = financing * (markupPercent / 100);
+                total = financing + markupRuble;
+                monthly = total / term;
+                
+                document.getElementById('ncMarkup').value = markupPercent;
+            } else {
+                // Режим База: базовая наценка + срок × 1%
+                const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
+                const term = parseInt(document.getElementById('ncTerm').value) || 0;
+                
+                if (!depositPercent || !term) {
+                    document.getElementById('calcPreview').classList.add('hidden');
+                    return;
+                }
+                
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+                
+                depositRuble = cost * (depositPercent / 100);
+                financing = cost - depositRuble;
+                markupRuble = financing * (totalMarkupPercent / 100);
+                total = financing + markupRuble;
+                monthly = total / term;
+            }
+            
             document.getElementById('prevDepositRuble').value = formatNumber(depositRuble) + ' ₽';
             document.getElementById('prevFinancing').value = formatNumber(financing) + ' ₽';
             document.getElementById('prevMarkupRuble').value = formatNumber(markupRuble) + ' ₽';
             document.getElementById('prevTotal').value = formatNumber(total) + ' ₽';
             document.getElementById('prevMonthly').value = formatNumber(monthly) + ' ₽';
-
+            
             document.getElementById('calcPreview').classList.remove('hidden');
         }
 
@@ -414,24 +486,53 @@
             const name = document.getElementById('ncName').value.trim();
             const item = document.getElementById('ncItem').value.trim();
             const cost = parseFloat(document.getElementById('ncCost').value);
-            const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
             const term = parseInt(document.getElementById('ncTerm').value);
             const startDate = document.getElementById('ncStartDate').value;
 
-            if (!phone || !name || !item || !cost || !depositPercent || !term || !startDate) {
+            if (!phone || !name || !item || !cost || !term || !startDate) {
                 alert('Заполните все поля');
                 return;
+            }
+            
+            // Проверка режима Мини
+            if (currentMode === 'mini') {
+                if (cost > 25000 || term > 6) {
+                    alert('Режим Мини: стоимость до 25 000 ₽, срок до 6 мес');
+                    return;
+                }
+            } else {
+                const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
+                if (!depositPercent) {
+                    alert('Выберите размер взноса');
+                    return;
+                }
             }
 
             // Проверка дубликата телефона
             const allowDuplicate = await checkDuplicatePhone(phone, name);
             if (!allowDuplicate) return;
 
-            // Расчёт по формуле из index.html (режим "База"): базовая наценка + срок × 1%
-            const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
-            const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
-
-            const depositRuble = cost * (depositPercent / 100);
+            let depositRuble, totalMarkupPercent, financing, markupRuble, total;
+            
+            if (currentMode === 'mini') {
+                // Режим Мини: 8% в месяц
+                const markupPercent = 8 * term;
+                depositRuble = 0;
+                financing = cost;
+                markupRuble = financing * (markupPercent / 100);
+                total = financing + markupRuble;
+                totalMarkupPercent = markupPercent;
+            } else {
+                // Режим База
+                const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+                depositRuble = cost * (depositPercent / 100);
+                financing = cost - depositRuble;
+                markupRuble = financing * (totalMarkupPercent / 100);
+                total = financing + markupRuble;
+            }
+            
             const code = generateCode();
 
             // Нормализация: телефон только цифрами, код заглавными
@@ -448,9 +549,6 @@
             // Считаем phoneHash для новой записи
             const phoneHash = await calculatePhoneHash(phone);
 
-            const financing = cost - depositRuble;
-            const markupRuble = financing * (totalMarkupPercent / 100);
-            const total = financing + markupRuble;
             const monthlyPayment = total / term;
 
             const schedule = [];
@@ -480,7 +578,8 @@
                 item: item,
                 total: Math.round(total),
                 schedule: schedule,
-                bonus: 0
+                bonus: 0,
+                mode: currentMode
             };
             clients.push(newClient);
 
@@ -913,7 +1012,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${c.unpaidPayments.map(p => {
+                                ${c.unpaidPayments.map((p, idx) => {
                                     let labelColor = '#000';
                                     if (p.label === 'просрочен') labelColor = '#d32f2f';
                                     else if (p.label === 'на этой неделе') labelColor = '#f57f17';
@@ -924,7 +1023,7 @@
                                         <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
                                         <td style="padding:8px; color:${labelColor}; font-weight:500;">${p.label}</td>
                                         <td style="padding:8px;">
-                                            <button class="btn btn-primary" onclick="goToPayment('${c.client.hash}')" style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">Отметить в Платежах</button>
+                                            <button class="btn btn-primary" onclick="markPaymentFromCollections('${c.client.hash}', ${idx})" style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">✓ Оплачен</button>
                                         </td>
                                     </tr>
                                     `;
@@ -951,6 +1050,67 @@
             });
         }
         
+        function markPaymentFromCollections(clientHash, paymentIndex) {
+            // Находим клиента в глобальном массиве
+            const client = window.allClients.find(c => c.hash === clientHash);
+            if (!client) {
+                alert('Клиент не найден');
+                return;
+            }
+            
+            // Находим конкретный неоплаченный платёж (индекс среди неоплаченных)
+            const unpaidPayments = client.schedule.filter(p => !p.paid);
+            if (paymentIndex >= unpaidPayments.length) {
+                alert('Платёж не найден');
+                return;
+            }
+            const targetPayment = unpaidPayments[paymentIndex];
+            
+            // Находим индекс платежа в общем расписании
+            const scheduleIndex = client.schedule.findIndex(p => p.date === targetPayment.date && !p.paid);
+            if (scheduleIndex === -1) {
+                alert('Платёж не найден в расписании');
+                return;
+            }
+            
+            // Проверяем, вовремя ли оплата (не позже даты + 3 дня)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const paymentDate = new Date(targetPayment.date);
+            const deadline = new Date(paymentDate);
+            deadline.setDate(deadline.getDate() + 3);
+            
+            const isOnTime = today <= deadline;
+            let bonusAmount = 0;
+            let bonusNote = '';
+            
+            if (isOnTime) {
+                // Начисляем бонус: 0.8% от суммы платежа
+                bonusAmount = Math.round(targetPayment.sum * 0.008 * 100) / 100;
+                client.bonus = Math.round((client.bonus + bonusAmount) * 100) / 100;
+                bonusNote = `Бонус: +${bonusAmount.toFixed(2)} ₽`;
+            } else {
+                bonusNote = 'без бонуса (просрочка)';
+            }
+            
+            // Отмечаем платёж как оплаченный
+            client.schedule[scheduleIndex].paid = true;
+            
+            // Сохраняем в clients.json
+            const jsonStr = JSON.stringify(window.allClients, null, 2);
+            
+            // Автосохранение через GitHub API
+            commitToGithub(jsonStr, `payment: ${client.name} - ${targetPayment.date}`).then(saved => {
+                if (saved) {
+                    alert(`✅ Платёж отмечен! ${bonusNote}\nСохранено — клиент видит платёж оплаченным`);
+                    // Перерисовываем вкладку "Сборы"
+                    renderCollections();
+                } else {
+                    alert('⚠️ Платёж отмечен локально, но автосохранение не сработало (нет токена).');
+                }
+            });
+        }
+
         function goToPayment(clientHash) {
             // Переключаемся на вкладку "Платежи"
             switchTab('payments');
