@@ -193,12 +193,12 @@
       {
         "date": "2026-08-06",
         "sum": 13500,
-        "paid": true
+        "paid": false
       },
       {
         "date": "2026-09-06",
         "sum": 13500,
-        "paid": false
+        "paid": true
       },
       {
         "date": "2026-10-06",
@@ -216,6 +216,6 @@
         "paid": false
       }
     ],
-    "bonus": 0
+    "bonus": 108
   }
 ]
