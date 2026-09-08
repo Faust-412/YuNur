@@ -118,10 +118,15 @@
                         <option value="50">50%</option>
                     </select>
                 </div>
-                <!-- Поле взноса для Мини режима (скрыто по умолчанию) -->
+                <!-- Поле взноса для Мини режима (скрыто по умолчанию) - взнос в ПРОЦЕНТАХ -->
                 <div class="form-group hidden" id="miniDepositGroup">
-                    <label>Взнос для Мини (₽)</label>
-                    <input type="number" id="ncMiniDeposit" placeholder="0" min="0" oninput="calculatePreview()">
+                    <label>Взнос для Мини (%)</label>
+                    <select id="ncMiniDepositPercent" onchange="calculatePreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="25">25%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Наценка (%)</label>
@@ -369,6 +374,8 @@
                 miniDepositGroup.classList.remove('hidden');
                 document.getElementById('ncDepositPercent').value = '';
                 document.getElementById('ncMarkup').readOnly = true;
+                // Сброс значения мини-взноса при переключении
+                document.getElementById('ncMiniDepositPercent').value = '';
             }
             calculatePreview();
         }
@@ -445,9 +452,10 @@
                     document.getElementById('calcPreview').classList.add('hidden');
                     return;
                 }
-                const miniDeposit = parseFloat(document.getElementById('ncMiniDeposit').value) || 0;
+                // Взнос в процентах (как на сайте index.html)
+                const miniDepositPercent = parseInt(document.getElementById('ncMiniDepositPercent').value) || 0;
                 const markupPercent = 8 * term; // 8% в месяц × количество месяцев
-                depositRuble = miniDeposit;
+                depositRuble = cost * (miniDepositPercent / 100);
                 financing = cost - depositRuble;
                 markupRuble = financing * (markupPercent / 100);
                 total = financing + markupRuble;
@@ -524,10 +532,10 @@
             let depositRuble, totalMarkupPercent, financing, markupRuble, total;
             
             if (currentMode === 'mini') {
-                // Режим Мини: 8% в месяц
-                const miniDeposit = parseFloat(document.getElementById('ncMiniDeposit').value) || 0;
+                // Режим Мини: 8% в месяц от финансирования
+                const miniDepositPercent = parseInt(document.getElementById('ncMiniDepositPercent').value) || 0;
                 const markupPercent = 8 * term;
-                depositRuble = miniDeposit;
+                depositRuble = cost * (miniDepositPercent / 100);
                 financing = cost - depositRuble;
                 markupRuble = financing * (markupPercent / 100);
                 total = financing + markupRuble;
@@ -1028,12 +1036,12 @@
                                     else if (p.label === 'на этой неделе') labelColor = '#f57f17';
                                     
                                     // Проверяем, есть ли у платежа bonusGiven (значит он уже был оплачен и отменён)
-                                    const originalPayment = client.schedule.find(sp => sp.date === p.date);
+                                    const originalPayment = c.client.schedule.find(sp => sp.date === p.date);
                                     const isPaid = originalPayment && originalPayment.paid;
                                     const bonusGiven = originalPayment && originalPayment.bonusGiven;
                                     
                                     return `
-                                    <tr id="payment-row-${client.hash.replace(/[^a-z0-9]/g,'')}-${idx}" style="${isPaid ? 'background:#e8f5e9;' : ''}">
+                                    <tr id="payment-row-${c.client.hash.replace(/[^a-z0-9]/g,'')}-${idx}" style="${isPaid ? 'background:#e8f5e9;' : ''}">
                                         <td style="padding:8px;">${isPaid ? '✓ ' : ''}${p.date}</td>
                                         <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
                                         <td style="padding:8px; color:${labelColor}; font-weight:500;">${p.label}${isPaid && !bonusGiven ? ' — без бонуса (просрочка)' : ''}</td>
