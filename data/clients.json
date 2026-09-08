@@ -10,13 +10,13 @@
       {
         "date": "2026-09-07",
         "sum": 7209,
-        "paid": true,
-        "bonusGiven": true
+        "paid": false
       },
       {
         "date": "2026-10-07",
         "sum": 7209,
-        "paid": false
+        "paid": true,
+        "bonusGiven": true
       },
       {
         "date": "2026-11-07",
