@@ -11,7 +11,8 @@
         "date": "2026-09-07",
         "sum": 7209,
         "paid": true,
-        "bonusGiven": true
+        "bonusGiven": true,
+        "paidSum": 7209
       },
       {
         "date": "2026-10-07",
