@@ -1082,121 +1082,192 @@
             });
         }
         
-        function togglePaymentFromCollections(clientHash, scheduleIndex, btnElement) {
-            // Находим клиента в глобальном массиве
+        // Открытие inline-поля ввода суммы для оплаты/доплаты/отмены
+        function openPaymentInput(clientHash, scheduleIndex, btnElement, existingPaidSum = 0) {
             const client = window.allClients.find(c => c.hash === clientHash);
-            if (!client) return;
+            if (!client || scheduleIndex >= client.schedule.length) return;
             
-            // Находим конкретный платёж по индексу в расписании
-            if (scheduleIndex >= client.schedule.length || scheduleIndex < 0) return;
+            const payment = client.schedule[scheduleIndex];
+            const planSum = payment.sum;
+            const isEditing = existingPaidSum > 0;
             
-            const currentPayment = client.schedule[scheduleIndex];
-            const targetPayment = currentPayment;
-            
-            // Защита от повторного нажатия: если уже идёт сохранение — игнорируем
+            // Защита от повторного нажатия
             if (btnElement.disabled) return;
             
-            // Блокируем кнопку на время сохранения
-            const originalBtnText = btnElement.textContent;
-            btnElement.disabled = true;
-            btnElement.textContent = 'Сохранение…';
+            // Заменяем кнопку на inline-форму
+            const originalBtnHtml = btnElement.outerHTML;
+            const inputId = `payment-input-${clientHash}-${scheduleIndex}`;
+            const confirmId = `payment-confirm-${clientHash}-${scheduleIndex}`;
+            const cancelId = `payment-cancel-${clientHash}-${scheduleIndex}`;
             
-            // Проверяем, вовремя ли оплата (не позже даты + 3 дня)
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const paymentDate = new Date(targetPayment.date);
-            const deadline = new Date(paymentDate);
-            deadline.setDate(deadline.getDate() + 3);
+            const defaultVal = isEditing ? existingPaidSum : planSum;
             
-            const isOnTime = today <= deadline;
+            btnElement.outerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="number" id="${inputId}" value="${defaultVal}" min="0" step="100" 
+                        style="width:100px; padding:4px 8px; font-size:12px; border:1px solid #ccc; border-radius:4px;" />
+                    <button id="${confirmId}" class="btn btn-primary" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">Подтвердить</button>
+                    <button id="${cancelId}" class="btn btn-outline" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">✕</button>
+                </div>
+            `;
             
-            // Сохраняем исходное состояние для отката при ошибке
-            const originalPaid = currentPayment.paid;
-            const originalBonusGiven = !!currentPayment.bonusGiven;
-            const originalClientBonus = client.bonus;
+            const inputEl = document.getElementById(inputId);
+            const confirmBtn = document.getElementById(confirmId);
+            const cancelBtn = document.getElementById(cancelId);
             
-            if (currentPayment.paid) {
-                // ОТМЕНА оплаты
-                // Если был начислен бонус (bonusGiven=true), вычитаем его
-                if (currentPayment.bonusGiven) {
-                    const bonusToSubtract = Math.round(targetPayment.sum * 0.008 * 100) / 100;
-                    client.bonus = Math.round((client.bonus - bonusToSubtract) * 100) / 100;
-                    delete currentPayment.bonusGiven;
+            if (!inputEl || !confirmBtn || !cancelBtn) return;
+            
+            inputEl.focus();
+            inputEl.select();
+            
+            // Отмена
+            cancelBtn.onclick = () => {
+                // Восстанавливаем оригинальную кнопку
+                renderPaymentsRows(client.schedule.map((p, i) => ({...p, originalIndex: i})), clientHash);
+            };
+            
+            // Подтверждение
+            confirmBtn.onclick = () => {
+                const enteredSum = parseFloat(inputEl.value) || 0;
+                if (enteredSum < 0) {
+                    alert('Сумма не может быть отрицательной');
+                    return;
                 }
-                currentPayment.paid = false;
                 
-                // Мгновенное обновление UI (строка и дата)
-                updatePaymentRowVisuals(btnElement, false);
+                // Блокируем кнопку на время сохранения
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Сохранение…';
                 
-                // Сохраняем
-                const jsonStr = JSON.stringify(window.allClients, null, 2);
-                commitToGithub(jsonStr, `payment: ${client.name} - отмена`).then(saved => {
-                    if (saved) {
-                        showInlineMessage(btnElement, 'Отменено', false);
-                        // Разблокируем кнопку с новым текстом
-                        btnElement.disabled = false;
-                        btnElement.className = 'btn btn-primary';
-                        btnElement.textContent = '✓ Оплачен';
-                    } else {
-                        // Откат при ошибке
-                        currentPayment.paid = originalPaid;
-                        if (originalBonusGiven) currentPayment.bonusGiven = true;
-                        client.bonus = originalClientBonus;
-                        updatePaymentRowVisuals(btnElement, true);
-                        btnElement.disabled = false;
-                        btnElement.className = 'btn btn-outline';
-                        btnElement.textContent = '↺ Отменить';
-                        showInlineMessage(btnElement, 'Не сохранено, повтори', true, true);
+                // Сохраняем исходное состояние для отката
+                const originalPaid = payment.paid;
+                const originalPaidSum = payment.paidSum || 0;
+                const originalBonusGiven = !!payment.bonusGiven;
+                const originalClientBonus = client.bonus;
+                const originalSchedule = JSON.parse(JSON.stringify(client.schedule));
+                
+                // Проверяем, вовремя ли оплата
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const paymentDate = new Date(payment.date);
+                const deadline = new Date(paymentDate);
+                deadline.setDate(deadline.getDate() + 3);
+                const isOnTime = today <= deadline;
+                
+                // Логика обновления платежа
+                let bonusChange = 0;
+                
+                if (enteredSum === 0) {
+                    // Отмена оплаты
+                    payment.paid = false;
+                    payment.paidSum = 0;
+                    if (originalBonusGiven) {
+                        bonusChange = -Math.round(originalPaidSum * 0.008 * 100) / 100;
+                        delete payment.bonusGiven;
                     }
-                });
-            } else {
-                // ОТМЕТКА оплаты
-                let bonusAmount = 0;
-                
-                if (isOnTime && !currentPayment.bonusGiven) {
-                    // Начисляем бонус: 0.8% от суммы платежа (только если ещё не был начислен)
-                    bonusAmount = Math.round(targetPayment.sum * 0.008 * 100) / 100;
-                    client.bonus = Math.round((client.bonus + bonusAmount) * 100) / 100;
-                    currentPayment.bonusGiven = true;
-                }
-                
-                currentPayment.paid = true;
-                
-                // Мгновенное обновление UI (строка и дата)
-                updatePaymentRowVisuals(btnElement, true);
-                
-                // Сохраняем в clients.json
-                const jsonStr = JSON.stringify(window.allClients, null, 2);
-                
-                // Автосохранение через GitHub API
-                commitToGithub(jsonStr, `payment: ${client.name} - ${targetPayment.date}`).then(saved => {
-                    if (saved) {
-                        showInlineMessage(btnElement, 'Сохранено ✓', false);
-                        // Разблокируем кнопку с новым текстом
-                        btnElement.disabled = false;
-                        btnElement.className = 'btn btn-outline';
-                        btnElement.textContent = '↺ Отменить';
-                    } else {
-                        // Откат при ошибке
-                        currentPayment.paid = originalPaid;
-                        if (originalBonusGiven && !isOnTime) {
-                            // бонус не начислялся, ничего не делаем
-                        } else if (originalBonusGiven) {
-                            // был бонус — возвращаем
-                        } else if (isOnTime) {
-                            // отменяем начисленный бонус
-                            const bonusToRevert = Math.round(targetPayment.sum * 0.008 * 100) / 100;
-                            client.bonus = Math.round((client.bonus - bonusToRevert) * 100) / 100;
-                            delete currentPayment.bonusGiven;
+                } else {
+                    // Установка paidSum
+                    const oldPaidSum = payment.paidSum || 0;
+                    
+                    if (!payment.paid || oldPaidSum === 0) {
+                        // Первая оплата или переход из unpaid
+                        payment.paid = true;
+                        payment.paidSum = enteredSum;
+                        
+                        // Начисление бонуса только если его ещё не было и оплата вовремя
+                        if (isOnTime && !payment.bonusGiven) {
+                            bonusChange = Math.round(enteredSum * 0.008 * 100) / 100;
+                            payment.bonusGiven = true;
                         }
-                        updatePaymentRowVisuals(btnElement, false);
-                        btnElement.disabled = false;
-                        btnElement.className = 'btn btn-primary';
-                        btnElement.textContent = '✓ Оплачен';
-                        showInlineMessage(btnElement, 'Не сохранено, повтори', true, true);
+                    } else {
+                        // Доплата или изменение суммы
+                        const bonusAlreadyGiven = payment.bonusGiven;
+                        payment.paidSum = enteredSum;
+                        
+                        // Пересчёт бонуса если изменилась сумма и бонус уже был начислен
+                        if (bonusAlreadyGiven && isOnTime) {
+                            const oldBonus = Math.round(oldPaidSum * 0.008 * 100) / 100;
+                            const newBonus = Math.round(enteredSum * 0.008 * 100) / 100;
+                            bonusChange = newBonus - oldBonus;
+                        } else if (!bonusAlreadyGiven && isOnTime) {
+                            // Бонус ещё не начислялся, но теперь можно
+                            bonusChange = Math.round(enteredSum * 0.008 * 100) / 100;
+                            payment.bonusGiven = true;
+                        }
+                    }
+                }
+                
+                // Применяем изменение бонуса
+                if (bonusChange !== 0) {
+                    client.bonus = Math.round((client.bonus + bonusChange) * 100) / 100;
+                }
+                
+                // Обработка переплаты: перенос излишка на следующие платежи
+                let overflow = 0;
+                if (payment.paid && payment.paidSum > planSum) {
+                    overflow = payment.paidSum - planSum;
+                }
+                
+                if (overflow > 0) {
+                    // Распределяем переплату на следующие неоплаченные платежи
+                    for (let i = scheduleIndex + 1; i < client.schedule.length && overflow > 0; i++) {
+                        const nextP = client.schedule[i];
+                        if (!nextP.paid || (nextP.paid && (nextP.paidSum || 0) < nextP.sum)) {
+                            const currentNextPaid = nextP.paidSum || 0;
+                            const remainingNeeded = nextP.sum - currentNextPaid;
+                            
+                            if (remainingNeeded > 0) {
+                                const applyOverflow = Math.min(overflow, remainingNeeded);
+                                nextP.paid = true;
+                                nextP.paidSum = currentNextPaid + applyOverflow;
+                                overflow -= applyOverflow;
+                                
+                                // Если следующий платёж полностью оплачен вовремя и бонус ещё не начислен
+                                if (nextP.paidSum >= nextP.sum) {
+                                    const nextDate = new Date(nextP.date);
+                                    const nextDeadline = new Date(nextDate);
+                                    nextDeadline.setDate(nextDeadline.getDate() + 3);
+                                    if (today <= nextDeadline && !nextP.bonusGiven) {
+                                        const nextBonus = Math.round(nextP.paidSum * 0.008 * 100) / 100;
+                                        client.bonus = Math.round((client.bonus + nextBonus) * 100) / 100;
+                                        nextP.bonusGiven = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Сохранение в GitHub
+                const jsonStr = JSON.stringify(window.allClients, null, 2);
+                const commitMsg = isEditing 
+                    ? `payment: ${client.name} - изменение суммы (${payment.date})`
+                    : `payment: ${client.name} - ${payment.date}`;
+                
+                commitToGithub(jsonStr, commitMsg).then(saved => {
+                    if (saved) {
+                        showInlineMessage(confirmBtn.parentElement, 'Сохранено ✓', false);
+                        setTimeout(() => {
+                            if (confirmBtn.parentElement) confirmBtn.parentElement.remove();
+                        }, 1000);
+                        // Перерисовка аккордеона
+                        toggleOnlyUnpaid(clientHash);
+                    } else {
+                        // Откат при ошибке
+                        client.bonus = originalClientBonus;
+                        client.schedule = originalSchedule;
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = 'Подтвердить';
+                        showInlineMessage(confirmBtn.parentElement, 'Не сохранено, повтори', true, true);
                     }
                 });
-            }
+            };
+        }
+        
+        // Устаревшая функция togglePaymentFromCollections теперь вызывает openPaymentInput
+        function togglePaymentFromCollections(clientHash, scheduleIndex, btnElement) {
+            openPaymentInput(clientHash, scheduleIndex, btnElement, 0);
         }
         
         // Обновление визуалов строки платежа (фон, дата) мгновенно
@@ -1237,42 +1308,89 @@
             }
         }
         
-        // Рендер строк платежей для аккордеона
+        // Рендер строк платежей для аккордеона с поддержкой paidSum и частичной оплаты
         function renderPaymentsRows(payments, clientHash) {
             const onlyUnpaid = document.getElementById(`onlyUnpaidToggle-${clientHash.replace(/[^a-z0-9]/g,'')}`)?.checked || false;
             
-            return payments.map(p => {
+            return payments.map((p, idx) => {
                 const isPaid = p.paid;
                 const bonusGiven = p.bonusGiven;
+                const paidSum = p.paidSum || 0;
+                const planSum = p.sum;
                 
-                // Если включён фильтр "Только неоплаченные", пропускаем оплаченные
-                if (onlyUnpaid && isPaid) return '';
-                
-                let labelColor = '#000';
-                if (!isPaid) {
-                    if (p.label === 'просрочен') labelColor = '#d32f2f';
-                    else if (p.label === 'на этой неделе') labelColor = '#f57f17';
-                } else {
-                    labelColor = '#1b5e20';
+                // Определяем статус по факту оплаты
+                let statusType = 'unpaid'; // unpaid, partial, paid, overpaid
+                if (paidSum > 0) {
+                    if (paidSum >= planSum) {
+                        statusType = paidSum > planSum ? 'overpaid' : 'paid';
+                    } else {
+                        statusType = 'partial';
+                    }
                 }
                 
-                const rowStyle = isPaid ? 'background:#e8f5e9;' : '';
-                const datePrefix = isPaid ? '✓ ' : '';
-                const labelText = `${p.label}${isPaid && !bonusGiven ? ' — без бонуса (просрочка)' : ''}`;
-                const btnClass = isPaid ? 'btn-outline' : 'btn-primary';
-                const btnText = isPaid ? '↺ Отменить' : '✓ Оплачен';
+                // Если включён фильтр "Только неоплаченные", показываем только unpaid и partial
+                if (onlyUnpaid && statusType === 'paid') return '';
+                
+                let labelColor = '#000';
+                let rowStyle = '';
+                let datePrefix = '';
+                let statusText = '';
+                
+                if (statusType === 'unpaid') {
+                    if (p.label === 'просрочен') labelColor = '#d32f2f';
+                    else if (p.label === 'на этой неделе') labelColor = '#f57f17';
+                    rowStyle = '';
+                } else if (statusType === 'partial') {
+                    labelColor = '#ef6c00';
+                    rowStyle = 'background:#fff3e0;';
+                    const remainder = planSum - paidSum;
+                    statusText = `<span style="font-size:11px; color:#ef6c00;">получено ${paidSum.toLocaleString()} из ${planSum.toLocaleString()}, остаток ${remainder.toLocaleString()}</span>`;
+                } else if (statusType === 'paid') {
+                    labelColor = '#1b5e20';
+                    rowStyle = 'background:#e8f5e9;';
+                    datePrefix = '✓ ';
+                } else if (statusType === 'overpaid') {
+                    labelColor = '#1b5e20';
+                    rowStyle = 'background:#c8e6c9;';
+                    datePrefix = '✓ ';
+                    const overflow = paidSum - planSum;
+                    statusText = `<span style="font-size:11px; color:#2e7d32;">переплата ${overflow.toLocaleString()} ₽</span>`;
+                }
+                
+                const labelText = `${p.label}${statusType !== 'unpaid' ? ' — ' + (statusType === 'partial' ? 'частично' : statusType === 'overpaid' ? 'переплата' : 'оплачен') : ''}`;
+                
+                // Кнопка действия
+                let btnHtml = '';
+                if (statusType === 'unpaid') {
+                    btnHtml = `<button class="btn btn-primary" 
+                        onclick="openPaymentInput('${clientHash}', ${idx}, this)" 
+                        style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
+                        ✓ Оплачен
+                    </button>`;
+                } else if (statusType === 'partial') {
+                    btnHtml = `<button class="btn btn-warning" 
+                        onclick="openPaymentInput('${clientHash}', ${idx}, this, ${paidSum})" 
+                        style="padding:6px 12px; font-size:12px; min-width:auto; width:auto; background:#ff9800; border-color:#f57c00; color:#fff;">
+                        Доплатить
+                    </button>`;
+                } else {
+                    // paid или overpaid — кнопка отмены/редактирования
+                    btnHtml = `<button class="btn btn-outline" 
+                        onclick="openPaymentInput('${clientHash}', ${idx}, this, ${paidSum})" 
+                        style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
+                        ${statusType === 'overpaid' ? '↺ Изменить' : '↺ Отменить'}
+                    </button>`;
+                }
                 
                 return `
                 <tr style="${rowStyle}">
                     <td style="padding:8px;">${datePrefix}${p.date}</td>
-                    <td style="padding:8px;">${p.sum.toLocaleString()} ₽</td>
-                    <td style="padding:8px; color:${labelColor}; font-weight:500;">${labelText}</td>
+                    <td style="padding:8px;">${planSum.toLocaleString()} ₽</td>
+                    <td style="padding:8px; color:${labelColor}; font-weight:500;">
+                        ${labelText}<br>${statusText}
+                    </td>
                     <td style="padding:8px;">
-                        <button class="btn ${btnClass}" 
-                            onclick="togglePaymentFromCollections('${clientHash}', ${p.originalIndex}, this)" 
-                            style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
-                            ${btnText}
-                        </button>
+                        ${btnHtml}
                     </td>
                 </tr>
                 `;
@@ -1331,20 +1449,20 @@
                     today.setHours(0, 0, 0, 0);
                     
                     let csv = '\uFEFF'; // BOM for UTF-8
-                    csv += 'имя;хвост;статус;остаток;ближайший платеж\n';
+                    csv += 'имя;хвост;статус;остаток;ближайший платеж;paidSum\n';
                     
                     clients.forEach(client => {
                         const status = getClientStatus(client);
                         const tail = client.phoneTail || '???';
                         
-                        const paidSum = client.schedule.filter(p => p.paid).reduce((s, p) => s + p.sum, 0);
+                        const paidSum = client.schedule.reduce((s, p) => s + (p.paidSum || 0), 0);
                         const remainder = client.total - paidSum;
                         
-                        const unpaid = client.schedule.filter(p => !p.paid);
+                        const unpaid = client.schedule.filter(p => !p.paid || (p.paidSum || 0) < p.sum);
                         unpaid.sort((a, b) => new Date(a.date) - new Date(b.date));
                         const nextPayment = unpaid.length > 0 ? unpaid[0].date : '-';
                         
-                        csv += `${client.name};${tail};${status};${remainder};${nextPayment}\n`;
+                        csv += `${client.name};${tail};${status};${remainder};${nextPayment};${paidSum}\n`;
                     });
                     
                     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
@@ -1355,6 +1473,8 @@
                     a.click();
                     URL.revokeObjectURL(url);
                 });
+        });
+        });
         }
     </script>
 </body>
