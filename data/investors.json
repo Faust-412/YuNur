@@ -9,8 +9,26 @@
         "type": "deposit",
         "name": "Первоначальный взнос",
         "amount": 1000000
+      },
+      {
+        "date": "2026-09-09",
+        "type": "take_for_product",
+        "name": "айфон 15 про 256гб",
+        "amount": 80000
       }
     ],
-    "deals": []
+    "deals": [
+      {
+        "id": "deal_1788957063015",
+        "date": "2026-09-09",
+        "productName": "айфон 15 про 256гб",
+        "amount": 80000,
+        "depositPercent": 40,
+        "term": 10,
+        "markupRuble": 31200,
+        "monthlyIncome": 3120,
+        "active": true
+      }
+    ]
   }
 ]
