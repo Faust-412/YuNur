@@ -26,6 +26,7 @@
         .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
         .tab { padding: 12px 24px; background: transparent; border: none; font-size: 16px; font-weight: 500; cursor: pointer; color: #666; border-radius: 8px 8px 0 0; transition: all 0.3s; font-family: 'DM Sans', sans-serif; }
         .tab.active { background: #1b5e20; color: white; }
+        .tab.investors-tab { background: #c9a227; color: white; }
         .tab:hover:not(.active) { background: #e8f5e9; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -77,7 +78,7 @@
             <button class="tab active" onclick="switchTab('newClient')">Новый клиент</button>
             <button class="tab" onclick="switchTab('payments')">Платежи</button>
             <button class="tab" onclick="switchTab('collections')">Сборы</button>
-            <button class="tab" onclick="switchTab('investors')">Инвесторы</button>
+            <button class="tab" onclick="switchTab('investors')" id="investorsTabBtn">Инвесторы</button>
         </div>
 
         <!-- New Client Tab -->
@@ -263,8 +264,13 @@
         <div id="investorsTab" class="tab-content">
             <h2>💰 Инвесторы</h2>
             
-            <!-- Форма добавления -->
-            <div class="result-box" style="margin-top: 20px;">
+            <!-- Кнопка экспорта CSV -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <button class="btn btn-outline" onclick="exportInvestorsCSV()" style="min-width:auto; width:auto;">Экспорт CSV</button>
+            </div>
+            
+            <!-- Форма добавления (только для списка) -->
+            <div class="result-box" style="margin-top: 20px;" id="investorAddForm">
                 <h3>Добавить инвестора</h3>
                 <div class="form-row">
                     <div class="form-group">
@@ -285,17 +291,126 @@
                 Инвесторов: 0 · Всего: 0 ₽
             </div>
 
-            <!-- Таблица инвесторов -->
+            <!-- Таблица инвесторов (список) -->
             <table class="schedule-table" id="investorsTable">
                 <thead>
                     <tr>
                         <th>Имя</th>
-                        <th>Сумма</th>
-                        <th>Дата</th>
+                        <th>На счёте</th>
+                        <th>В обороте</th>
+                        <th>Начислено дохода</th>
                     </tr>
                 </thead>
                 <tbody id="investorsBody"></tbody>
             </table>
+            
+            <!-- Карточка инвестора (скрыта по умолчанию) -->
+            <div id="investorCard" class="hidden" style="margin-top: 20px;">
+                <button class="btn btn-outline" onclick="showInvestorList()" style="margin-bottom: 20px; min-width:auto; width:auto;">← Назад к списку</button>
+                
+                <h3 id="cardInvestorName">Имя инвестора</h3>
+                
+                <!-- Три цифры крупно -->
+                <div class="form-row" style="margin: 20px 0;">
+                    <div class="result-box" style="background: #e3f2fd; text-align: center;">
+                        <h4 style="color: #1565c0;">На счёте</h4>
+                        <p id="cardOnAccount" style="font-size: 24px; font-weight: 700; color: #1565c0;">0 ₽</p>
+                    </div>
+                    <div class="result-box" style="background: #fff3e0; text-align: center;">
+                        <h4 style="color: #e65100;">В обороте</h4>
+                        <p id="cardInTurnover" style="font-size: 24px; font-weight: 700; color: #e65100;">0 ₽</p>
+                    </div>
+                    <div class="result-box" style="background: #e8f5e9; text-align: center;">
+                        <h4 style="color: #2e7d32;">Начислено дохода</h4>
+                        <p id="cardAccruedIncome" style="font-size: 24px; font-weight: 700; color: #2e7d32;">0 ₽</p>
+                    </div>
+                </div>
+                
+                <!-- Кнопки действий -->
+                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="toggleTopUpForm()" style="min-width:auto;">+ Пополнить</button>
+                    <button class="btn btn-secondary" onclick="toggleTakeForProductForm()" style="min-width:auto;">Взять на товар</button>
+                </div>
+                
+                <!-- Форма пополнения -->
+                <div id="topUpForm" class="result-box hidden" style="background: #f5f5f5; margin-bottom: 20px;">
+                    <h4>Пополнение счёта</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Сумма (₽)</label>
+                            <input type="number" id="topUpAmount" placeholder="10000">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doTopUp()">Пополнить</button>
+                </div>
+                
+                <!-- Форма взятия на товар -->
+                <div id="takeForProductForm" class="result-box hidden" style="background: #f5f5f5; margin-bottom: 20px;">
+                    <h4>Взять на товар</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Название товара</label>
+                            <input type="text" id="takeProductName" placeholder="iPhone 17 Pro">
+                        </div>
+                        <div class="form-group">
+                            <label>Сумма (₽)</label>
+                            <input type="number" id="takeProductAmount" placeholder="100000" oninput="calculateDealPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Режим сделки</label>
+                            <select id="takeDealMode" onchange="updateDealOptions(); calculateDealPreview()">
+                                <option value="base">База</option>
+                                <option value="mini">Мини</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="baseDepositGroup">
+                            <label>Взнос (%)</label>
+                            <select id="takeBaseDeposit" onchange="calculateDealPreview()">
+                                <option value="">Выбрать...</option>
+                                <option value="25">25%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="miniDepositGroup" style="display:none;">
+                            <label>Взнос (%)</label>
+                            <select id="takeMiniDeposit" onchange="calculateDealPreview()">
+                                <option value="">Выбрать...</option>
+                                <option value="25">25%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="takeTermGroup">
+                            <label>Срок (мес)</label>
+                            <select id="takeTerm" onchange="calculateDealPreview()">
+                                <option value="">Выбрать...</option>
+                                <option value="3">3</option>
+                                <option value="6">6</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="dealPreview" style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <p><strong>Ежемесячный доход инвестора:</strong> <span id="dealMonthlyIncome">0</span> ₽</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="doTakeForProduct()">Взять на товар</button>
+                </div>
+                
+                <!-- Книжка операций -->
+                <h4 style="margin-top: 30px;">📖 Книжка учёта операций</h4>
+                <table class="schedule-table" id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Тип</th>
+                            <th>Название</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -450,7 +565,7 @@
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active', 'investors-tab'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
 
             if (tabName === 'newClient') {
@@ -464,7 +579,8 @@
                 document.getElementById('collectionsTab').classList.add('active');
                 renderCollections();
             } else if (tabName === 'investors') {
-                document.querySelectorAll('.tab')[3].classList.add('active');
+                const investorsBtn = document.getElementById('investorsTabBtn');
+                investorsBtn.classList.add('active', 'investors-tab');
                 document.getElementById('investorsTab').classList.add('active');
                 loadInvestors();
             }
@@ -1772,6 +1888,9 @@
         }
 
         // === Инвесторы ===
+        let currentInvestors = [];
+        let selectedInvestorIndex = -1;
+        
         async function loadInvestors() {
             try {
                 const response = await fetch('data/investors.json?' + Date.now());
@@ -1779,33 +1898,351 @@
                     renderInvestors([]);
                     return;
                 }
-                const investors = await response.json();
-                renderInvestors(investors);
+                currentInvestors = await response.json();
+                // Автончисление дохода при открытии вкладки
+                await processAutoAccrual(currentInvestors);
+                renderInvestors(currentInvestors);
             } catch (e) {
                 renderInvestors([]);
             }
         }
 
+        // Автончисление дохода по сделкам
+        async function processAutoAccrual(investors) {
+            let changed = false;
+            const today = new Date();
+            
+            for (let inv of investors) {
+                if (!inv.deals) inv.deals = [];
+                if (!inv.transactions) inv.transactions = [];
+                
+                for (let deal of inv.deals) {
+                    if (!deal.active) continue;
+                    
+                    const dealStartDate = new Date(deal.date);
+                    const termMonths = parseInt(deal.term);
+                    
+                    // Проверяем каждый месяц срока
+                    for (let monthNum = 1; monthNum <= termMonths; monthNum++) {
+                        const accrualDate = new Date(dealStartDate);
+                        accrualDate.setMonth(accrualDate.getMonth() + monthNum);
+                        
+                        // Если дата начисления наступила или сегодня
+                        if (accrualDate <= today) {
+                            const accrualKey = `accrual_${deal.id}_month_${monthNum}`;
+                            
+                            // Проверяем, не было ли уже начисления для этого месяца
+                            const alreadyAccrued = inv.transactions.some(t => t.key === accrualKey);
+                            
+                            if (!alreadyAccrued) {
+                                // Создаём запись о начислении
+                                inv.transactions.push({
+                                    date: accrualDate.toISOString().split('T')[0],
+                                    type: 'income',
+                                    name: `доход по сделке "${deal.productName}", месяц ${monthNum}`,
+                                    amount: deal.monthlyIncome,
+                                    key: accrualKey
+                                });
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Если были изменения - сохраняем
+            if (changed) {
+                const jsonStr = JSON.stringify(investors, null, 2);
+                await commitInvestorsToGithub(jsonStr, 'investor: auto accrual income');
+            }
+        }
+
+        function calculateInvestorMetrics(inv) {
+            let onAccount = 0;
+            let inTurnover = 0;
+            let accruedIncome = 0;
+            
+            if (!inv.transactions) inv.transactions = [];
+            
+            for (const t of inv.transactions) {
+                if (t.type === 'deposit' || t.type === 'topup') {
+                    onAccount += t.amount;
+                } else if (t.type === 'take_for_product') {
+                    onAccount -= t.amount;
+                    inTurnover += t.amount;
+                } else if (t.type === 'income') {
+                    onAccount += t.amount;
+                    accruedIncome += t.amount;
+                }
+            }
+            
+            return { onAccount, inTurnover, accruedIncome };
+        }
+
         function renderInvestors(investors) {
             const tbody = document.getElementById('investorsBody');
             const summary = document.getElementById('investorsSummary');
+            const card = document.getElementById('investorCard');
+            const addForm = document.getElementById('investorAddForm');
+            
+            // Если открыта карточка - не перерисовываем список
+            if (!card.classList.contains('hidden')) {
+                return;
+            }
             
             // Сортируем: новые сверху (по дате убывание)
             investors.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             tbody.innerHTML = '';
-            investors.forEach(inv => {
+            investors.forEach((inv, idx) => {
+                const metrics = calculateInvestorMetrics(inv);
                 const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.onclick = () => showInvestorCard(idx);
                 row.innerHTML = `
                     <td>${inv.name}</td>
-                    <td>${inv.sum.toLocaleString('ru-RU')}</td>
-                    <td>${inv.date}</td>
+                    <td>${metrics.onAccount.toLocaleString('ru-RU')}</td>
+                    <td>${metrics.inTurnover.toLocaleString('ru-RU')}</td>
+                    <td>${metrics.accruedIncome.toLocaleString('ru-RU')}</td>
                 `;
                 tbody.appendChild(row);
             });
             
-            const total = investors.reduce((sum, inv) => sum + inv.sum, 0);
-            summary.textContent = `Инвесторов: ${investors.length} · Всего: ${total.toLocaleString('ru-RU')} ₽`;
+            // Итог по всем инвесторам
+            let totalOnAccount = 0, totalInTurnover = 0, totalAccrued = 0;
+            investors.forEach(inv => {
+                const m = calculateInvestorMetrics(inv);
+                totalOnAccount += m.onAccount;
+                totalInTurnover += m.inTurnover;
+                totalAccrued += m.accrued;
+            });
+            
+            summary.textContent = `Инвесторов: ${investors.length} · На счетах: ${totalOnAccount.toLocaleString('ru-RU')} ₽ · В обороте: ${totalInTurnover.toLocaleString('ru-RU')} ₽ · Начислено дохода: ${totalAccrued.toLocaleString('ru-RU')} ₽`;
+        }
+
+        function showInvestorCard(index) {
+            selectedInvestorIndex = index;
+            const inv = currentInvestors[index];
+            
+            document.getElementById('investorCard').classList.remove('hidden');
+            document.getElementById('investorAddForm').classList.add('hidden');
+            document.getElementById('investorsTable').classList.add('hidden');
+            document.getElementById('investorsSummary').classList.add('hidden');
+            
+            document.getElementById('cardInvestorName').textContent = inv.name;
+            
+            updateInvestorCardDisplay(inv);
+        }
+        
+        function updateInvestorCardDisplay(inv) {
+            const metrics = calculateInvestorMetrics(inv);
+            document.getElementById('cardOnAccount').textContent = metrics.onAccount.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('cardInTurnover').textContent = metrics.inTurnover.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('cardAccruedIncome').textContent = metrics.accruedIncome.toLocaleString('ru-RU') + ' ₽';
+            
+            // Книжка операций
+            const tbody = document.getElementById('transactionsBody');
+            tbody.innerHTML = '';
+            
+            if (inv.transactions && inv.transactions.length > 0) {
+                // Сортируем по дате (новые сверху)
+                const sortedTx = [...inv.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                sortedTx.forEach(t => {
+                    const row = document.createElement('tr');
+                    let amountClass = '';
+                    let amountPrefix = '';
+                    if (t.type === 'deposit' || t.type === 'topup' || t.type === 'income') {
+                        amountClass = 'style="color: #1b5e20;"';
+                        amountPrefix = '+';
+                    } else if (t.type === 'take_for_product') {
+                        amountClass = 'style="color: #d32f2f;"';
+                        amountPrefix = '−';
+                    }
+                    row.innerHTML = `
+                        <td>${t.date}</td>
+                        <td ${amountClass}>${t.type === 'deposit' ? 'взнос' : t.type === 'topup' ? 'пополнение' : t.type === 'take_for_product' ? 'взято на товар' : 'начислен доход'}</td>
+                        <td>${t.name}</td>
+                        <td ${amountClass}>${amountPrefix}${t.amount.toLocaleString('ru-RU')}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        function showInvestorList() {
+            document.getElementById('investorCard').classList.add('hidden');
+            document.getElementById('investorAddForm').classList.remove('hidden');
+            document.getElementById('investorsTable').classList.remove('hidden');
+            document.getElementById('investorsSummary').classList.remove('hidden');
+            document.getElementById('topUpForm').classList.add('hidden');
+            document.getElementById('takeForProductForm').classList.add('hidden');
+            selectedInvestorIndex = -1;
+            renderInvestors(currentInvestors);
+        }
+
+        function toggleTopUpForm() {
+            const form = document.getElementById('topUpForm');
+            form.classList.toggle('hidden');
+            document.getElementById('takeForProductForm').classList.add('hidden');
+        }
+
+        function toggleTakeForProductForm() {
+            const form = document.getElementById('takeForProductForm');
+            form.classList.toggle('hidden');
+            document.getElementById('topUpForm').classList.add('hidden');
+        }
+
+        async function doTopUp() {
+            const amountInput = document.getElementById('topUpAmount');
+            const amount = parseInt(amountInput.value);
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму больше 0');
+                return;
+            }
+            
+            const inv = currentInvestors[selectedInvestorIndex];
+            const today = new Date().toISOString().split('T')[0];
+            
+            inv.transactions.push({
+                date: today,
+                type: 'topup',
+                name: 'Пополнение счёта',
+                amount: amount
+            });
+            
+            // Сохраняем
+            const jsonStr = JSON.stringify(currentInvestors, null, 2);
+            const saved = await commitInvestorsToGithub(jsonStr, `investor: top up ${inv.name}`);
+            
+            if (saved) {
+                amountInput.value = '';
+                document.getElementById('topUpForm').classList.add('hidden');
+                updateInvestorCardDisplay(inv);
+            }
+        }
+
+        function updateDealOptions() {
+            const mode = document.getElementById('takeDealMode').value;
+            const baseDepositGroup = document.getElementById('baseDepositGroup');
+            const miniDepositGroup = document.getElementById('miniDepositGroup');
+            
+            if (mode === 'base') {
+                baseDepositGroup.style.display = 'block';
+                miniDepositGroup.style.display = 'none';
+            } else {
+                baseDepositGroup.style.display = 'none';
+                miniDepositGroup.style.display = 'block';
+            }
+            calculateDealPreview();
+        }
+
+        function calculateDealPreview() {
+            const amount = parseInt(document.getElementById('takeProductAmount').value) || 0;
+            const mode = document.getElementById('takeDealMode').value;
+            const termSelect = document.getElementById('takeTerm');
+            const depositSelect = mode === 'base' ? document.getElementById('takeBaseDeposit') : document.getElementById('takeMiniDeposit');
+            
+            const depositPercent = parseInt(depositSelect.value) || 0;
+            const term = parseInt(termSelect.value) || 0;
+            
+            if (!amount || !depositPercent || !term) {
+                document.getElementById('dealMonthlyIncome').textContent = '0';
+                return;
+            }
+            
+            // Расчёт наценки как в калькуляторе сайта
+            let baseMarkupPercent;
+            if (mode === 'base') {
+                const BASE_MARKUP = { 25: 39, 40: 29, 50: 24 };
+                baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+            } else {
+                // Мини: упрощённая формула
+                baseMarkupPercent = 45;
+            }
+            
+            const monthlyAddition = 1;
+            const markupPercent = baseMarkupPercent + (term * monthlyAddition);
+            const markupRuble = Math.round(amount * markupPercent / 100);
+            
+            // Доход инвестора = наценка / срок в месяцах
+            const monthlyIncome = Math.round(markupRuble / term);
+            
+            document.getElementById('dealMonthlyIncome').textContent = monthlyIncome.toLocaleString('ru-RU');
+        }
+
+        async function doTakeForProduct() {
+            const productName = document.getElementById('takeProductName').value.trim();
+            const amount = parseInt(document.getElementById('takeProductAmount').value);
+            const mode = document.getElementById('takeDealMode').value;
+            const depositPercent = parseInt(document.getElementById('takeBaseDeposit').value) || parseInt(document.getElementById('takeMiniDeposit').value);
+            const term = parseInt(document.getElementById('takeTerm').value);
+            
+            if (!productName || !amount || !depositPercent || !term) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            const inv = currentInvestors[selectedInvestorIndex];
+            const metrics = calculateInvestorMetrics(inv);
+            
+            // Проверка достаточности средств на счёте
+            if (metrics.onAccount < amount) {
+                alert(`Недостаточно средств на счёте. Доступно: ${metrics.onAccount.toLocaleString('ru-RU')} ₽`);
+                return;
+            }
+            
+            // Расчёт наценки и ежемесячного дохода
+            let baseMarkupPercent;
+            if (mode === 'base') {
+                const BASE_MARKUP = { 25: 39, 40: 29, 50: 24 };
+                baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+            } else {
+                baseMarkupPercent = 45;
+            }
+            const monthlyAddition = 1;
+            const markupPercent = baseMarkupPercent + (term * monthlyAddition);
+            const markupRuble = Math.round(amount * markupPercent / 100);
+            const monthlyIncome = Math.round(markupRuble / term);
+            
+            const today = new Date().toISOString().split('T')[0];
+            const dealId = 'deal_' + Date.now();
+            
+            // Добавляем транзакцию взятия на товар
+            inv.transactions.push({
+                date: today,
+                type: 'take_for_product',
+                name: productName,
+                amount: amount
+            });
+            
+            // Добавляем сделку
+            inv.deals.push({
+                id: dealId,
+                date: today,
+                productName: productName,
+                amount: amount,
+                depositPercent: depositPercent,
+                term: term,
+                markupRuble: markupRuble,
+                monthlyIncome: monthlyIncome,
+                active: true
+            });
+            
+            // Сохраняем
+            const jsonStr = JSON.stringify(currentInvestors, null, 2);
+            const saved = await commitInvestorsToGithub(jsonStr, `investor: take for product ${productName}`);
+            
+            if (saved) {
+                document.getElementById('takeProductName').value = '';
+                document.getElementById('takeProductAmount').value = '';
+                document.getElementById('takeBaseDeposit').value = '';
+                document.getElementById('takeMiniDeposit').value = '';
+                document.getElementById('takeTerm').value = '';
+                document.getElementById('takeForProductForm').classList.add('hidden');
+                updateInvestorCardDisplay(inv);
+            }
         }
 
         async function addInvestor() {
@@ -1822,7 +2259,18 @@
             }
             
             const today = new Date().toISOString().split('T')[0];
-            const newInvestor = { name, sum, date: today };
+            const newInvestor = { 
+                name, 
+                sum, 
+                date: today,
+                transactions: [{
+                    date: today,
+                    type: 'deposit',
+                    name: 'Первоначальный взнос',
+                    amount: sum
+                }],
+                deals: []
+            };
             
             // Загружаем текущих инвесторов
             let investors = [];
@@ -1853,7 +2301,25 @@
             }
             
             // Обновляем таблицу
+            currentInvestors = investors;
             renderInvestors(investors);
+        }
+
+        function exportInvestorsCSV() {
+            let csv = '\uFEFF'; // BOM для UTF-8
+            csv += 'Имя;На счёте;В обороте;Начислено дохода;Число сделок\n';
+            
+            currentInvestors.forEach(inv => {
+                const metrics = calculateInvestorMetrics(inv);
+                const dealsCount = inv.deals ? inv.deals.filter(d => d.active).length : 0;
+                csv += `${inv.name};${metrics.onAccount};${metrics.inTurnover};${metrics.accruedIncome};${dealsCount}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'investors.csv';
+            link.click();
         }
     </script>
 </body>
