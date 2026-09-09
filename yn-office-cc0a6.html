@@ -281,6 +281,10 @@
                         <label>Сумма (₽)</label>
                         <input type="number" id="invSum" placeholder="100000">
                     </div>
+                    <div class="form-group">
+                        <label>Срок (мес)</label>
+                        <input type="number" id="invTerm" placeholder="24" value="24">
+                    </div>
                 </div>
                 <button class="btn btn-primary" onclick="addInvestor()">Добавить инвестора</button>
                 <p id="invSavedMsg" style="color: #1b5e20; font-weight: 500; margin-top: 10px; display: none;">✅ Сохранено</p>
@@ -299,6 +303,7 @@
                         <th>На счёте</th>
                         <th>В обороте</th>
                         <th>Начислено дохода</th>
+                        <th>Дата окончания</th>
                     </tr>
                 </thead>
                 <tbody id="investorsBody"></tbody>
@@ -323,6 +328,14 @@
                     <div class="result-box" style="background: #e8f5e9; text-align: center;">
                         <h4 style="color: #2e7d32;">Начислено дохода</h4>
                         <p id="cardAccruedIncome" style="font-size: 24px; font-weight: 700; color: #2e7d32;">0 ₽</p>
+                    </div>
+                    <div class="result-box" style="background: #f3e5f5; text-align: center;">
+                        <h4 style="color: #7b1fa2;">Дата окончания</h4>
+                        <p id="cardEndDate" style="font-size: 24px; font-weight: 700; color: #7b1fa2;">-</p>
+                    </div>
+                    <div class="result-box" style="background: #e0f7fa; text-align: center;">
+                        <h4 style="color: #00838f;">Общий оборот</h4>
+                        <p id="cardTotalTurnover" style="font-size: 24px; font-weight: 700; color: #00838f;">0 ₽</p>
                     </div>
                 </div>
                 
@@ -1961,6 +1974,7 @@
             let onAccount = 0;
             let inTurnover = 0;
             let accruedIncome = 0;
+            let totalTurnover = 0;
             
             if (!inv.transactions) inv.transactions = [];
             
@@ -1970,13 +1984,14 @@
                 } else if (t.type === 'take_for_product') {
                     onAccount -= t.amount;
                     inTurnover += t.amount;
+                    totalTurnover += t.amount;
                 } else if (t.type === 'income') {
                     onAccount += t.amount;
                     accruedIncome += t.amount;
                 }
             }
             
-            return { onAccount, inTurnover, accruedIncome };
+            return { onAccount, inTurnover, accruedIncome, totalTurnover };
         }
 
         function renderInvestors(investors) {
@@ -1996,6 +2011,13 @@
             tbody.innerHTML = '';
             investors.forEach((inv, idx) => {
                 const metrics = calculateInvestorMetrics(inv);
+                // Расчёт даты окончания
+                const startDate = new Date(inv.date);
+                const termMonths = parseInt(inv.term) || 24;
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + termMonths);
+                const endDateStr = endDate.toLocaleDateString('ru-RU');
+                
                 const row = document.createElement('tr');
                 row.style.cursor = 'pointer';
                 row.onclick = () => showInvestorCard(idx);
@@ -2004,6 +2026,7 @@
                     <td>${metrics.onAccount.toLocaleString('ru-RU')}</td>
                     <td>${metrics.inTurnover.toLocaleString('ru-RU')}</td>
                     <td>${metrics.accruedIncome.toLocaleString('ru-RU')}</td>
+                    <td>${endDateStr}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -2039,6 +2062,16 @@
             document.getElementById('cardOnAccount').textContent = metrics.onAccount.toLocaleString('ru-RU') + ' ₽';
             document.getElementById('cardInTurnover').textContent = metrics.inTurnover.toLocaleString('ru-RU') + ' ₽';
             document.getElementById('cardAccruedIncome').textContent = metrics.accruedIncome.toLocaleString('ru-RU') + ' ₽';
+            
+            // Дата окончания
+            const startDate = new Date(inv.date);
+            const termMonths = parseInt(inv.term) || 24;
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + termMonths);
+            document.getElementById('cardEndDate').textContent = endDate.toLocaleDateString('ru-RU');
+            
+            // Общий оборот
+            document.getElementById('cardTotalTurnover').textContent = metrics.totalTurnover.toLocaleString('ru-RU') + ' ₽';
             
             // Книжка операций
             const tbody = document.getElementById('transactionsBody');
@@ -2190,8 +2223,8 @@
                 markupRuble = Math.round(financing * totalMarkupPercent / 100);
             }
             
-            // Доход инвестора = наценка / срок в месяцах
-            const monthlyIncome = term > 0 ? Math.round(markupRuble / term) : 0;
+            // Доход инвестора = (наценка / срок в месяцах) × 0.5 (деление 50/50)
+            const monthlyIncome = term > 0 ? Math.round((markupRuble / term) * 0.5) : 0;
             
             document.getElementById('dealMonthlyIncome').textContent = monthlyIncome.toLocaleString('ru-RU');
         }
@@ -2228,13 +2261,15 @@
                 const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
                 const totalMarkupPercent = baseMarkupPercent + (term * 1);
                 markupRuble = Math.round(financing * totalMarkupPercent / 100);
-                monthlyIncome = Math.round(markupRuble / term);
+                // Доход инвестора = 50% от наценки / срок
+                monthlyIncome = Math.round((markupRuble / term) * 0.5);
             } else {
-                // Мини: 8% в месяц от финансирования
+                // Мини: 8% в месяц от финансирования, инвестору 50% (4% в месяц)
                 const MINI_MONTHLY_RATE = 0.08;
                 const totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
                 markupRuble = Math.round(financing * totalMarkupPercent / 100);
-                monthlyIncome = term > 0 ? Math.round(markupRuble / term) : 0;
+                // Доход инвестора = 50% от общей наценки / срок = 4% в месяц
+                monthlyIncome = term > 0 ? Math.round((markupRuble / term) * 0.5) : 0;
             }
             
             const today = new Date().toISOString().split('T')[0];
@@ -2279,10 +2314,12 @@
         async function addInvestor() {
             const nameInput = document.getElementById('invName');
             const sumInput = document.getElementById('invSum');
+            const termInput = document.getElementById('invTerm');
             const savedMsg = document.getElementById('invSavedMsg');
             
             const name = nameInput.value.trim();
             const sum = parseInt(sumInput.value);
+            const term = parseInt(termInput.value) || 24;
             
             if (!name || !sum || sum <= 0) {
                 alert('Введите имя и сумму больше 0');
@@ -2294,6 +2331,7 @@
                 name, 
                 sum, 
                 date: today,
+                term: term,
                 transactions: [{
                     date: today,
                     type: 'deposit',
@@ -2324,6 +2362,7 @@
             // Очищаем форму
             nameInput.value = '';
             sumInput.value = '';
+            termInput.value = '24';
             
             // Показываем сообщение о сохранении
             if (saved) {
