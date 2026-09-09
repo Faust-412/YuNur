@@ -385,7 +385,7 @@
                                 <option value="50">50%</option>
                             </select>
                         </div>
-                        <div class="form-group" id="miniDepositGroup" style="display:none;">
+                        <div class="form-group" id="investorMiniDepositGroup" style="display:none;">
                             <label>Взнос (%)</label>
                             <select id="takeMiniDeposit" onchange="calculateDealPreview()">
                                 <option value="">Выбрать...</option>
@@ -2159,7 +2159,7 @@
         function updateDealOptions() {
             const mode = document.getElementById('takeDealMode').value;
             const baseDepositGroup = document.getElementById('baseDepositGroup');
-            const miniDepositGroup = document.getElementById('miniDepositGroup');
+            const miniDepositGroup = document.getElementById('investorMiniDepositGroup');
             const takeTermGroup = document.getElementById('takeTermGroup');
             
             if (mode === 'base') {
