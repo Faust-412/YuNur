@@ -2127,13 +2127,33 @@
             const mode = document.getElementById('takeDealMode').value;
             const baseDepositGroup = document.getElementById('baseDepositGroup');
             const miniDepositGroup = document.getElementById('miniDepositGroup');
+            const takeTermGroup = document.getElementById('takeTermGroup');
             
             if (mode === 'base') {
                 baseDepositGroup.style.display = 'block';
                 miniDepositGroup.style.display = 'none';
+                // База: сроки 3, 6, 10
+                takeTermGroup.innerHTML = `<label>Срок (мес)</label>
+                    <select id="takeTerm" onchange="calculateDealPreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="3">3</option>
+                        <option value="6">6</option>
+                        <option value="10">10</option>
+                    </select>`;
             } else {
                 baseDepositGroup.style.display = 'none';
                 miniDepositGroup.style.display = 'block';
+                // Мини: сроки 1-6
+                takeTermGroup.innerHTML = `<label>Срок (мес)</label>
+                    <select id="takeTerm" onchange="calculateDealPreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>`;
             }
             calculateDealPreview();
         }
@@ -2152,22 +2172,26 @@
                 return;
             }
             
-            // Расчёт наценки как в калькуляторе сайта
-            let baseMarkupPercent;
+            // Расчёт финансирования (сумма минус взнос)
+            const depositRuble = Math.round(amount * depositPercent / 100);
+            const financing = amount - depositRuble;
+            
+            let markupRuble;
             if (mode === 'base') {
+                // База: базовая наценка + срок × 1%
                 const BASE_MARKUP = { 25: 39, 40: 29, 50: 24 };
-                baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const totalMarkupPercent = baseMarkupPercent + (term * 1);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
             } else {
-                // Мини: упрощённая формула
-                baseMarkupPercent = 45;
+                // Мини: 8% в месяц от финансирования
+                const MINI_MONTHLY_RATE = 0.08;
+                const totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
             }
             
-            const monthlyAddition = 1;
-            const markupPercent = baseMarkupPercent + (term * monthlyAddition);
-            const markupRuble = Math.round(amount * markupPercent / 100);
-            
             // Доход инвестора = наценка / срок в месяцах
-            const monthlyIncome = Math.round(markupRuble / term);
+            const monthlyIncome = term > 0 ? Math.round(markupRuble / term) : 0;
             
             document.getElementById('dealMonthlyIncome').textContent = monthlyIncome.toLocaleString('ru-RU');
         }
@@ -2193,18 +2217,25 @@
                 return;
             }
             
-            // Расчёт наценки и ежемесячного дохода
-            let baseMarkupPercent;
+            // Расчёт финансирования и наценки как в калькуляторе сайта
+            const depositRuble = Math.round(amount * depositPercent / 100);
+            const financing = amount - depositRuble;
+            
+            let markupRuble, monthlyIncome;
             if (mode === 'base') {
+                // База: базовая наценка + срок × 1% от финансирования
                 const BASE_MARKUP = { 25: 39, 40: 29, 50: 24 };
-                baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const totalMarkupPercent = baseMarkupPercent + (term * 1);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
+                monthlyIncome = Math.round(markupRuble / term);
             } else {
-                baseMarkupPercent = 45;
+                // Мини: 8% в месяц от финансирования
+                const MINI_MONTHLY_RATE = 0.08;
+                const totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
+                monthlyIncome = term > 0 ? Math.round(markupRuble / term) : 0;
             }
-            const monthlyAddition = 1;
-            const markupPercent = baseMarkupPercent + (term * monthlyAddition);
-            const markupRuble = Math.round(amount * markupPercent / 100);
-            const monthlyIncome = Math.round(markupRuble / term);
             
             const today = new Date().toISOString().split('T')[0];
             const dealId = 'deal_' + Date.now();
