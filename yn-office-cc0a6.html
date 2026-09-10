@@ -278,6 +278,10 @@
                         <input type="text" id="invName" placeholder="Имя инвестора">
                     </div>
                     <div class="form-group">
+                        <label>Телефон (последние 3 цифры)</label>
+                        <input type="text" id="invPhoneTail" placeholder="123" maxlength="3" pattern="[0-9]{3}">
+                    </div>
+                    <div class="form-group">
                         <label>Сумма (₽)</label>
                         <input type="number" id="invSum" placeholder="100000">
                     </div>
@@ -1911,7 +1915,35 @@
                     renderInvestors([]);
                     return;
                 }
-                currentInvestors = await response.json();
+                let investors = await response.json();
+                
+                // Генерация invCode и phoneTail для существующих записей без них
+                let changed = false;
+                const hexChars = '0123456789ABCDEF';
+                for (let inv of investors) {
+                    if (!inv.invCode) {
+                        let code;
+                        do {
+                            code = 'INV-';
+                            for (let i = 0; i < 4; i++) {
+                                code += hexChars[Math.floor(Math.random() * 16)];
+                            }
+                        } while (investors.some(i => i.invCode === code));
+                        inv.invCode = code;
+                        changed = true;
+                    }
+                    if (!inv.phoneTail) {
+                        inv.phoneTail = '000';
+                        changed = true;
+                    }
+                }
+                
+                if (changed) {
+                    const jsonStr = JSON.stringify(investors, null, 2);
+                    await commitInvestorsToGithub(jsonStr, 'investor: add invCode and phoneTail to existing records');
+                }
+                
+                currentInvestors = investors;
                 // Автончисление дохода при открытии вкладки
                 await processAutoAccrual(currentInvestors);
                 renderInvestors(currentInvestors);
@@ -2021,8 +2053,9 @@
                 const row = document.createElement('tr');
                 row.style.cursor = 'pointer';
                 row.onclick = () => showInvestorCard(idx);
+                const invCodeDisplay = inv.invCode || '---';
                 row.innerHTML = `
-                    <td>${inv.name}</td>
+                    <td><strong>${invCodeDisplay}</strong><br>${inv.name}</td>
                     <td>${metrics.onAccount.toLocaleString('ru-RU')}</td>
                     <td>${metrics.inTurnover.toLocaleString('ru-RU')}</td>
                     <td>${metrics.accruedIncome.toLocaleString('ru-RU')}</td>
@@ -2052,7 +2085,8 @@
             document.getElementById('investorsTable').classList.add('hidden');
             document.getElementById('investorsSummary').classList.add('hidden');
             
-            document.getElementById('cardInvestorName').textContent = inv.name;
+            const invCodeDisplay = inv.invCode || '---';
+            document.getElementById('cardInvestorName').innerHTML = `${inv.name} <span style="color: #c9a227; font-size: 1.2em;">${invCodeDisplay}</span>`;
             
             updateInvestorCardDisplay(inv);
         }
@@ -2313,11 +2347,13 @@
 
         async function addInvestor() {
             const nameInput = document.getElementById('invName');
+            const phoneTailInput = document.getElementById('invPhoneTail');
             const sumInput = document.getElementById('invSum');
             const termInput = document.getElementById('invTerm');
             const savedMsg = document.getElementById('invSavedMsg');
             
             const name = nameInput.value.trim();
+            const phoneTail = (phoneTailInput.value || '').trim().slice(-3);
             const sum = parseInt(sumInput.value);
             const term = parseInt(termInput.value) || 24;
             
@@ -2326,9 +2362,32 @@
                 return;
             }
             
+            // Генерация уникального invCode
+            let invCode;
+            let investorsCheck = [];
+            try {
+                const response = await fetch('data/investors.json?' + Date.now());
+                if (response.ok) {
+                    investorsCheck = await response.json();
+                }
+            } catch (e) {
+                investorsCheck = [];
+            }
+            
+            const hexChars = '0123456789ABCDEF';
+            do {
+                let code = 'INV-';
+                for (let i = 0; i < 4; i++) {
+                    code += hexChars[Math.floor(Math.random() * 16)];
+                }
+                invCode = code;
+            } while (investorsCheck.some(inv => inv.invCode === invCode));
+            
             const today = new Date().toISOString().split('T')[0];
             const newInvestor = { 
                 name, 
+                phoneTail: phoneTail || '000',
+                invCode,
                 sum, 
                 date: today,
                 term: term,
@@ -2342,25 +2401,18 @@
             };
             
             // Загружаем текущих инвесторов
-            let investors = [];
-            try {
-                const response = await fetch('data/investors.json?' + Date.now());
-                if (response.ok) {
-                    investors = await response.json();
-                }
-            } catch (e) {
-                investors = [];
-            }
+            let investors = investorsCheck;
             
             // Добавляем нового инвестора
             investors.push(newInvestor);
             
             // Сохраняем в GitHub
             const jsonStr = JSON.stringify(investors, null, 2);
-            const saved = await commitInvestorsToGithub(jsonStr, 'investor: add ' + name);
+            const saved = await commitInvestorsToGithub(jsonStr, 'investor: add ' + name + ' (' + invCode + ')');
             
             // Очищаем форму
             nameInput.value = '';
+            phoneTailInput.value = '';
             sumInput.value = '';
             termInput.value = '24';
             
