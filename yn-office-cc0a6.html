@@ -55,6 +55,15 @@
         .hidden { display: none !important; }
         .remember-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #666; font-size: 14px; }
         .remember-row input { width: auto !important; padding: 0 !important; margin: 0 !important; }
+        
+        /* Tier badges */
+        .tier-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-left: 8px; }
+        .tier-base { background: #fff8e1; color: #c9a227; border: 1px solid #c9a227; }
+        .tier-mini { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+        
+        /* Error hints */
+        .error-hint { color: #d32f2f; font-size: 13px; margin-top: 5px; display: none; }
+        .error-hint.visible { display: block; }
     </style>
 </head>
 <body>
@@ -283,13 +292,22 @@
                     </div>
                     <div class="form-group">
                         <label>Сумма (₽)</label>
-                        <input type="number" id="invSum" placeholder="100000">
+                        <input type="number" id="invSum" placeholder="100000" oninput="updateTierByAmount()">
+                        <p id="tierHint" style="color: #666; font-size: 13px; margin-top: 5px;"></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Tier</label>
+                        <select id="invTier">
+                            <option value="base">База (1–5 млн ₽)</option>
+                            <option value="mini">Мини (500 тыс–1 млн ₽)</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Срок (мес)</label>
                         <input type="number" id="invTerm" placeholder="24" value="24">
                     </div>
                 </div>
+                <p id="invErrorHint" class="error-hint"></p>
                 <button class="btn btn-primary" onclick="addInvestor()">Добавить инвестора</button>
                 <p id="invSavedMsg" style="color: #1b5e20; font-weight: 500; margin-top: 10px; display: none;">✅ Сохранено</p>
             </div>
@@ -304,6 +322,7 @@
                 <thead>
                     <tr>
                         <th>Имя</th>
+                        <th>Tier</th>
                         <th>На счёте</th>
                         <th>В обороте</th>
                         <th>Начислено дохода</th>
@@ -355,7 +374,8 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Сумма (₽)</label>
-                            <input type="number" id="topUpAmount" placeholder="10000">
+                            <input type="number" id="topUpAmount" placeholder="10000" oninput="validateTopUpAmount()">
+                            <p id="topUpErrorHint" class="error-hint"></p>
                         </div>
                     </div>
                     <button class="btn btn-primary" onclick="doTopUp()">Пополнить</button>
@@ -379,6 +399,7 @@
                                 <option value="base">База</option>
                                 <option value="mini">Мини</option>
                             </select>
+                            <p id="dealModeHint" class="error-hint"></p>
                         </div>
                         <div class="form-group" id="baseDepositGroup">
                             <label>Взнос (%)</label>
@@ -2026,6 +2047,59 @@
             return { onAccount, inTurnover, accruedIncome, totalTurnover };
         }
 
+        // Get tier for investor based on total contributions
+        function getInvestorTier(investor) {
+            const totalSum = (investor.transactions || [])
+                .filter(t => t.type === 'deposit' || t.type === 'topup')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            if (totalSum >= 1000000 && totalSum <= 5000000) {
+                return 'base';
+            } else if (totalSum >= 500000 && totalSum < 1000000) {
+                return 'mini';
+            }
+            return 'base'; // default
+        }
+
+        // Update tier by amount input in form
+        function updateTierByAmount() {
+            const sumInput = document.getElementById('invSum');
+            const tierSelect = document.getElementById('invTier');
+            const tierHint = document.getElementById('tierHint');
+            const errorHint = document.getElementById('invErrorHint');
+            
+            const sum = parseInt(sumInput.value) || 0;
+            
+            if (sum <= 0) {
+                tierHint.textContent = '';
+                errorHint.classList.remove('visible');
+                return;
+            }
+            
+            // Auto-switch tier based on amount
+            if (sum >= 1000000 && sum <= 5000000) {
+                tierSelect.value = 'base';
+                tierHint.textContent = 'База (1–5 млн ₽)';
+                tierHint.style.color = '#c9a227';
+                errorHint.classList.remove('visible');
+            } else if (sum >= 500000 && sum < 1000000) {
+                tierSelect.value = 'mini';
+                tierHint.textContent = 'Мини (500 тыс–1 млн ₽)';
+                tierHint.style.color = '#2e7d32';
+                errorHint.classList.remove('visible');
+            } else if (sum < 500000) {
+                tierHint.textContent = 'Минимальная сумма 500 000 ₽';
+                tierHint.style.color = '#d32f2f';
+                errorHint.textContent = 'Сумма вне диапазона: Мини 500 000–999 999 ₽, База 1 000 000–5 000 000 ₽';
+                errorHint.classList.add('visible');
+            } else if (sum > 5000000) {
+                tierHint.textContent = 'Максимальная сумма 5 000 000 ₽';
+                tierHint.style.color = '#d32f2f';
+                errorHint.textContent = 'Сумма вне диапазона: Мини 500 000–999 999 ₽, База 1 000 000–5 000 000 ₽';
+                errorHint.classList.add('visible');
+            }
+        }
+
         function renderInvestors(investors) {
             const tbody = document.getElementById('investorsBody');
             const summary = document.getElementById('investorsSummary');
@@ -2050,12 +2124,19 @@
                 endDate.setMonth(endDate.getMonth() + termMonths);
                 const endDateStr = endDate.toLocaleDateString('ru-RU');
                 
+                // Get tier
+                const tier = inv.tier || getInvestorTier(inv);
+                const tierBadgeHtml = tier === 'mini' 
+                    ? '<span class="tier-badge tier-mini">Мини</span>' 
+                    : '<span class="tier-badge tier-base">База</span>';
+                
                 const row = document.createElement('tr');
                 row.style.cursor = 'pointer';
                 row.onclick = () => showInvestorCard(idx);
                 const invCodeDisplay = inv.invCode || '---';
                 row.innerHTML = `
                     <td><strong>${invCodeDisplay}</strong><br>${inv.name}</td>
+                    <td>${tierBadgeHtml}</td>
                     <td>${metrics.onAccount.toLocaleString('ru-RU')}</td>
                     <td>${metrics.inTurnover.toLocaleString('ru-RU')}</td>
                     <td>${metrics.accruedIncome.toLocaleString('ru-RU')}</td>
@@ -2086,7 +2167,11 @@
             document.getElementById('investorsSummary').classList.add('hidden');
             
             const invCodeDisplay = inv.invCode || '---';
-            document.getElementById('cardInvestorName').innerHTML = `${inv.name} <span style="color: #c9a227; font-size: 1.2em;">${invCodeDisplay}</span>`;
+            const tier = inv.tier || getInvestorTier(inv);
+            const tierBadgeHtml = tier === 'mini' 
+                ? '<span class="tier-badge tier-mini" style="margin-left: 10px;">Мини</span>' 
+                : '<span class="tier-badge tier-base" style="margin-left: 10px;">База</span>';
+            document.getElementById('cardInvestorName').innerHTML = `${inv.name} <span style="color: #c9a227; font-size: 1.2em;">${invCodeDisplay}</span>${tierBadgeHtml}`;
             
             updateInvestorCardDisplay(inv);
         }
@@ -2160,8 +2245,34 @@
             document.getElementById('topUpForm').classList.add('hidden');
         }
 
+        function validateTopUpAmount() {
+            const amountInput = document.getElementById('topUpAmount');
+            const errorHint = document.getElementById('topUpErrorHint');
+            const amount = parseInt(amountInput.value) || 0;
+            
+            if (!currentInvestors || selectedInvestorIndex < 0 || amount <= 0) {
+                errorHint.classList.remove('visible');
+                return;
+            }
+            
+            const inv = currentInvestors[selectedInvestorIndex];
+            const tier = inv.tier || getInvestorTier(inv);
+            const currentTotal = (inv.transactions || [])
+                .filter(t => t.type === 'deposit' || t.type === 'topup')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const ceiling = tier === 'mini' ? 1000000 : 5000000;
+            
+            if (currentTotal + amount > ceiling) {
+                errorHint.textContent = `Превышен потолок tier ${tier === 'mini' ? 'Мини' : 'База'} (${ceiling.toLocaleString('ru-RU')} ₽)`;
+                errorHint.classList.add('visible');
+            } else {
+                errorHint.classList.remove('visible');
+            }
+        }
+
         async function doTopUp() {
             const amountInput = document.getElementById('topUpAmount');
+            const errorHint = document.getElementById('topUpErrorHint');
             const amount = parseInt(amountInput.value);
             
             if (!amount || amount <= 0) {
@@ -2170,6 +2281,20 @@
             }
             
             const inv = currentInvestors[selectedInvestorIndex];
+            const tier = inv.tier || getInvestorTier(inv);
+            const currentTotal = (inv.transactions || [])
+                .filter(t => t.type === 'deposit' || t.type === 'topup')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const ceiling = tier === 'mini' ? 1000000 : 5000000;
+            
+            // Валидация потолка tier
+            if (currentTotal + amount > ceiling) {
+                errorHint.textContent = `Превышен потолок tier ${tier === 'mini' ? 'Мини' : 'База'} (${ceiling.toLocaleString('ru-RU')} ₽)`;
+                errorHint.classList.add('visible');
+                return;
+            }
+            errorHint.classList.remove('visible');
+            
             const today = new Date().toISOString().split('T')[0];
             
             inv.transactions.push({
@@ -2191,26 +2316,27 @@
         }
 
         function updateDealOptions() {
-            const mode = document.getElementById('takeDealMode').value;
+            const inv = currentInvestors[selectedInvestorIndex];
+            const tier = inv.tier || getInvestorTier(inv);
+            const modeSelect = document.getElementById('takeDealMode');
+            const baseOption = modeSelect.querySelector('option[value="base"]');
+            const miniOption = modeSelect.querySelector('option[value="mini"]');
             const baseDepositGroup = document.getElementById('baseDepositGroup');
             const miniDepositGroup = document.getElementById('investorMiniDepositGroup');
             const takeTermGroup = document.getElementById('takeTermGroup');
-            
-            if (mode === 'base') {
-                baseDepositGroup.style.display = 'block';
-                miniDepositGroup.style.display = 'none';
-                // База: сроки 3, 6, 10
-                takeTermGroup.innerHTML = `<label>Срок (мес)</label>
-                    <select id="takeTerm" onchange="calculateDealPreview()">
-                        <option value="">Выбрать...</option>
-                        <option value="3">3</option>
-                        <option value="6">6</option>
-                        <option value="10">10</option>
-                    </select>`;
-            } else {
+
+            if (tier === 'mini') {
+                // Mini investor: only Mini mode available
+                modeSelect.value = 'mini';
+                baseOption.disabled = true;
+                baseOption.textContent = 'База (недоступно)';
+                miniOption.disabled = false;
+                miniOption.textContent = 'Мини';
+                
                 baseDepositGroup.style.display = 'none';
                 miniDepositGroup.style.display = 'block';
-                // Мини: сроки 1-6
+                
+                // Mini: terms 1-6 months
                 takeTermGroup.innerHTML = `<label>Срок (мес)</label>
                     <select id="takeTerm" onchange="calculateDealPreview()">
                         <option value="">Выбрать...</option>
@@ -2220,6 +2346,25 @@
                         <option value="4">4</option>
                         <option value="5">5</option>
                         <option value="6">6</option>
+                    </select>`;
+            } else {
+                // Base investor: only Base mode available
+                modeSelect.value = 'base';
+                miniOption.disabled = true;
+                miniOption.textContent = 'Мини (недоступно)';
+                baseOption.disabled = false;
+                baseOption.textContent = 'База';
+                
+                baseDepositGroup.style.display = 'block';
+                miniDepositGroup.style.display = 'none';
+                
+                // Base: terms 3, 6, 10 months
+                takeTermGroup.innerHTML = `<label>Срок (мес)</label>
+                    <select id="takeTerm" onchange="calculateDealPreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="3">3</option>
+                        <option value="6">6</option>
+                        <option value="10">10</option>
                     </select>`;
             }
             calculateDealPreview();
@@ -2349,18 +2494,34 @@
             const nameInput = document.getElementById('invName');
             const phoneTailInput = document.getElementById('invPhoneTail');
             const sumInput = document.getElementById('invSum');
+            const tierSelect = document.getElementById('invTier');
             const termInput = document.getElementById('invTerm');
             const savedMsg = document.getElementById('invSavedMsg');
+            const errorHint = document.getElementById('invErrorHint');
             
             const name = nameInput.value.trim();
             const phoneTail = (phoneTailInput.value || '').trim().slice(-3);
             const sum = parseInt(sumInput.value);
+            const tier = tierSelect.value;
             const term = parseInt(termInput.value) || 24;
             
             if (!name || !sum || sum <= 0) {
                 alert('Введите имя и сумму больше 0');
                 return;
             }
+            
+            // Валидация диапазона tier
+            if (tier === 'mini' && (sum < 500000 || sum > 999999)) {
+                errorHint.textContent = 'Мини: 500 000–999 999 ₽';
+                errorHint.classList.add('visible');
+                return;
+            }
+            if (tier === 'base' && (sum < 1000000 || sum > 5000000)) {
+                errorHint.textContent = 'База: 1 000 000–5 000 000 ₽';
+                errorHint.classList.add('visible');
+                return;
+            }
+            errorHint.classList.remove('visible');
             
             // Генерация уникального invCode
             let invCode;
@@ -2389,6 +2550,7 @@
                 phoneTail: phoneTail || '000',
                 invCode,
                 sum, 
+                tier,
                 date: today,
                 term: term,
                 transactions: [{
