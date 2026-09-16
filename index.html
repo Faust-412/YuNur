@@ -1,0 +1,2929 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuNur — Исламская рассрочка без переплат</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&display=swap&subset=cyrillic" rel="stylesheet">
+    <style>
+        /* ==================== НАСТРОЙКИ ==================== */
+        :root {
+            --header-bg: #1b4332;
+            --accent-color: #2d6a4f;
+            --bg-color: #f2f7f4;
+            --text-color: #1b4332;
+            --card-bg: #ffffff;
+            --white: #ffffff;
+            --gold: #d4af37;
+            --gold-light: #f4e5b0;
+            --deep-green-dark: #0a1f17;
+            --deep-green-mid: #1b4332;
+            --deep-green-light: #2d6a4f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ==================== ШАПКА ==================== */
+        header {
+            background-color: var(--header-bg);
+            color: var(--white);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 45px;
+            border-radius: 8px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .header-btn {
+            background: var(--white);
+            color: var(--header-bg);
+            padding: 10px 24px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.3s;
+        }
+
+        .header-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* ==================== КАТАЛОГ DROPDOWN ==================== */
+        .catalog-btn {
+            background: transparent;
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .catalog-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .catalog-btn-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .catalog-btn-icon span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 1px;
+        }
+
+        .catalog-dropdown {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--white);
+            border: 1px solid var(--accent-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(27, 67, 50, 0.2);
+            z-index: 999;
+            display: none;
+            overflow: hidden;
+            max-width: 900px;
+            width: calc(100vw - 40px);
+        }
+
+        .catalog-dropdown.active {
+            display: block;
+            animation: dropdownFade 0.2s ease forwards;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .catalog-dropdown-content {
+            display: flex;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .catalog-categories {
+            min-width: 220px;
+            border-right: 1px solid rgba(27, 67, 50, 0.1);
+            padding-right: 1.5rem;
+        }
+
+        .catalog-category {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .catalog-category:hover {
+            background: var(--bg-color);
+        }
+
+        .catalog-category.active {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .catalog-category-icon {
+            font-size: 1.3rem;
+        }
+
+        .catalog-brands {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .catalog-brands-title {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .catalog-brands-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .catalog-brand-btn {
+            background: transparent;
+            color: var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 1px solid var(--accent-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .catalog-brand-btn:hover {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* ==================== ГЛАВНЫЙ ЭКРАН ==================== */
+        .hero {
+            background: radial-gradient(ellipse at center, var(--deep-green-light) 0%, var(--deep-green-mid) 40%, var(--deep-green-dark) 100%);
+            color: var(--white);
+            padding: 100px 0 120px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Золотые свечения по углам */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 10% 90%, rgba(212, 175, 55, 0.08) 0%, transparent 35%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Исламский звёздный узор с анимацией мерцания */
+        .hero-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 20 L100 180 M20 100 L180 100 M45 45 L155 155 M45 155 L155 45' stroke='rgba(212, 175, 55, 0.08)' stroke-width='1' fill='none'/%3E%3Ccircle cx='100' cy='100' r='30' stroke='rgba(212, 175, 55, 0.06)' stroke-width='0.8' fill='none'/%3E%3Ccircle cx='100' cy='100' r='15' stroke='rgba(212, 175, 55, 0.04)' stroke-width='0.5' fill='none'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            opacity: 0.6;
+            animation: patternShimmer 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes patternShimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 3rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--gold-light);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero-trust-line {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn-hero-primary {
+            display: inline-block;
+            background-color: var(--white);
+            color: var(--header-bg);
+            padding: 16px 36px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-hero-secondary {
+            display: inline-block;
+            background-color: transparent;
+            color: var(--gold);
+            padding: 16px 36px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border: 2px solid var(--gold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-hero-secondary:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Карточка рынков */
+        .markets-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 1.5rem;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            animation: fadeUp 0.8s ease-out 0.3s both;
+        }
+
+        .markets-title {
+            font-size: 0.85rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .market-item:last-child {
+            border-bottom: none;
+        }
+
+        .market-name {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .market-value {
+            text-align: right;
+        }
+
+        .market-price {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            display: block;
+        }
+
+        .market-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .market-change.positive {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.15);
+        }
+
+        .market-change.negative {
+            color: #ef5350;
+            background: rgba(239, 83, 80, 0.15);
+        }
+
+        .market-change.neutral {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Анимация появления */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1,
+        .hero-subtitle,
+        .hero-trust-line,
+        .hero-buttons {
+            animation: fadeUp 0.8s ease-out both;
+        }
+
+        .hero h1 { animation-delay: 0.1s; }
+        .hero-subtitle { animation-delay: 0.2s; }
+        .hero-trust-line { animation-delay: 0.3s; }
+        .hero-buttons { animation-delay: 0.4s; }
+
+        /* Мобильная адаптация */
+        @media (max-width: 900px) {
+            .hero {
+                padding: 60px 0 80px;
+                min-height: auto;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-text {
+                align-items: center;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .markets-card {
+                margin: 0 auto;
+                width: 100%;
+                max-width: 340px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                padding: 14px 24px;
+                font-size: 0.95rem;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* ==================== СЕКЦИИ ==================== */
+        section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 3rem;
+            color: var(--header-bg);
+        }
+
+        /* ==================== КАЛЬКУЛЯТОР ==================== */
+        .calculator-section {
+            background-color: var(--bg-color);
+            position: relative;
+            z-index: 5;
+            margin-top: -60px;
+            padding-top: 120px;
+        }
+
+        .calculator {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .calculator-card {
+            background: var(--accent-color);
+            border-radius: 30px;
+            padding: 3rem;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .calculator-card.mini-mode {
+            background: var(--white);
+            color: var(--deep-green-mid);
+            border: 2px solid var(--gold);
+        }
+
+        .mode-switch-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--white);
+            background: transparent;
+            color: var(--white);
+        }
+
+        .mode-btn.active {
+            background: var(--white);
+            color: var(--deep-green-mid);
+        }
+
+        .mini-mode .mode-btn {
+            border-color: var(--deep-green-mid);
+            color: var(--deep-green-mid);
+        }
+
+        .mini-mode .mode-btn.active {
+            background: var(--deep-green-mid);
+            color: var(--white);
+        }
+
+        .mini-mode .slider-value-display {
+            background: var(--deep-green-mid);
+            color: #ffffff !important;
+            border-color: var(--gold);
+        }
+
+        .mini-mode .cost-input-field {
+            color: #ffffff !important;
+        }
+
+        .mini-mode .ruble-subvalue {
+            color: #ffffff !important;
+        }
+
+        /* Подписи к слайдерам в режиме Мини */
+        .mini-mode .input-group label {
+            color: var(--deep-green-mid);
+        }
+
+        /* Дорожки слайдеров в режиме Мини */
+        .mini-mode input[type="range"] {
+            background: #cfe0d6;
+        }
+
+        .mini-mode input[type="range"]::-webkit-slider-thumb {
+            background: var(--deep-green-mid);
+        }
+
+        .mini-mode input[type="range"]::-moz-range-thumb {
+            background: var(--deep-green-mid);
+        }
+
+        .mini-mode .btn-white {
+            background: var(--deep-green-mid);
+            color: var(--white);
+            border-color: var(--deep-green-mid);
+        }
+
+        .mini-mode .btn-white:hover {
+            background: var(--white);
+            color: var(--deep-green-mid);
+        }
+
+        .calculator-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-group {
+            position: relative;
+            width: 250px;
+            flex: 0 0 auto;
+        }
+
+        .slider-group:nth-child(3) {
+            margin: 0 auto;
+        }
+
+        .slider-value-display {
+            background: var(--white);
+            color: var(--header-bg);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            height: 54px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #c9a227;
+            white-space: nowrap;
+        }
+
+        .cost-input-field {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--header-bg);
+            outline: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .cost-input-field:focus {
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        /* Скрываем стрелки input type="number" для текстового поля */
+        .cost-input-field::-webkit-outer-spin-button,
+        .cost-input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cost-input-field[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .ruble-subvalue {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+            font-size: 0.95rem;
+        }
+
+        /* Стиль слайдеров */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--white);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--white);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Новые результаты - большие цифры в ряд */
+        .results-new {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-item {
+            text-align: center;
+            padding: 1.5rem 1rem;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .result-big-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            transition: transform 0.15s ease;
+        }
+
+        .result-big-value.flash {
+            transform: scale(1.05);
+        }
+
+        .result-small-percent {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        .calculator-btn-container {
+            text-align: center;
+        }
+
+        .btn-white {
+            display: inline-block;
+            background: var(--white);
+            color: var(--accent-color);
+            padding: 16px 40px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid var(--white);
+        }
+
+        .btn-white:hover {
+            background: transparent;
+            color: var(--white);
+        }
+
+        .guarantors-link {
+            margin-top: 1rem;
+        }
+
+        .guarantors-link a {
+            color: var(--white);
+            font-size: 0.9rem;
+            text-decoration: underline;
+            opacity: 0.9;
+        }
+
+        .guarantors-link a:hover {
+            opacity: 1;
+        }
+
+        /* ==================== КАК ЭТО РАБОТАЕТ ==================== */
+        .steps-section {
+            background-color: var(--accent-color);
+            padding: 40px 0;
+        }
+
+        .steps-section .section-title {
+            color: var(--white);
+            margin-bottom: 30px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .step-card {
+            background: transparent;
+            padding: 0;
+            border-radius: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-illustration {
+            height: 0;
+            display: none;
+            margin: 0;
+            padding: 0;
+            visibility: hidden;
+        }
+
+        .speech-bubble {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            position: relative;
+            margin: 0 auto 1rem;
+            max-width: 200px;
+            font-weight: 500;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid var(--white);
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background-color: var(--white);
+            color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step-card h3 {
+            min-height: 3.5em;
+            margin-bottom: 1rem;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-card p {
+            color: var(--white);
+            opacity: 0.9;
+        }
+
+        /* ==================== ФОРМА ЗАЯВКИ ==================== */
+        .form-section {
+            background-color: var(--bg-color);
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--header-bg);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #d0d0d0;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+
+        .form-note {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            accent-color: var(--accent-color);
+        }
+
+        .message-box {
+            display: none;
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px solid #ffc107;
+        }
+
+        /* ==================== ПОДВАЛ ==================== */
+        footer {
+            background-color: var(--header-bg);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* ==================== ЧАСТЫЕ ВОПРОСЫ ==================== */
+        .faq-section {
+            background-color: var(--bg-color);
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            margin-bottom: 1rem;
+            border-radius: 40px;
+            border: 1px solid var(--accent-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            background: var(--white);
+            border: none;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--header-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+            font-family: inherit;
+        }
+
+        .faq-question:hover {
+            background-color: var(--bg-color);
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+        }
+
+        .faq-answer p {
+            padding: 1.2rem 1.5rem;
+            margin: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* ==================== КАТАЛОГ КАТЕГОРИЙ ==================== */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--accent-color);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            background: var(--bg-color);
+        }
+
+        .category-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--header-bg);
+        }
+
+        .category-card p {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* ==================== КАРТОЧКА ТОВАРА ==================== */
+        .products-section {
+            background-color: var(--bg-color);
+            padding: 60px 0;
+        }
+
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border: 1px solid #c9a227;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .product-card-content {
+            padding: 1.25rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .product-card-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .product-card-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+        }
+
+        .product-card-btn {
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 10px 24px;
+            border-radius: 25px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .product-card-btn:hover {
+            background: var(--header-bg);
+            transform: translateY(-2px);
+        }
+
+        .products-placeholder {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px dashed var(--accent-color);
+        }
+
+        .products-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .products-placeholder h3 {
+            color: var(--header-bg);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .products-placeholder p {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* ==================== ПРОДУКТЫ YUNUR (КАРТОЧКИ-СТОЛПЫ) ==================== */
+        .products-yunur-section {
+            background-color: var(--white);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-pillar-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--accent-color);
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
+        .product-pillar-card:hover {
+            background: var(--bg-color);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(27, 67, 50, 0.15);
+        }
+
+        .product-pillar-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1.5rem;
+            fill: var(--accent-color);
+        }
+
+        .product-pillar-card h3 {
+            margin-bottom: 0.75rem;
+            color: var(--header-bg);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .product-pillar-card .emotional-line {
+            color: var(--text-color);
+            opacity: 0.9;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .product-pillar-link {
+            display: inline-block;
+            color: var(--accent-color);
+            font-weight: 600;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 40px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .product-pillar-link:hover {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .product-pillar-card.coming-soon .product-pillar-link {
+            border-color: #999;
+            color: #999;
+            pointer-events: none;
+        }
+
+        .product-pillar-card.coming-soon .product-pillar-link:hover {
+            background: transparent;
+            color: #999;
+        }
+
+        /* ==================== КНОПКА ДОСТУПНОСТИ ==================== */
+        .accessibility-toggle {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--header-bg);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: opacity 0.3s;
+        }
+
+        .accessibility-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--white);
+        }
+
+        .accessibility-toggle:hover {
+            opacity: 0.9;
+        }
+
+        body.large-text {
+            font-size: 20px !important;
+        }
+
+        body.large-text h1 {
+            font-size: 68px !important;
+        }
+
+        body.large-text h2 {
+            font-size: 2.6rem !important;
+        }
+
+        body.large-text h3 {
+            font-size: 1.5rem !important;
+        }
+
+        body.large-text p {
+            font-size: 1.2rem !important;
+        }
+
+        /* ==================== БЛОК "ИЩЕМ ЛУЧШУЮ ЦЕНУ" ==================== */
+        .best-price-section {
+            background-color: var(--white);
+        }
+
+        .best-price-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        /* ==================== WHY US COMPARISON CARDS ==================== */
+        .why-us-section {
+            background-color: var(--bg-color);
+        }
+
+        .why-us-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .why-us-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--header-bg);
+            margin-bottom: 0.5rem;
+        }
+
+        .why-us-subtitle {
+            font-size: 1.1rem;
+            color: #777777;
+            font-weight: 400;
+        }
+
+        .comparison-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .comparison-card {
+            border-radius: 20px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .comparison-card.bank {
+            background: #f5f5f5;
+            border: 1px solid #dddddd;
+            color: #777777;
+            opacity: 0.9;
+        }
+
+        .comparison-card.yunur {
+            background: #1b4332;
+            color: #ffffff;
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.25);
+            transform: translateY(-10px);
+            position: relative;
+        }
+
+        .yunur-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1b4332;
+            border: 2px solid #d4af37;
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .comparison-card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .yunur .comparison-card-title {
+            color: #ffffff;
+        }
+
+        .bank .comparison-card-title {
+            color: #777777;
+        }
+
+        .comparison-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .comparison-list li:first-child {
+            padding-top: 0;
+        }
+
+        .comparison-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .comparison-icon.cross {
+            color: #ef5350;
+        }
+
+        .comparison-icon.check {
+            color: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-cards .yunur {
+                order: -1;
+                transform: translateY(0);
+            }
+
+            .why-us-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .best-price-section {
+            color: var(--header-bg);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .best-price-card p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 16px 36px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border: 2px solid var(--accent-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--header-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27, 67, 50, 0.3);
+        }
+
+        /* ==================== ПЛАВАЮЩАЯ КНОПКА WHATSAPP ==================== */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--header-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 999;
+            transition: opacity 0.3s;
+        }
+
+        .whatsapp-float svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--white);
+        }
+
+        /* ==================== МОБИЛЬНАЯ ВЕРСИЯ ==================== */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .header-btn {
+                display: none;
+            }
+
+            .catalog-btn {
+                margin-right: 0;
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .catalog-dropdown {
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100vw;
+                max-width: none;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            .catalog-dropdown.active {
+                animation: dropdownFadeMobile 0.2s ease forwards;
+            }
+
+            @keyframes dropdownFadeMobile {
+                from {
+                    opacity: 0;
+                    transform: translateY(-100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .catalog-dropdown-content {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                overflow-y: auto;
+                height: 100%;
+            }
+
+            .catalog-categories {
+                border-right: none;
+                border-bottom: 1px solid rgba(27, 67, 50, 0.1);
+                padding-right: 0;
+                padding-bottom: 1rem;
+                min-width: auto;
+            }
+
+            .catalog-category {
+                padding: 10px 12px;
+            }
+
+            .catalog-brands {
+                min-width: auto;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--header-bg);
+                flex-direction: column;
+                padding: 1rem 0;
+                gap: 0;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav ul li {
+                text-align: center;
+                padding: 1rem 0;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            section {
+                padding: 40px 0;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .calculator-inputs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .slider-group {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .slider-group:nth-child(3) {
+                margin: 0 auto;
+            }
+
+            .results-new {
+                grid-template-columns: 1fr;
+            }
+
+            .result-big-value {
+                font-size: 1.8rem;
+            }
+
+            .step-illustration svg {
+                max-width: 100px;
+            }
+
+            .speech-bubble {
+                max-width: 180px;
+                font-size: 0.8rem;
+            }
+
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .calculator-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .best-price-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .best-price-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .best-price-card p {
+                font-size: 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-pillar-card {
+                padding: 1.5rem;
+            }
+
+            .product-pillar-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .whatsapp-float svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .accessibility-toggle {
+                bottom: 80px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .accessibility-toggle svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            body.large-text h1 {
+                font-size: 48px !important;
+            }
+
+            body.large-text h2 {
+                font-size: 2rem !important;
+            }
+
+            body.large-text h3 {
+                font-size: 1.3rem !important;
+            }
+
+            body.large-text p {
+                font-size: 1.1rem !important;
+            }
+
+            /* Каталог на мобильном - категории сверху */
+            .catalog-categories {
+                display: flex;
+                overflow-x: auto;
+                border-bottom: 1px solid rgba(27, 67, 50, 0.1);
+                padding-bottom: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .catalog-category {
+                white-space: nowrap;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+    <style>
+#how-it-works{padding:40px 0 !important;}
+#how-it-works [class*="icon"]{display:none !important;height:0 !important;}
+#how-it-works .steps-grid{margin-top:0 !important;padding-top:0 !important;}
+#how-it-works .section-title{margin-bottom:40px !important;}
+</style>
+   <style>
+/* YuNur: декор (безопасная версия) */
+.calculator-card{position:relative;}
+.calculator-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23c9a227' stroke-opacity='0.12' stroke-width='1.2'%3E%3Crect x='25' y='25' width='40' height='40'/%3E%3Crect x='25' y='25' width='40' height='40' transform='rotate(45 45 45)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:90px 90px;
+  pointer-events:none;
+}
+#calculator [class*="result"]{
+  border:1px solid #c9a227;
+  border-radius:18px;
+  margin:6px;
+  box-shadow:0 4px 14px rgba(43,74,58,.08);
+}
+</style>
+    </head>
+       <body>
+    <!-- Шапка -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo"><img src="logo.png" alt="YuNur"></a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="#calculator">Калькулятор</a></li>
+                    <li><a href="#how-it-works">Как это работает</a></li>
+                    <li><a href="rates.html">Курсы валют</a></li>
+                    <li><a href="articles.html">Статьи</a></li>
+                    <li><a href="payments.html">Мои платежи</a></li>
+                </ul>
+            </nav>
+            <button class="catalog-btn" onclick="toggleCatalog()">
+                <span class="catalog-btn-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                Каталог
+            </button>
+            <a href="#application" class="header-btn">Оставить заявку</a>
+        </div>
+    </header>
+
+    <!-- Каталог Dropdown -->
+    <div class="overlay" id="catalog-overlay" onclick="closeCatalog()"></div>
+    <div class="catalog-dropdown" id="catalog-dropdown">
+        <div class="catalog-dropdown-content">
+            <div class="catalog-categories">
+                <div class="catalog-category active" data-category="phones" onclick="selectCategory('phones')">
+                    <span class="catalog-category-icon">📱</span>
+                    <span>Телефоны</span>
+                </div>
+                <div class="catalog-category" data-category="audio" onclick="selectCategory('audio')">
+                    <span class="catalog-category-icon">🎧</span>
+                    <span>Наушники и аудио</span>
+                </div>
+                <div class="catalog-category" data-category="fridge" onclick="selectCategory('fridge')">
+                    <span class="catalog-category-icon">🧊</span>
+                    <span>Холодильники</span>
+                </div>
+                <div class="catalog-category" data-category="washing" onclick="selectCategory('washing')">
+                    <span class="catalog-category-icon">🌀</span>
+                    <span>Стиральные машины</span>
+                </div>
+                <div class="catalog-category" data-category="vacuum" onclick="selectCategory('vacuum')">
+                    <span class="catalog-category-icon">🧹</span>
+                    <span>Пылесосы</span>
+                </div>
+                <div class="catalog-category" data-category="small" onclick="selectCategory('small')">
+                    <span class="catalog-category-icon">☕</span>
+                    <span>Мелкая бытовая техника</span>
+                </div>
+                <div class="catalog-category" data-category="accessories" onclick="selectCategory('accessories')">
+                    <span class="catalog-category-icon">🔌</span>
+                    <span>Аксессуары</span>
+                </div>
+            </div>
+            <div class="catalog-brands">
+                <p class="catalog-brands-title">Бренды</p>
+                <div class="catalog-brands-list" id="brands-container">
+                    <!-- Бренды заполняются JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Главный экран -->
+    <section class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Честная рассрочка для твоей семьи</h1>
+                <p class="hero-subtitle">Без процентов и штрафов. По шариату.</p>
+                <p class="hero-trust-line">0 ₽ скрытых комиссий · фиксированный график · товар сразу твой</p>
+                <div class="hero-buttons">
+                    <a href="#calculator" class="btn-hero-primary">Рассчитать рассрочку</a>
+                    <a href="rates.html" class="btn-hero-secondary">Курсы и золото</a>
+                </div>
+            </div>
+            <div class="markets-card" id="markets-card">
+                <div class="markets-title">Рынки</div>
+                <div class="market-item">
+                    <span class="market-name">Золото (₽/г)</span>
+                    <div class="market-value">
+                        <span class="market-price" id="gold-price">—</span>
+                        <span class="market-change neutral" id="gold-change">—</span>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <span class="market-name">Доллар</span>
+                    <div class="market-value">
+                        <span class="market-price" id="usd-price">—</span>
+                        <span class="market-change neutral" id="usd-change">—</span>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <span class="market-name">Евро</span>
+                    <div class="market-value">
+                        <span class="market-price" id="eur-price">—</span>
+                        <span class="market-change neutral" id="eur-change">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Калькулятор -->
+    <section id="calculator" class="calculator-section">
+        <div class="container">
+            <h2 class="section-title">Калькулятор рассрочки</h2>
+            <div class="calculator">
+                <div class="calculator-card" id="calculator-card">
+                    <!-- Переключатель режимов -->
+                    <div class="mode-switch-container">
+                        <button class="mode-btn active" data-mode="base">База</button>
+                        <button class="mode-btn" data-mode="mini">Мини (до 25 000 ₽)</button>
+                    </div>
+
+                    <div class="calculator-inputs">
+                        <!-- Стоимость товара -->
+                        <div class="input-group slider-group">
+                            <div class="slider-value-display">
+                                <input type="text" id="cost-input" value="100 000" class="cost-input-field">
+                            </div>
+                            <label for="cost-slider">Стоимость товара или услуги</label>
+                            <input type="range" id="cost-slider" min="10000" max="100000" step="1000" value="100000">
+                        </div>
+                        
+                        <!-- Первоначальный взнос -->
+                        <div class="input-group slider-group">
+                            <div class="slider-value-display">
+                                <span id="initial-display">25%</span>
+                                <span id="initial-ruble-display" class="ruble-subvalue"></span>
+                            </div>
+                            <label for="initial-slider">Первоначальный взнос</label>
+                            <input type="range" id="initial-slider" min="0" max="2" step="1" value="0">
+                        </div>
+                        
+                        <!-- Срок рассрочки -->
+                        <div class="input-group slider-group">
+                            <div class="slider-value-display">
+                                <span id="term-display">6 мес.</span>
+                            </div>
+                            <label for="term-slider">Срок рассрочки</label>
+                            <input type="range" id="term-slider" min="0" max="2" step="1" value="1">
+                        </div>
+                    </div>
+
+                    <div class="results-new">
+                        <div class="result-item">
+                            <div class="result-label">Ежемесячный платёж</div>
+                            <div class="result-big-value" id="res-monthly">0 ₽</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Наценка</div>
+                            <div class="result-big-value" id="res-markup-ruble">0 ₽</div>
+                            <div class="result-small-percent" id="res-markup-percent">0%</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Общая стоимость в рассрочку</div>
+                            <div class="result-big-value" id="res-total">0 ₽</div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-btn-container">
+                        <a href="#application" class="btn btn-white">Заполнить анкету</a>
+                        <div class="guarantors-link">
+                            <a href="#faq">Нужно два поручителя</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Почему мы, а не банк -->
+    <section id="why-us" class="why-us-section">
+        <div class="container">
+            <div class="why-us-header">
+                <h2>Почему мы, а не банк</h2>
+                <p class="why-us-subtitle">Честное сравнение за 30 секунд</p>
+            </div>
+            <div class="comparison-cards">
+                <!-- БАНК -->
+                <div class="comparison-card bank">
+                    <h3 class="comparison-card-title">БАНК</h3>
+                    <ul class="comparison-list">
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Процент на остаток (риба)</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Штрафы за просрочку</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Скрытые комиссии</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>10 справок и очередей</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon cross">✕</span>
+                            <span>Офис, поездки, прописка</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- YuNur -->
+                <div class="comparison-card yunur">
+                    <span class="yunur-badge">✓ Халяль</span>
+                    <h3 class="comparison-card-title">YuNur</h3>
+                    <ul class="comparison-list">
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Фиксированная наценка в цене</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Без штрафов — сумма не растёт</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>0 скрытых комиссий</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Паспорт + 2 поручителя</span>
+                        </li>
+                        <li>
+                            <span class="comparison-icon check">✓</span>
+                            <span>Онлайн по всей России</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ищем лучшую цену для вас -->
+    <section id="best-price" class="best-price-section">
+        <div class="container">
+            <div class="best-price-card">
+                <h2>Ищем лучшую цену для вас</h2>
+                <p>Мы не накручиваем цены. Скажите, что вы ищете — мы найдём, где дешевле, и посчитаем честную рассрочку без сюрпризов.</p>
+                <a href="#application" class="btn btn-primary">Рассказать, что ищу</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Что можно взять в рассрочку -->
+    <section id="products">
+        <div class="container">
+            <h2 class="section-title">Что можно взять в рассрочку</h2>
+            <div class="catalog-grid">
+                <div class="category-card">
+                    <h3>Техника</h3>
+                    <p>Телефоны, ноутбуки, планшеты</p>
+                </div>
+                <div class="category-card">
+                    <h3>Бытовая техника</h3>
+                    <p>Холодильники, стиральные машины</p>
+                </div>
+                <div class="category-card">
+                    <h3>Одежда и обувь</h3>
+                    <p>Для всей семьи</p>
+                </div>
+                <div class="category-card">
+                    <h3>Лечение</h3>
+                    <p>Стоматология, обследования</p>
+                </div>
+                <div class="category-card">
+                    <h3>Образование</h3>
+                    <p>Курсы и обучение</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Продукты YuNur -->
+    <section id="products-yunur" class="products-yunur-section">
+        <div class="container">
+            <h2 class="section-title">Продукты YuNur</h2>
+            <div class="products-grid">
+                <!-- Рассрочка -->
+                <div class="product-pillar-card">
+                    <svg class="product-pillar-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="12" y="20" width="40" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <line x1="12" y1="32" x2="52" y2="32" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="32" cy="42" r="5" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M32 39 L32 45 M29 42 L35 42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <h3>Рассрочка</h3>
+                    <p class="emotional-line">Жизнь, которую хочешь сегодня, — честно оплаченная завтра. Без риба.</p>
+                    <a href="#calculator" class="product-pillar-link">Рассчитать</a>
+                </div>
+
+                <!-- Рынки и золото -->
+                <div class="product-pillar-card">
+                    <svg class="product-pillar-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M32 16 C40 16 44 24 44 32 C44 40 40 48 32 48 C24 48 20 40 20 32 C20 24 24 16 32 16" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="32" cy="32" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M32 8 L32 12 M32 52 L32 56 M8 32 L12 32 M52 32 L56 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <h3>Рынки и золото</h3>
+                    <p class="emotional-line">Твои деньги — по твоим правилам: валюты, золото, крипта в одном месте.</p>
+                    <a href="rates.html" class="product-pillar-link">Курсам</a>
+                </div>
+
+                <!-- Копилки (скоро) -->
+                <div class="product-pillar-card coming-soon">
+                    <svg class="product-pillar-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 28 C20 20 28 16 32 16 C36 16 44 20 44 28 L44 48 C44 56 36 56 32 56 C28 56 20 56 20 48 Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <ellipse cx="32" cy="28" rx="12" ry="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M32 28 L32 48" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"/>
+                        <circle cx="28" cy="38" r="2" fill="currentColor"/>
+                        <circle cx="36" cy="42" r="2" fill="currentColor"/>
+                    </svg>
+                    <h3>Копилки</h3>
+                    <p class="emotional-line">Копи в граммах на Умру, дом, мечту.</p>
+                    <a href="#application" class="product-pillar-link">Лист ожидания</a>
+                </div>
+
+                <!-- Пулы для инвесторов (скоро) -->
+                <div class="product-pillar-card coming-soon">
+                    <svg class="product-pillar-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 44 L28 32 L40 40 L52 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="16" cy="44" r="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="28" cy="32" r="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="40" cy="40" r="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="52" cy="24" r="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M20 52 Q32 60 44 52" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <h3>Пулы для инвесторов</h3>
+                    <p class="emotional-line">Ты живёшь — капитал растёт. По шариату.</p>
+                    <a href="#application" class="product-pillar-link">Лист ожидания</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Как это работает -->
+    <section id="how-it-works" class="steps-section">
+        <div class="container">
+            <h2 class="section-title">Как это работает</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-label="Человечек смотрит в телефон">
+                            <!-- Человечек смотрит в телефон - белые линии -->
+                            <circle cx="60" cy="40" r="10" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="50" x2="60" y2="70" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="55" x2="45" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="55" x2="75" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="70" x2="50" y2="85" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="70" x2="70" y2="85" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Телефон в руках -->
+                            <rect x="42" y="60" width="12" height="18" rx="2" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">Я нашёл то, что нужно, в обычном магазине</div>
+                    <div class="step-number">1</div>
+                    <h3>Выбираете товар</h3>
+                    <p>Вы находите товар или услугу в любом магазине</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg" aria-label="Два человечка пожимают руки">
+                            <!-- Левый человечек - белые линии -->
+                            <circle cx="45" cy="40" r="10" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="50" x2="45" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="55" x2="55" y2="62" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="55" x2="35" y2="62" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="65" x2="38" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="65" x2="52" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Правый человечек - белые линии -->
+                            <circle cx="95" cy="40" r="10" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="95" y1="50" x2="95" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="95" y1="55" x2="85" y2="62" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="95" y1="55" x2="105" y2="62" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="95" y1="65" x2="88" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="95" y1="65" x2="102" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Рукопожатие -->
+                            <line x1="55" y1="62" x2="65" y2="62" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="65" y1="62" x2="75" y2="62" stroke="#ffffff" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">YuNur выкупает товар — я не беру кредит</div>
+                    <div class="step-number">2</div>
+                    <h3>Мы оплачиваем его магазину</h3>
+                    <p>YuNur выкупает товар у продавца по договору купли-продажи</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-label="Человечек с календарём">
+                            <!-- Человечек с календарём - белые линии -->
+                            <circle cx="60" cy="40" r="10" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="50" x2="60" y2="70" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="55" x2="48" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="55" x2="72" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="70" x2="52" y2="85" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="70" x2="68" y2="85" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Календарь -->
+                            <rect x="68" y="58" width="22" height="28" rx="2" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="68" y1="65" x2="90" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <circle cx="75" cy="72" r="2" fill="#ffffff"/>
+                            <circle cx="83" cy="72" r="2" fill="#ffffff"/>
+                            <circle cx="75" cy="80" r="2" fill="#ffffff"/>
+                            <circle cx="83" cy="80" r="2" fill="#ffffff"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">Плачу равными частями, сумма не меняется</div>
+                    <div class="step-number">3</div>
+                    <h3>Вы платите нам по графику</h3>
+                    <p>Возвращаете сумму равными платежами без процентов</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-illustration">
+                        <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-label="Довольный человечек с коробкой">
+                            <!-- Довольный человечек с коробкой - белые линии -->
+                            <circle cx="60" cy="35" r="10" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Улыбка -->
+                            <path d="M 56 38 Q 60 42 64 38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="60" y1="45" x2="60" y2="60" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="50" x2="45" y2="58" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="50" x2="75" y2="58" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="60" x2="50" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="60" x2="70" y2="75" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Коробка -->
+                            <rect x="48" y="58" width="24" height="20" rx="2" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="60" y1="58" x2="60" y2="78" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="48" y1="65" x2="72" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <!-- Бант на коробке -->
+                            <path d="M 55 58 L 60 52 L 65 58" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="speech-bubble">И это моё с первого дня!</div>
+                    <div class="step-number">4</div>
+                    <h3>Товар сразу ваш</h3>
+                    <p>Пользуетесь товаром с первого дня, несмотря на рассрочку</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Форма заявки -->
+    <section id="application" class="form-section">
+        <div class="container">
+            <h2 class="section-title">Оставить заявку</h2>
+            <div class="form-container">
+                <form id="application-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Ваше имя</label>
+                        <input type="text" id="name" required placeholder="Как к вам обращаться">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Контакт (телефон или мессенджер)</label>
+                        <input type="text" id="contact" required placeholder="+7 ___ ___-__-__ или @username">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Сообщение</label>
+                        <textarea id="message" placeholder="Какой товар вас интересует?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="search-item">Что ищете? (товар, бренд — необязательно)</label>
+                        <input type="text" id="search-item" placeholder="Например: iPhone 15 или Zara">
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" required>
+                            <span>Согласен на обработку персональных данных</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn form-btn">Отправить</button>
+                    <div id="form-message" class="message-box">Функция скоро появится, мы тестируем сайт</div>
+                </form>
+                <p class="form-note">Мы свяжемся с вами через WhatsApp</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Частые вопросы -->
+    <section id="faq" class="faq-section">
+        <div class="container">
+            <h2 class="section-title">Частые вопросы</h2>
+            <div class="faq-container" style="max-width: 800px; margin: 0 auto;">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Это действительно халяль?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Да. Мы работаем по принципу мурабаха: покупаем товар и продаём его вам с фиксированной наценкой. Цена известна в момент договора и не меняется. Это не заём с процентом, а купля-продажа, разрешённая шариатом.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Какие документы нужны?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Паспорт и два поручителя. Это обязательное условие.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Как быстро одобрите?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Обычно в тот же день. Оставляете заявку — мы связываемся через WhatsApp и всё оформляем.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Что если я задержу платёж?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Мы не начисляем пени и штрафы, сумма не растёт. Если ситуация изменилась — напишите нам, найдём решение.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Обязателен ли первоначальный взнос?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Да: 25%, 40% или 50%. Чем больше взнос, тем меньше наценка и ежемесячный платёж.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Можно ли погасить раньше срока?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Да, без лишних комиссий и штрафов. Общая сумма зафиксирована в договоре.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <p>&copy; YuNur. Исламская рассрочка без переплат.</p>
+        </div>
+    </footer>
+
+    <!-- Плавающая кнопка WhatsApp -->
+    <a href="https://wa.me/79991234567" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    </a>
+
+    <script>
+        // НАСТРОЙКИ: меняй значения здесь
+        const BASE_MARKUP = {
+            25: 39,  // 25% взнос → 39% базовая наценка
+            40: 29,  // 40% взнос → 29% базовая наценка
+            50: 24   // 50% взнос → 24% базовая наценка
+        };
+        const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
+        
+        // Настройки режима Мини
+        const MINI_MONTHLY_RATE = 0.08;  // 8% в месяц
+        const MINI_MARKUP = {
+            25: 39,  // 25% взнос → 39% базовая наценка (как в Базе)
+            40: 29,  // 40% взнос → 29% базовая наценка
+            50: 24   // 50% взнос → 24% базовая наценка
+        };
+
+        // Массивы значений для слайдеров
+        const INITIAL_PERCENTS = [25, 40, 50];
+        const TERMS = [3, 6, 10];
+        const MINI_TERMS = [1, 2, 3, 4, 5, 6];
+        
+        // Текущий режим
+        let currentMode = 'base';
+
+        // Форматирование числа с пробелами (15 745 ₽)
+        function formatNumber(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
+        }
+
+        // Форматирование числа без знака рубля
+        function formatNumberPlain(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        // Расчёт калькулятора
+        function calculate() {
+            // Получаем стоимость из слайдера
+            const costSlider = document.getElementById('cost-slider');
+            let cost = parseInt(costSlider.value) || 0;
+
+            // Обновляем отображение стоимости в поле ввода
+            const costInput = document.getElementById('cost-input');
+            costInput.value = formatNumberPlain(cost);
+
+            // Получаем процент взноса из слайдера (индекс 0, 1, 2)
+            const initialSlider = document.getElementById('initial-slider');
+            const initialIndex = parseInt(initialSlider.value);
+            const initialPercent = INITIAL_PERCENTS[initialIndex];
+
+            // Получаем срок из слайдера
+            const termSlider = document.getElementById('term-slider');
+            const termIndex = parseInt(termSlider.value);
+            
+            let term;
+            if (currentMode === 'mini') {
+                term = MINI_TERMS[termIndex];
+            } else {
+                term = TERMS[termIndex];
+            }
+
+            // Обновляем отображение процента взноса и суммы в рублях
+            document.getElementById('initial-display').textContent = initialPercent + '%';
+            const initialRuble = cost * (initialPercent / 100);
+            document.getElementById('initial-ruble-display').textContent = formatNumber(initialRuble);
+
+            // Обновляем отображение срока
+            document.getElementById('term-display').textContent = term + ' мес.';
+
+            // Финансирование = стоимость − взнос
+            const financing = cost - initialRuble;
+
+            // Итоговая наценка
+            let totalMarkupPercent;
+            if (currentMode === 'mini') {
+                // Мини: 8% в месяц от суммы в рассрочку
+                totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
+            } else {
+                // База: базовая наценка + срок × 1%
+                const baseMarkupPercent = BASE_MARKUP[initialPercent];
+                totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+            }
+
+            // Наценка ₽ = финансирование × итоговая наценка %
+            const markupRuble = financing * (totalMarkupPercent / 100);
+
+            // Общая стоимость = финансирование + наценка ₽
+            const total = financing + markupRuble;
+
+            // Ежемесячный платёж = общая стоимость ÷ срок
+            const monthly = term > 0 ? total / term : 0;
+
+            // Обновление результатов
+            document.getElementById('res-monthly').textContent = formatNumber(monthly);
+            document.getElementById('res-markup-ruble').textContent = formatNumber(markupRuble);
+            document.getElementById('res-markup-percent').textContent = `${totalMarkupPercent}%`;
+            document.getElementById('res-total').textContent = formatNumber(total);
+        }
+
+        // Обработка ввода в поле стоимости
+        function handleCostInput() {
+            const costInput = document.getElementById('cost-input');
+            const costSlider = document.getElementById('cost-slider');
+            
+            // Удаляем все нецифровые символы
+            let value = costInput.value.replace(/\D/g, '');
+            
+            if (value === '') {
+                value = '0';
+            }
+            
+            let numValue = parseInt(value);
+            
+            // Ограничиваем значениями в зависимости от режима
+            if (currentMode === 'mini') {
+                if (numValue < 1000) {
+                    numValue = 1000;
+                } else if (numValue > 25000) {
+                    numValue = 25000;
+                }
+            } else {
+                if (numValue < 10000) {
+                    numValue = 10000;
+                } else if (numValue > 100000) {
+                    numValue = 100000;
+                }
+            }
+            
+            // Обновляем слайдер
+            costSlider.value = numValue;
+            
+            // Форматируем отображение
+            costInput.value = formatNumberPlain(numValue);
+            
+            // Пересчитываем
+            calculate();
+        }
+
+        // Переключение режимов
+        function switchMode(mode) {
+            currentMode = mode;
+            const card = document.getElementById('calculator-card');
+            const buttons = document.querySelectorAll('.mode-btn');
+            
+            // Обновляем активную кнопку
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.mode === mode) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Переключаем класс на карточке
+            if (mode === 'mini') {
+                card.classList.add('mini-mode');
+            } else {
+                card.classList.remove('mini-mode');
+            }
+            
+            // Сбрасываем слайдеры в дефолты режима
+            const costSlider = document.getElementById('cost-slider');
+            const termSlider = document.getElementById('term-slider');
+            
+            if (mode === 'mini') {
+                costSlider.min = 1000;
+                costSlider.max = 25000;
+                costSlider.value = 10000;  // дефолт для Мини
+                termSlider.max = MINI_TERMS.length - 1;  // 0-5 для 6 месяцев
+                termSlider.value = 2;  // дефолт 3 месяца (индекс 2)
+            } else {
+                costSlider.min = 10000;
+                costSlider.max = 100000;
+                costSlider.value = 100000;  // дефолт для Базы
+                termSlider.max = TERMS.length - 1;  // 0-2
+                termSlider.value = 1;  // дефолт 6 месяцев (индекс 1)
+            }
+            
+            // Пересчитываем
+            calculate();
+        }
+
+        // Инициализация обработчиков переключателей режимов
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchMode(btn.dataset.mode);
+            });
+        });
+
+        // Инициализация обработчиков слайдеров
+        document.getElementById('cost-slider').addEventListener('input', calculate);
+        document.getElementById('initial-slider').addEventListener('input', calculate);
+        document.getElementById('term-slider').addEventListener('input', calculate);
+        
+        // Обработчик для поля ввода стоимости
+        document.getElementById('cost-input').addEventListener('input', handleCostInput);
+
+        // Мобильное меню
+        function toggleMenu() {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Закрытие меню при клике на ссылку
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('nav-menu').classList.remove('active');
+            });
+        });
+
+        // Обработка формы
+        function handleSubmit(event) {
+            event.preventDefault();
+            const messageBox = document.getElementById('form-message');
+            messageBox.style.display = 'block';
+
+            // Скрыть сообщение через 5 секунд
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // Аккордеон для FAQ
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            faqItem.classList.toggle('active');
+        }
+
+        // Первичный расчёт при загрузке
+        calculate();
+
+        // Кнопка доступности (крупный текст)
+        function initAccessibilityToggle() {
+            const isLargeText = localStorage.getItem('largeText') === 'true';
+            if (isLargeText) {
+                document.body.classList.add('large-text');
+            }
+
+            let toggleBtn = document.querySelector('.accessibility-toggle');
+            if (!toggleBtn) {
+                toggleBtn = document.createElement('button');
+                toggleBtn.className = 'accessibility-toggle';
+                toggleBtn.setAttribute('aria-label', 'Крупный текст');
+                toggleBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 16.5v-9h-2V11h2v5.5H6v2h7v-2h-3.5zM18 7.5c0-.8-.7-1.5-1.5-1.5S15 6.7 15 7.5s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5zm-1.5 3h-3v9h3v-3.5h1.5c1.7 0 3-1.3 3-3s-1.3-3-3-3h-1.5V10.5zM18 14h-1.5v-2H18c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5z"/></svg>';
+                document.body.appendChild(toggleBtn);
+            }
+
+            toggleBtn.addEventListener('click', function() {
+                document.body.classList.toggle('large-text');
+                const isLarge = document.body.classList.contains('large-text');
+                localStorage.setItem('largeText', isLarge);
+            });
+        }
+
+        initAccessibilityToggle();
+
+        // Загрузка данных о рынках из data/rates.json
+        async function loadMarketsData() {
+            try {
+                const response = await fetch('data/rates.json');
+                if (!response.ok) throw new Error('Не удалось загрузить данные о рынках');
+                const data = await response.json();
+                
+                const currencies = data.currencies;
+                
+                // Золото
+                const gold = currencies.find(c => c.code === 'GOLD');
+                if (gold) {
+                    const goldPriceEl = document.getElementById('gold-price');
+                    const goldChangeEl = document.getElementById('gold-change');
+                    const priceFormatted = Math.round(gold.value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                    goldPriceEl.textContent = priceFormatted + ' ₽';
+                    
+                    if (gold.previous !== null && gold.previous !== undefined) {
+                        const change = ((gold.value - gold.previous) / gold.previous) * 100;
+                        const changeFixed = change.toFixed(2);
+                        goldChangeEl.textContent = (change >= 0 ? '+' : '') + changeFixed + '%';
+                        goldChangeEl.className = 'market-change ' + (change >= 0 ? 'positive' : 'negative');
+                    } else {
+                        goldChangeEl.textContent = '—';
+                        goldChangeEl.className = 'market-change neutral';
+                    }
+                }
+                
+                // Доллар
+                const usd = currencies.find(c => c.code === 'USD');
+                if (usd) {
+                    const usdPriceEl = document.getElementById('usd-price');
+                    const usdChangeEl = document.getElementById('usd-change');
+                    usdPriceEl.textContent = usd.value.toFixed(2) + ' ₽';
+                    
+                    if (usd.previous !== null && usd.previous !== undefined) {
+                        const change = ((usd.value - usd.previous) / usd.previous) * 100;
+                        const changeFixed = change.toFixed(2);
+                        usdChangeEl.textContent = (change >= 0 ? '+' : '') + changeFixed + '%';
+                        usdChangeEl.className = 'market-change ' + (change >= 0 ? 'positive' : 'negative');
+                    } else {
+                        usdChangeEl.textContent = '—';
+                        usdChangeEl.className = 'market-change neutral';
+                    }
+                }
+                
+                // Евро
+                const eur = currencies.find(c => c.code === 'EUR');
+                if (eur) {
+                    const eurPriceEl = document.getElementById('eur-price');
+                    const eurChangeEl = document.getElementById('eur-change');
+                    eurPriceEl.textContent = eur.value.toFixed(2) + ' ₽';
+                    
+                    if (eur.previous !== null && eur.previous !== undefined) {
+                        const change = ((eur.value - eur.previous) / eur.previous) * 100;
+                        const changeFixed = change.toFixed(2);
+                        eurChangeEl.textContent = (change >= 0 ? '+' : '') + changeFixed + '%';
+                        eurChangeEl.className = 'market-change ' + (change >= 0 ? 'positive' : 'negative');
+                    } else {
+                        eurChangeEl.textContent = '—';
+                        eurChangeEl.className = 'market-change neutral';
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных о рынках:', error);
+            }
+        }
+
+        loadMarketsData();
+
+        // ==================== КАТАЛОГ DROPDOWN ====================
+        const catalogData = {
+            phones: ['iPhone', 'Samsung'],
+            fridge: ['Samsung', 'LG', 'Bosch', 'Haier', 'Indesit'],
+            washing: ['LG', 'Samsung', 'Bosch', 'Haier', 'Indesit'],
+            vacuum: ['Dyson', 'Samsung', 'LG', 'Bosch', 'Philips'],
+            audio: ['Sony', 'JBL', 'Bose', 'Sennheiser', 'Apple AirPods'],
+            small: ['Tefal', 'Bosch', 'Philips', 'Redmond', 'Kitfort'],
+            accessories: ['Чехлы', 'Зарядки', 'Кабели', 'Стекла', 'Наушники']
+        };
+
+        let currentCategory = 'phones';
+
+        function toggleCatalog() {
+            const dropdown = document.getElementById('catalog-dropdown');
+            const overlay = document.getElementById('catalog-overlay');
+            dropdown.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            if (dropdown.classList.contains('active')) {
+                renderBrands(currentCategory);
+            }
+        }
+
+        function closeCatalog() {
+            const dropdown = document.getElementById('catalog-dropdown');
+            const overlay = document.getElementById('catalog-overlay');
+            dropdown.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        function selectCategory(category) {
+            currentCategory = category;
+            
+            // Обновляем активную категорию
+            document.querySelectorAll('.catalog-category').forEach(cat => {
+                cat.classList.remove('active');
+                if (cat.dataset.category === category) {
+                    cat.classList.add('active');
+                }
+            });
+            
+            renderBrands(category);
+        }
+
+        function renderBrands(category) {
+            const container = document.getElementById('brands-container');
+            const brands = catalogData[category] || [];
+            
+            container.innerHTML = brands.map(brand => {
+                const brandSlug = brand.toLowerCase().replace(/\s+/g, '-');
+                return `<a href="brand.html?b=${brandSlug}" class="catalog-brand-btn" onclick="closeCatalog()">${brand}</a>`;
+            }).join('');
+        }
+
+        // Инициализация брендов при загрузке
+        renderBrands(currentCategory);
+
+        // ==================== ЗАГРУЗКА ТОВАРОВ ====================
+        let productsData = [];
+        const categoryMap = {
+            'phones': 'Телефоны',
+            'audio': 'Наушники и аудио',
+            'fridge': 'Холодильники',
+            'washing': 'Стиральные машины',
+            'vacuum': 'Пылесосы',
+            'small': 'Мелкая бытовая техника',
+            'accessories': 'Аксессуары'
+        };
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('data/products.json');
+                if (!response.ok) throw new Error('Не удалось загрузить товары');
+                productsData = await response.json();
+                renderProducts(currentCategory);
+            } catch (error) {
+                console.error('Ошибка загрузки товаров:', error);
+            }
+        }
+
+        function renderProducts(category) {
+            const container = document.getElementById('products-display');
+            if (!container) return;
+
+            const categoryProducts = productsData.filter(p => p.category === categoryMap[category]);
+            
+            if (categoryProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="products-placeholder">
+                        <span class="products-placeholder-icon">📦</span>
+                        <h3>Товары скоро появятся</h3>
+                        <p>Мы уже готовим для вас лучшие предложения!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = categoryProducts.map(product => {
+                const imgSrc = `images/products/${encodeURIComponent(product.img)}`;
+                return `
+                    <div class="product-card">
+                        <img src="${imgSrc}" alt="${product.name}" class="product-card-image" loading="lazy">
+                        <div class="product-card-content">
+                            <h3 class="product-card-name">${product.name}</h3>
+                            <span class="product-card-badge">Цена скоро</span>
+                            <button class="product-card-btn" onclick="openOrderModal('${product.name}')">Купить</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== МОДАЛЬНОЕ ОКНО ЗАКАЗА ====================
+        function openOrderModal(productName) {
+            const modal = document.getElementById('order-modal');
+            const overlay = document.getElementById('order-overlay');
+            document.getElementById('order-product-name').textContent = productName;
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            const modal = document.getElementById('order-modal');
+            const overlay = document.getElementById('order-overlay');
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            document.getElementById('order-form').reset();
+        }
+
+        function handleOrderSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('order-name').value.trim();
+            const phone = document.getElementById('order-phone').value.trim();
+            const comment = document.getElementById('order-comment').value.trim();
+            const product = document.getElementById('order-product-name').textContent;
+
+            if (!name || !phone) {
+                alert('Пожалуйста, заполните имя и телефон');
+                return;
+            }
+
+            const message = `Здравствуйте! Хочу оформить заявку:%0AТовар: ${encodeURIComponent(product)}%0AИмя: ${encodeURIComponent(name)}%0AТелефон: ${encodeURIComponent(phone)}${comment ? '%0AКомментарий: ' + encodeURIComponent(comment) : ''}`;
+            window.open(`https://wa.me/79991234567?text=${message}`, '_blank');
+            closeOrderModal();
+        }
+
+        // Загрузка товаров при загрузке страницы
+        loadProducts();
+    </script>
+</body>
+    <script>
+(function(){
+  document.querySelectorAll('a,button').forEach(function(el){
+    if((el.textContent||'').indexOf('Рассказать, что ищу')!==-1){
+      el.classList.add('tell-btn');
+      el.addEventListener('click',function(e){
+        e.preventDefault();
+        var app=document.getElementById('application');
+        if(app){app.scrollIntoView({behavior:'smooth'});}
+        setTimeout(function(){
+          var f=document.querySelector('#application input[name="looking"]');
+          if(f){f.focus();}
+        },600);
+      });
+    }
+  });
+  var form=document.querySelector('#application form');
+  if(form && !form.querySelector('[name="looking"]')){
+    var wrap=document.createElement('div');
+    wrap.className='input-group';
+    wrap.innerHTML='<label for="looking">Что ищете? (товар, бренд — необязательно)</label><input type="text" id="looking" name="looking" placeholder="Например: iPhone 15, пылесос Dyson...">';
+    form.insertBefore(wrap, form.querySelector('button[type="submit"]')||form.lastElementChild);
+  }
+  var calc=document.getElementById('calculator');
+  function flash(){
+    document.querySelectorAll('#calculator .result-big-value, #calculator .result-small-percent').forEach(function(el){
+      el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+    });
+  }
+  if(calc){calc.addEventListener('input',flash);calc.addEventListener('change',flash);}
+})();
+</script>
+</html>

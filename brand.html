@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Каталог — YuNur</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--header-bg:#1b4332;--accent:#2d6a4f;--bg:#f2f7f4;--text:#1b4332;--gold:#d4af37;--white:#fff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+header{background:var(--header-bg);padding:1rem 0;position:sticky;top:0;z-index:100}
+.header-content{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo img{height:45px;border-radius:8px}
+nav ul{display:flex;gap:2rem;list-style:none}
+nav a{color:#fff;text-decoration:none;font-weight:500}
+.header-btn{background:#fff;color:var(--header-bg);padding:10px 24px;border-radius:40px;text-decoration:none;font-weight:600;white-space:nowrap}
+main{padding:40px 0 80px}
+h1{font-size:2rem;margin-bottom:8px}
+.sub{opacity:.75;margin-bottom:24px}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:28px}
+.chip{padding:8px 18px;border-radius:25px;border:1px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;font-weight:500;font-size:.9rem}
+.chip.active{background:var(--accent);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.card{background:#fff;border:1px solid var(--gold);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:scale(1.03);box-shadow:0 10px 30px rgba(27,67,50,.18)}
+.card img{width:100%;height:200px;object-fit:cover;background:#eee}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card-name{font-weight:600;font-size:.95rem;line-height:1.35;flex:1}
+.badge{align-self:flex-start;font-size:.75rem;color:var(--gold);border:1px solid var(--gold);padding:3px 10px;border-radius:999px}
+.buy{background:var(--accent);color:#fff;border:none;border-radius:40px;padding:12px;font-weight:600;cursor:pointer;font-size:.95rem}
+.buy:hover{background:var(--header-bg)}
+.empty{background:#fff;border:1px solid var(--accent);border-radius:30px;padding:3rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.empty h2{margin-bottom:10px}
+.empty p{opacity:.8;margin-bottom:20px}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:40px;text-decoration:none;font-weight:600}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:20px;max-width:420px;width:100%;padding:28px;position:relative}
+.modal-box h3{margin-bottom:6px}
+.modal-product{color:var(--accent);font-weight:600;margin-bottom:16px;font-size:.95rem}
+.modal-box label{display:block;font-size:.85rem;margin:12px 0 4px;font-weight:500}
+.modal-box input,.modal-box textarea{width:100%;padding:10px 14px;border:1px solid #cfd8d3;border-radius:10px;font-family:inherit;font-size:.95rem}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text)}
+.modal-send{width:100%;margin-top:18px}
+@media(max-width:768px){nav{display:none}}
+</style>
+</head>
+<body>
+<header><div class="container header-content">
+<a href="index.html" class="logo"><img src="logo.png" alt="YuNur"></a>
+<nav><ul>
+<li><a href="index.html#calculator">Калькулятор</a></li>
+<li><a href="rates.html">Курсы валют</a></li>
+<li><a href="articles.html">Статьи</a></li>
+<li><a href="payments.html">Мои платежи</a></li>
+</ul></nav>
+<a href="index.html#application" class="header-btn">Оставить заявку</a>
+</div></header>
+<main><div class="container">
+<h1 id="title">Каталог</h1>
+<p class="sub">Честная рассрочка без процентов и штрафов</p>
+<div class="chips" id="chips"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none">
+<h2>🛍️ Товары скоро появятся</h2>
+<p>Каталог наполняется. Оставьте заявку — и мы сообщим, когда товар приедет.</p>
+<a class="btn" href="index.html#application">Оставить заявку</a>
+</div>
+</div></main>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+<div class="modal-box">
+<button class="modal-close" onclick="closeModal()">×</button>
+<h3>Оформить заявку</h3>
+<p class="modal-product" id="modal-product"></p>
+<label>Имя</label><input id="m-name" placeholder="Как к вам обращаться">
+<label>Телефон / WhatsApp</label><input id="m-phone" placeholder="+7 ___ ___-__-__">
+<label>Комментарий (необязательно)</label><textarea id="m-comment" rows="2"></textarea>
+<button class="buy modal-send" onclick="sendOrder()">Отправить</button>
+</div>
+</div>
+<script>
+const CATS={all:'Все товары',phones:'Телефоны',audio:'Наушники и аудио',fridge:'Холодильники',washing:'Стиральные машины',vacuum:'Пылесосы',home:'Мелкая бытовая техника',accessories:'Аксессуары'};
+let products=[],currentList=[],currentProduct='',filter={},dirCache=null;
+const params=new URLSearchParams(location.search);
+if(params.get('b'))filter.b=params.get('b');
+if(params.get('c'))filter.c=params.get('c');
+fetch('data/products.json').then(r=>r.json()).then(list=>{products=list;renderChips();render();}).catch(()=>{document.getElementById('empty').style.display='block';});
+function slug(s){return (s||'').toLowerCase().replace(/\s+/g,'-');}
+function pretty(s){return s.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function norm(s){return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,'').replace(/(jpeg|jpg|png|webp|avif)/g,'');}
+async function fixImg(im){
+if(im.dataset.fixed)return;
+im.dataset.fixed='1';
+const raw=im.getAttribute('data-raw');
+try{
+if(!dirCache){dirCache=await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/images/products?per_page=100').then(r=>r.json());}
+const cands=(dirCache||[]).filter(f=>norm(f.name)===norm(raw));const hit=cands.find(f=>/\.jpe?g$/i.test(f.name))||cands[0];
+if(hit){im.src='images/products/'+encodeURIComponent(hit.name);}
+}catch(e){}
+}
+function renderChips(){
+document.getElementById('chips').innerHTML=Object.keys(CATS).map(k=>'<button class="chip'+((k==='all'&&!filter.c&&!filter.b)||(k===filter.c)?' active':'')+'" onclick="setCat(\''+k+'\')">'+CATS[k]+'</button>').join('');
+}
+function setCat(k){filter={c:k==='all'?undefined:k};history.replaceState(null,'',k==='all'?'brand.html':'brand.html?c='+k);renderChips();render();}
+function render(){
+let list=products;
+if(filter.b)list=list.filter(p=>slug(p.brand)===filter.b);
+else if(filter.c)list=list.filter(p=>p.category===filter.c);
+currentList=list;
+document.getElementById('title').textContent=filter.b?pretty(filter.b):(filter.c?CATS[filter.c]:'Все товары');
+document.getElementById('empty').style.display=list.length?'none':'block';
+document.getElementById('grid').innerHTML=list.map((p,i)=>'<div class="card"><img loading="lazy" data-raw="'+esc(p.img)+'" src="images/products/'+encodeURIComponent(p.img)+'" alt="'+esc(p.name)+'"><div class="card-body"><div class="card-name">'+esc(p.name)+'</div><span class="badge">Цена скоро</span><button class="buy" onclick="openModal('+i+')">Купить</button></div></div>').join('');
+document.querySelectorAll('#grid img').forEach(im=>im.addEventListener('error',()=>fixImg(im)));
+}
+function openModal(i){currentProduct=currentList[i].name;document.getElementById('modal-product').textContent=currentProduct;document.getElementById('modal').classList.add('active');}
+function closeModal(){document.getElementById('modal').classList.remove('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function sendOrder(){
+const name=document.getElementById('m-name').value.trim();
+const phone=document.getElementById('m-phone').value.trim();
+if(!name||!phone){alert('Заполните имя и телефон');return;}
+const comment=document.getElementById('m-comment').value.trim();
+const msg='Здравствуйте! Хочу оформить заявку:%0AТовар: '+encodeURIComponent(currentProduct)+'%0AИмя: '+encodeURIComponent(name)+'%0AТелефон: '+encodeURIComponent(phone)+(comment?'%0AКомментарий: '+encodeURIComponent(comment):'');
+window.open('https://wa.me/79991234567?text='+msg,'_blank');
+closeModal();
+}
+</script>
+</body>
+</html>

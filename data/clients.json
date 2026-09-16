@@ -1,0 +1,243 @@
+[
+  {
+    "hash": "d1e5f0139c985b45f29411912bc84cb4871b641c6f9f87473a25257e759b9157",
+    "phoneHash": "3ea3b0328a0f8f8056414a434a80f7625bfe7f5317c055fac455076b255e6716",
+    "phoneTail": "567",
+    "name": "Магомед",
+    "item": "Айфон 15 про 256 гб",
+    "total": 72090,
+    "schedule": [
+      {
+        "date": "2026-09-07",
+        "sum": 7209,
+        "paid": true,
+        "bonusGiven": true,
+        "paidSum": 7209
+      },
+      {
+        "date": "2026-10-07",
+        "sum": 7209,
+        "paid": true,
+        "bonusGiven": true,
+        "paidSum": 2500
+      },
+      {
+        "date": "2026-11-07",
+        "sum": 7209,
+        "paid": true,
+        "bonusGiven": true,
+        "paidSum": 16000
+      },
+      {
+        "date": "2026-12-07",
+        "sum": 7209,
+        "paid": true,
+        "paidSum": 7209,
+        "bonusGiven": true
+      },
+      {
+        "date": "2027-01-07",
+        "sum": 7209,
+        "paid": true,
+        "paidSum": 1582
+      },
+      {
+        "date": "2027-02-07",
+        "sum": 7209,
+        "paid": true,
+        "paidSum": 12222,
+        "bonusGiven": true
+      },
+      {
+        "date": "2027-03-07",
+        "sum": 7209,
+        "paid": true,
+        "paidSum": 5013
+      },
+      {
+        "date": "2027-04-07",
+        "sum": 7209,
+        "paid": true,
+        "paidSum": 7209,
+        "bonusGiven": true
+      },
+      {
+        "date": "2027-05-07",
+        "sum": 7209,
+        "paid": false
+      },
+      {
+        "date": "2027-06-07",
+        "sum": 7209,
+        "paid": false
+      }
+    ],
+    "bonus": 501.47
+  },
+  {
+    "hash": "bdc2c3dcebf7cf278199d4f24606b67e6cd78f9a2db4254a2ddbf018e27736f3",
+    "phoneHash": "a826b41de5a5c4297168c0293802f598325f2da8488d6ada4255160bed5cdc6a",
+    "phoneTail": "222",
+    "name": "Тест",
+    "item": "Айфон 15 про 256 гб",
+    "total": 69660,
+    "schedule": [
+      {
+        "date": "2026-09-07",
+        "sum": 11610,
+        "paid": true,
+        "bonusGiven": true
+      },
+      {
+        "date": "2026-10-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2026-11-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2026-12-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2027-01-07",
+        "sum": 11610,
+        "paid": false
+      },
+      {
+        "date": "2027-02-07",
+        "sum": 11610,
+        "paid": false
+      }
+    ],
+    "bonus": 92.88
+  },
+  {
+    "hash": "9ae4198edb3f27eb6a6c4865c2dbf2a5f86801739579f2f622055c181ae7dc2f",
+    "name": "Тест",
+    "item": "Айфон 15 про 256 гб",
+    "total": 69336,
+    "schedule": [
+      {
+        "date": "2026-09-07",
+        "sum": 11556,
+        "paid": true,
+        "paidSum": 11559,
+        "bonusGiven": true
+      },
+      {
+        "date": "2026-10-07",
+        "sum": 11556,
+        "paid": true,
+        "paidSum": 3
+      },
+      {
+        "date": "2026-11-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2026-12-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2027-01-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2027-02-07",
+        "sum": 11556,
+        "paid": false
+      }
+    ],
+    "bonus": 92.47
+  },
+  {
+    "hash": "45e8ff0f6edf487578fa6ea8d3b582dbffdf7dddb199792ab13e1b94995cc89f",
+    "name": "Тест",
+    "item": "Айфон 15 про 256 гб",
+    "total": 69336,
+    "schedule": [
+      {
+        "date": "2026-09-07",
+        "sum": 11556,
+        "paid": true,
+        "paidSum": 1123,
+        "bonusGiven": true
+      },
+      {
+        "date": "2026-10-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2026-11-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2026-12-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2027-01-07",
+        "sum": 11556,
+        "paid": false
+      },
+      {
+        "date": "2027-02-07",
+        "sum": 11556,
+        "paid": false
+      }
+    ],
+    "bonus": 8.98
+  },
+  {
+    "hash": "9ce022b956d8659e4b38e70a355e0dc2ab34b32e6891d3d915dedb22ef091044",
+    "name": "gh",
+    "item": "Айфон 15 про 256 гб",
+    "total": 81000,
+    "schedule": [
+      {
+        "date": "2026-07-06",
+        "sum": 13500,
+        "paid": true,
+        "paidSum": 13501
+      },
+      {
+        "date": "2026-08-06",
+        "sum": 13500,
+        "paid": true,
+        "paidSum": 100
+      },
+      {
+        "date": "2026-09-06",
+        "sum": 13500,
+        "paid": true
+      },
+      {
+        "date": "2026-10-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-11-06",
+        "sum": 13500,
+        "paid": false
+      },
+      {
+        "date": "2026-12-06",
+        "sum": 13500,
+        "paid": false
+      }
+    ],
+    "bonus": 108
+  }
+]

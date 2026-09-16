@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YuNur Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f8f9fa; color: #1a1a1a; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%); }
+        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
+        .login-box h1 { color: #1b5e20; text-align: center; margin-bottom: 30px; font-size: 28px; }
+        .login-box input { width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; font-family: 'DM Sans', sans-serif; margin-bottom: 20px; transition: border-color 0.3s; }
+        .login-box input:focus { outline: none; border-color: #c9a227; }
+        .btn { width: 100%; padding: 14px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.3s; font-family: 'DM Sans', sans-serif; }
+        .btn-primary { background: #1b5e20; color: white; }
+        .btn-primary:hover { background: #2e7d32; }
+        .btn-secondary { background: #c9a227; color: white; }
+        .btn-secondary:hover { background: #d4af37; }
+        .btn-outline { background: transparent; border: 2px solid #1b5e20; color: #1b5e20; }
+        .btn-outline:hover { background: #1b5e20; color: white; }
+        .error-msg { color: #d32f2f; text-align: center; margin-top: 15px; font-weight: 500; display: none; }
+        .admin-panel { display: none; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        .tab { padding: 12px 24px; background: transparent; border: none; font-size: 16px; font-weight: 500; cursor: pointer; color: #666; border-radius: 8px 8px 0 0; transition: all 0.3s; font-family: 'DM Sans', sans-serif; }
+        .tab.active { background: #1b5e20; color: white; }
+        .tab.investors-tab { background: #c9a227; color: white; }
+        .tab:hover:not(.active) { background: #e8f5e9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: 'DM Sans', sans-serif; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #c9a227; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .result-box { background: white; padding: 25px; border-radius: 12px; margin-top: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .result-box h3 { color: #1b5e20; margin-bottom: 15px; }
+        .result-box pre { background: #f5f5f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .result-box .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .result-box .actions button { flex: 1; min-width: 150px; }
+        .whatsapp-text { background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #1b5e20; }
+        .schedule-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .schedule-table th, .schedule-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        .schedule-table th { background: #1b5e20; color: white; }
+        .schedule-table tr:hover { background: #f5f5f5; }
+        .schedule-table .paid { color: #1b5e20; font-weight: 500; }
+        .schedule-table .unpaid { color: #d32f2f; cursor: pointer; }
+        .schedule-table .unpaid:hover { text-decoration: underline; }
+        .client-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .client-info p { margin-bottom: 10px; }
+        .client-info strong { color: #1b5e20; }
+        .gold-accent { color: #c9a227; }
+        .hidden { display: none !important; }
+        .remember-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; color: #666; font-size: 14px; }
+        .remember-row input { width: auto !important; padding: 0 !important; margin: 0 !important; }
+        
+        /* Tier badges */
+        .tier-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-left: 8px; }
+        .tier-base { background: #fff8e1; color: #c9a227; border: 1px solid #c9a227; }
+        .tier-mini { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+        
+        /* Error hints */
+        .error-hint { color: #d32f2f; font-size: 13px; margin-top: 5px; display: none; }
+        .error-hint.visible { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-wrapper">
+        <div class="login-box">
+            <h1>🔐 YuNur Admin</h1>
+            <input type="password" id="masterCode" placeholder="Мастер-код">
+            <input type="password" id="githubToken" placeholder="GitHub-токен (для автосохранения)">
+            <label class="remember-row">
+                <input type="checkbox" id="rememberToken"> Запомнить токен в этом браузере
+            </label>
+            <button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
+            <p id="errorMsg" class="error-msg">Доступ запрещён</p>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('newClient')">Новый клиент</button>
+            <button class="tab" onclick="switchTab('payments')">Платежи</button>
+            <button class="tab" onclick="switchTab('collections')">Сборы</button>
+            <button class="tab" onclick="switchTab('investors')" id="investorsTabBtn">Инвесторы</button>
+        </div>
+
+        <!-- New Client Tab -->
+        <div id="newClientTab" class="tab-content active">
+            <!-- Режимы: База / Мини -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Режим расчёта</label>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn btn-primary" id="modeBase" onclick="setMode('base')">База</button>
+                    <button type="button" class="btn btn-outline" id="modeMini" onclick="setMode('mini')">Мини (до 25 000 ₽)</button>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="ncPhone" placeholder="+7 (___) ___-__-__">
+                </div>
+                <div class="form-group">
+                    <label>Имя</label>
+                    <input type="text" id="ncName" placeholder="Имя клиента">
+                </div>
+                <div class="form-group">
+                    <label>Товар</label>
+                    <input type="text" id="ncItem" placeholder="Название товара">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Реферальный код (необязательно)</label>
+                    <input type="text" id="ncRefCode" placeholder="RF-XXXX" oninput="checkRefCodeInput()">
+                    <p id="refCodeWarning" style="color:#f57c00; font-size:13px; margin-top:5px; display:none;">Код не найден, клиент будет без привязки</p>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Стоимость (₽)</label>
+                    <input type="number" id="ncCost" placeholder="100000" oninput="handleCostInput(); calculatePreview()">
+                </div>
+                <div class="form-group" id="depositGroup">
+                    <label>Взнос (%)</label>
+                    <select id="ncDepositPercent" onchange="updateMarkupFromPercent(); calculatePreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="25">25%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
+                    </select>
+                </div>
+                <!-- Поле взноса для Мини режима (скрыто по умолчанию) - взнос в ПРОЦЕНТАХ -->
+                <div class="form-group hidden" id="miniDepositGroup">
+                    <label>Взнос для Мини (%)</label>
+                    <select id="ncMiniDepositPercent" onchange="calculatePreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="25">25%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Наценка (%)</label>
+                    <input type="number" id="ncMarkup" placeholder="45" readonly>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Срок (мес)</label>
+                    <select id="ncTerm" onchange="updateMarkupFromPercent(); calculatePreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="3">3</option>
+                        <option value="6">6</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Дата старта</label>
+                    <input type="date" id="ncStartDate">
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="calcPreview" class="result-box hidden" style="margin-top: 20px; background: #f8f9fa;">
+                <h3>📊 Расчёт</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Взнос в рублях</label>
+                        <input type="text" id="prevDepositRuble" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Сумма в рассрочку</label>
+                        <input type="text" id="prevFinancing" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Наценка (₽)</label>
+                        <input type="text" id="prevMarkupRuble" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Общая сумма</label>
+                        <input type="text" id="prevTotal" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Платёж в месяц</label>
+                        <input type="text" id="prevMonthly" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="generateClient()" style="margin-top: 20px;">Сгенерировать</button>
+
+            <div id="ncResult" class="result-box hidden">
+                <h3>✅ Клиент создан</h3>
+                <div class="whatsapp-text" id="waText"></div>
+                <div class="actions">
+                    <button class="btn btn-secondary" onclick="copyWaText()">Копировать WhatsApp</button>
+                </div>
+                <h3 style="margin-top: 20px;">📄 clients.json</h3>
+                <pre id="jsonOutput"></pre>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="downloadJson()">Скачать</button>
+                    <button class="btn btn-outline" onclick="copyJson()">Копировать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div id="paymentsTab" class="tab-content">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="payPhone" placeholder="+7 (___) ___-__-__">
+                </div>
+                <div class="form-group">
+                    <label>Код</label>
+                    <input type="text" id="payCode" placeholder="YN-XXXX-XXXX">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="findClient()">Найти</button>
+
+            <div id="payResult" class="result-box hidden">
+                <div class="client-info" id="clientInfo"></div>
+                <table class="schedule-table" id="scheduleTable">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody"></tbody>
+                </table>
+                <div style="margin-top: 20px;" class="actions">
+                    <button class="btn btn-primary" onclick="downloadUpdatedJson()">Скачать обновлённый clients.json</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collections Tab -->
+        <div id="collectionsTab" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>📊 Сборы</h2>
+                <button class="btn btn-outline" onclick="exportCollectionsCSV()" style="min-width:auto; width:auto;">Экспорт CSV</button>
+            </div>
+            <div id="collectionsSummary" style="background:#fff3cd; padding:15px; border-radius:8px; margin-bottom:20px; border-left:4px solid #ffc107;"></div>
+            <button class="btn btn-outline" id="showCompletedBtn" onclick="toggleCompletedClients()" style="margin-bottom:15px; display:none;">Показать завершённых (<span id="completedCount">0</span>)</button>
+            <table class="schedule-table" id="collectionsTable">
+                <thead>
+                    <tr>
+                        <th>Клиент</th>
+                        <th>Хвост</th>
+                        <th>Статус</th>
+                        <th>Бейджи</th>
+                        <th>Ближайший платёж</th>
+                    </tr>
+                </thead>
+                <tbody id="collectionsBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Investors Tab -->
+        <div id="investorsTab" class="tab-content">
+            <h2>💰 Инвесторы</h2>
+            
+            <!-- Кнопка экспорта CSV -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <button class="btn btn-outline" onclick="exportInvestorsCSV()" style="min-width:auto; width:auto;">Экспорт CSV</button>
+            </div>
+            
+            <!-- Форма добавления (только для списка) -->
+            <div class="result-box" style="margin-top: 20px;" id="investorAddForm">
+                <h3>Добавить инвестора</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" id="invName" placeholder="Имя инвестора">
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон (последние 3 цифры)</label>
+                        <input type="text" id="invPhoneTail" placeholder="123" maxlength="3" pattern="[0-9]{3}">
+                    </div>
+                    <div class="form-group">
+                        <label>Сумма (₽)</label>
+                        <input type="number" id="invSum" placeholder="100000" oninput="updateTierByAmount()">
+                        <p id="tierHint" style="color: #666; font-size: 13px; margin-top: 5px;"></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Tier</label>
+                        <select id="invTier">
+                            <option value="base">База (1–5 млн ₽)</option>
+                            <option value="mini">Мини (500 тыс–1 млн ₽)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Срок (мес)</label>
+                        <input type="number" id="invTerm" placeholder="24" value="24">
+                    </div>
+                </div>
+                <p id="invErrorHint" class="error-hint"></p>
+                <button class="btn btn-primary" onclick="addInvestor()">Добавить инвестора</button>
+                <p id="invSavedMsg" style="color: #1b5e20; font-weight: 500; margin-top: 10px; display: none;">✅ Сохранено</p>
+            </div>
+
+            <!-- Итоговая строка -->
+            <div id="investorsSummary" style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1b5e20;">
+                Инвесторов: 0 · Всего: 0 ₽
+            </div>
+
+            <!-- Таблица инвесторов (список) -->
+            <table class="schedule-table" id="investorsTable">
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Tier</th>
+                        <th>На счёте</th>
+                        <th>В обороте</th>
+                        <th>Начислено дохода</th>
+                        <th>Дата окончания</th>
+                    </tr>
+                </thead>
+                <tbody id="investorsBody"></tbody>
+            </table>
+            
+            <!-- Карточка инвестора (скрыта по умолчанию) -->
+            <div id="investorCard" class="hidden" style="margin-top: 20px;">
+                <button class="btn btn-outline" onclick="showInvestorList()" style="margin-bottom: 20px; min-width:auto; width:auto;">← Назад к списку</button>
+                
+                <h3 id="cardInvestorName">Имя инвестора</h3>
+                
+                <!-- Три цифры крупно -->
+                <div class="form-row" style="margin: 20px 0;">
+                    <div class="result-box" style="background: #e3f2fd; text-align: center;">
+                        <h4 style="color: #1565c0;">На счёте</h4>
+                        <p id="cardOnAccount" style="font-size: 24px; font-weight: 700; color: #1565c0;">0 ₽</p>
+                    </div>
+                    <div class="result-box" style="background: #fff3e0; text-align: center;">
+                        <h4 style="color: #e65100;">В обороте</h4>
+                        <p id="cardInTurnover" style="font-size: 24px; font-weight: 700; color: #e65100;">0 ₽</p>
+                    </div>
+                    <div class="result-box" style="background: #e8f5e9; text-align: center;">
+                        <h4 style="color: #2e7d32;">Начислено дохода</h4>
+                        <p id="cardAccruedIncome" style="font-size: 24px; font-weight: 700; color: #2e7d32;">0 ₽</p>
+                    </div>
+                    <div class="result-box" style="background: #f3e5f5; text-align: center;">
+                        <h4 style="color: #7b1fa2;">Дата окончания</h4>
+                        <p id="cardEndDate" style="font-size: 24px; font-weight: 700; color: #7b1fa2;">-</p>
+                    </div>
+                    <div class="result-box" style="background: #e0f7fa; text-align: center;">
+                        <h4 style="color: #00838f;">Общий оборот</h4>
+                        <p id="cardTotalTurnover" style="font-size: 24px; font-weight: 700; color: #00838f;">0 ₽</p>
+                    </div>
+                </div>
+                
+                <!-- Кнопки действий -->
+                <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="toggleTopUpForm()" style="min-width:auto;">+ Пополнить</button>
+                    <button class="btn btn-secondary" onclick="toggleTakeForProductForm()" style="min-width:auto;">Взять на товар</button>
+                </div>
+                
+                <!-- Форма пополнения -->
+                <div id="topUpForm" class="result-box hidden" style="background: #f5f5f5; margin-bottom: 20px;">
+                    <h4>Пополнение счёта</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Сумма (₽)</label>
+                            <input type="number" id="topUpAmount" placeholder="10000" oninput="validateTopUpAmount()">
+                            <p id="topUpErrorHint" class="error-hint"></p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="doTopUp()">Пополнить</button>
+                </div>
+                
+                <!-- Форма взятия на товар -->
+                <div id="takeForProductForm" class="result-box hidden" style="background: #f5f5f5; margin-bottom: 20px;">
+                    <h4>Взять на товар</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Название товара</label>
+                            <input type="text" id="takeProductName" placeholder="iPhone 17 Pro">
+                        </div>
+                        <div class="form-group">
+                            <label>Сумма (₽)</label>
+                            <input type="number" id="takeProductAmount" placeholder="100000" oninput="calculateDealPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Режим сделки</label>
+                            <select id="takeDealMode" onchange="updateDealOptions(); calculateDealPreview()">
+                                <option value="base">База</option>
+                                <option value="mini">Мини</option>
+                            </select>
+                            <p id="dealModeHint" class="error-hint"></p>
+                        </div>
+                        <div class="form-group" id="baseDepositGroup">
+                            <label>Взнос (%)</label>
+                            <select id="takeBaseDeposit" onchange="calculateDealPreview()">
+                                <option value="">Выбрать...</option>
+                                <option value="25">25%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="investorMiniDepositGroup" style="display:none;">
+                            <label>Взнос (%)</label>
+                            <select id="takeMiniDeposit" onchange="calculateDealPreview()">
+                                <option value="">Выбрать...</option>
+                                <option value="25">25%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="takeTermGroup">
+                            <label>Срок (мес)</label>
+                            <select id="takeTerm" onchange="calculateDealPreview()">
+                                <option value="">Выбрать...</option>
+                                <option value="3">3</option>
+                                <option value="6">6</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="dealPreview" style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <p><strong>Ежемесячный доход инвестора:</strong> <span id="dealMonthlyIncome">0</span> ₽</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="doTakeForProduct()">Взять на товар</button>
+                </div>
+                
+                <!-- Книжка операций -->
+                <h4 style="margin-top: 30px;">📖 Книжка учёта операций</h4>
+                <table class="schedule-table" id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Тип</th>
+                            <th>Название</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_HASH = "e00ea505e2fb83fa48766a618f62ba5f6596040630908fbcc6b70d8b0e03829e";
+
+        let actualMasterHash = MASTER_HASH;
+        
+        // === Генерация уникального реферального кода ===
+        function generateRefCode() {
+            return 'RF-' + Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+        
+        // === Проверка реферального кода при вводе ===
+        function checkRefCodeInput() {
+            const inputCode = document.getElementById('ncRefCode').value.trim().toUpperCase();
+            const warningEl = document.getElementById('refCodeWarning');
+            if (!inputCode) {
+                warningEl.style.display = 'none';
+                return;
+            }
+            // Проверяем, есть ли такой код среди существующих клиентов
+            const clientsData = window.currentClients || [];
+            const found = clientsData.some(c => c.refCode && c.refCode.toUpperCase() === inputCode);
+            if (!found) {
+                warningEl.style.display = 'block';
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
+
+        // === GitHub API: автосохранение базы ===
+        function loadToken() {
+            const saved = localStorage.getItem('yunur_token');
+            if (saved) {
+                document.getElementById('githubToken').value = saved;
+                document.getElementById('rememberToken').checked = true;
+            }
+        }
+
+        function saveToken() {
+            const token = document.getElementById('githubToken').value.trim();
+            const remember = document.getElementById('rememberToken').checked;
+            if (remember && token) {
+                localStorage.setItem('yunur_token', token);
+            } else {
+                localStorage.removeItem('yunur_token');
+            }
+        }
+
+        async function commitToGithub(jsonContent, message) {
+            const token = document.getElementById('githubToken').value.trim() || localStorage.getItem('yunur_token') || '';
+            if (!token) return false;
+            try {
+                const getResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/clients.json', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!getResp.ok) return false;
+                const current = await getResp.json();
+                const putResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/clients.json', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        content: btoa(unescape(encodeURIComponent(jsonContent))),
+                        sha: current.sha
+                    })
+                });
+                return putResp.ok;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function commitInvestorsToGithub(jsonContent, message) {
+            const token = document.getElementById('githubToken').value.trim() || localStorage.getItem('yunur_token') || '';
+            if (!token) return false;
+            try {
+                const getResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/investors.json', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!getResp.ok) return false;
+                const current = await getResp.json();
+                const putResp = await fetch('https://api.github.com/repos/Faust-412/YuNur/contents/data/investors.json', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        content: btoa(unescape(encodeURIComponent(jsonContent))),
+                        sha: current.sha
+                    })
+                });
+                return putResp.ok;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadToken);
+
+        async function checkMasterCode() {
+            const code = document.getElementById('masterCode').value;
+            const encoder = new TextEncoder();
+            const data = encoder.encode(code);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            if (inputHash !== actualMasterHash) {
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+            
+            // Проверка токена GitHub API
+            const token = document.getElementById('githubToken').value.trim() || localStorage.getItem('yunur_token') || '';
+            if (token) {
+                try {
+                    const resp = await fetch('https://api.github.com/user', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (!resp.ok && resp.status === 401) {
+                        showErrorBanner('Токен истёк или невалиден — создай новый и войди снова');
+                        return;
+                    }
+                } catch (e) {
+                    showErrorBanner('Токен истёк или невалиден — создай новый и войди снова');
+                    return;
+                }
+            }
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            saveToken();
+        }
+        
+        function showErrorBanner(message) {
+            let banner = document.getElementById('tokenErrorBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'tokenErrorBanner';
+                banner.style.cssText = 'background:#d32f2f; color:white; padding:15px; text-align:center; font-weight:500; border-radius:8px; margin-bottom:20px;';
+                document.querySelector('.login-box').insertBefore(banner, document.querySelector('.login-box input'));
+            }
+            banner.textContent = message;
+            banner.style.display = 'block';
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active', 'investors-tab'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+            if (tabName === 'newClient') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('newClientTab').classList.add('active');
+            } else if (tabName === 'payments') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('paymentsTab').classList.add('active');
+            } else if (tabName === 'collections') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('collectionsTab').classList.add('active');
+                renderCollections();
+            } else if (tabName === 'investors') {
+                const investorsBtn = document.getElementById('investorsTabBtn');
+                investorsBtn.classList.add('active', 'investors-tab');
+                document.getElementById('investorsTab').classList.add('active');
+                loadInvestors();
+            }
+        }
+
+        // НАСТРОЙКИ: базовая наценка в зависимости от взноса (как в index.html режим "База")
+        const BASE_MARKUP = {
+            25: 39,  // 25% взнос → 39% базовая наценка
+            40: 29,  // 40% взнос → 29% базовая наценка
+            50: 24   // 50% взнос → 24% базовая наценка
+        };
+        const MONTHLY_ADDITION = 1;  // +1% за каждый месяц срока
+        
+        // Режим расчёта: 'base' или 'mini'
+        let currentMode = 'base';
+        
+        function setMode(mode) {
+            currentMode = mode;
+            const baseBtn = document.getElementById('modeBase');
+            const miniBtn = document.getElementById('modeMini');
+            const depositGroup = document.getElementById('depositGroup');
+            const miniDepositGroup = document.getElementById('miniDepositGroup');
+            
+            if (mode === 'base') {
+                baseBtn.classList.remove('btn-outline');
+                baseBtn.classList.add('btn-primary');
+                miniBtn.classList.remove('btn-primary');
+                miniBtn.classList.add('btn-outline');
+                depositGroup.style.display = 'block';
+                miniDepositGroup.classList.add('hidden');
+                document.getElementById('ncMarkup').readOnly = false;
+            } else {
+                miniBtn.classList.remove('btn-outline');
+                miniBtn.classList.add('btn-primary');
+                baseBtn.classList.remove('btn-primary');
+                baseBtn.classList.add('btn-outline');
+                depositGroup.style.display = 'none';
+                miniDepositGroup.classList.remove('hidden');
+                document.getElementById('ncDepositPercent').value = '';
+                document.getElementById('ncMarkup').readOnly = true;
+                // Сброс значения мини-взноса при переключении
+                document.getElementById('ncMiniDepositPercent').value = '';
+            }
+            calculatePreview();
+        }
+        
+        function handleCostInput() {
+            const cost = parseFloat(document.getElementById('ncCost').value) || 0;
+            // Авто-переключение на Мини при стоимости <= 25000
+            if (cost > 0 && cost <= 25000 && currentMode !== 'mini') {
+                setMode('mini');
+            } else if (cost > 25000 && currentMode !== 'base') {
+                setMode('base');
+            }
+        }
+
+        function calculatePhoneHash(phone) {
+            const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+            const encoder = new TextEncoder();
+            const data = encoder.encode(normPhone);
+            return crypto.subtle.digest('SHA-256', data).then(hashBuffer => {
+                return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            });
+        }
+
+        async function checkDuplicatePhone(phone, name) {
+            const phoneHash = await calculatePhoneHash(phone);
+            
+            let clients = [];
+            try {
+                const response = await fetch('data/clients.json?' + Date.now());
+                clients = await response.json();
+            } catch (e) {
+                return false;
+            }
+            
+            const existingClients = clients.filter(c => c.phoneHash === phoneHash);
+            if (existingClients.length > 0) {
+                const clientNames = existingClients.map(c => c.name).join(', ');
+                const count = existingClients.length;
+                return confirm(`Этот номер уже зарегистрирован: ${clientNames}, договоров: ${count}. Оформить ещё один договор?`);
+            }
+            return true;
+        }
+
+        function updateMarkupFromPercent() {
+            const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
+            const term = parseInt(document.getElementById('ncTerm').value) || 0;
+            const markupField = document.getElementById('ncMarkup');
+
+            if (!depositPercent) return;
+            
+            const baseMarkup = BASE_MARKUP[depositPercent] || 0;
+            const totalMarkup = baseMarkup + (term * MONTHLY_ADDITION);
+            markupField.value = totalMarkup;
+        }
+
+        function formatNumber(num) {
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        function calculatePreview() {
+            const cost = parseFloat(document.getElementById('ncCost').value) || 0;
+            
+            if (!cost) {
+                document.getElementById('calcPreview').classList.add('hidden');
+                return;
+            }
+            
+            let depositRuble, financing, markupRuble, total, monthly;
+            
+            if (currentMode === 'mini') {
+                // Режим Мини: 8% в месяц, срок до 6 мес, стоимость 1000-25000
+                const term = parseInt(document.getElementById('ncTerm').value) || 0;
+                if (!term || term > 6) {
+                    document.getElementById('calcPreview').classList.add('hidden');
+                    return;
+                }
+                // Взнос в процентах (как на сайте index.html)
+                const miniDepositPercent = parseInt(document.getElementById('ncMiniDepositPercent').value) || 0;
+                const markupPercent = 8 * term; // 8% в месяц × количество месяцев
+                depositRuble = cost * (miniDepositPercent / 100);
+                financing = cost - depositRuble;
+                markupRuble = financing * (markupPercent / 100);
+                total = financing + markupRuble;
+                monthly = total / term;
+                
+                document.getElementById('ncMarkup').value = markupPercent;
+            } else {
+                // Режим База: базовая наценка + срок × 1%
+                const depositPercent = parseInt(document.getElementById('ncDepositPercent').value) || 0;
+                const term = parseInt(document.getElementById('ncTerm').value) || 0;
+                
+                if (!depositPercent || !term) {
+                    document.getElementById('calcPreview').classList.add('hidden');
+                    return;
+                }
+                
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+                
+                depositRuble = cost * (depositPercent / 100);
+                financing = cost - depositRuble;
+                markupRuble = financing * (totalMarkupPercent / 100);
+                total = financing + markupRuble;
+                monthly = total / term;
+            }
+            
+            document.getElementById('prevDepositRuble').value = formatNumber(depositRuble) + ' ₽';
+            document.getElementById('prevFinancing').value = formatNumber(financing) + ' ₽';
+            document.getElementById('prevMarkupRuble').value = formatNumber(markupRuble) + ' ₽';
+            document.getElementById('prevTotal').value = formatNumber(total) + ' ₽';
+            document.getElementById('prevMonthly').value = formatNumber(monthly) + ' ₽';
+            
+            document.getElementById('calcPreview').classList.remove('hidden');
+        }
+
+        function generateCode() {
+            const array = new Uint8Array(8);
+            crypto.getRandomValues(array);
+            const hex = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+            return `YN-${hex.slice(0,4).toUpperCase()}-${hex.slice(4,8).toUpperCase()}`;
+        }
+
+        async function generateClient() {
+            const phone = document.getElementById('ncPhone').value.trim();
+            const name = document.getElementById('ncName').value.trim();
+            const item = document.getElementById('ncItem').value.trim();
+            const cost = parseFloat(document.getElementById('ncCost').value);
+            const term = parseInt(document.getElementById('ncTerm').value);
+            const startDate = document.getElementById('ncStartDate').value;
+
+            if (!phone || !name || !item || !cost || !term || !startDate) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            // Проверка режима Мини
+            if (currentMode === 'mini') {
+                if (cost > 25000 || term > 6) {
+                    alert('Режим Мини: стоимость до 25 000 ₽, срок до 6 мес');
+                    return;
+                }
+            } else {
+                const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
+                if (!depositPercent) {
+                    alert('Выберите размер взноса');
+                    return;
+                }
+            }
+
+            // Проверка дубликата телефона
+            const allowDuplicate = await checkDuplicatePhone(phone, name);
+            if (!allowDuplicate) return;
+
+            let depositRuble, totalMarkupPercent, financing, markupRuble, total;
+            
+            if (currentMode === 'mini') {
+                // Режим Мини: 8% в месяц от финансирования
+                const miniDepositPercent = parseInt(document.getElementById('ncMiniDepositPercent').value) || 0;
+                const markupPercent = 8 * term;
+                depositRuble = cost * (miniDepositPercent / 100);
+                financing = cost - depositRuble;
+                markupRuble = financing * (markupPercent / 100);
+                total = financing + markupRuble;
+                totalMarkupPercent = markupPercent;
+            } else {
+                // Режим База
+                const depositPercent = parseInt(document.getElementById('ncDepositPercent').value);
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                totalMarkupPercent = baseMarkupPercent + (term * MONTHLY_ADDITION);
+                depositRuble = cost * (depositPercent / 100);
+                financing = cost - depositRuble;
+                markupRuble = financing * (totalMarkupPercent / 100);
+                total = financing + markupRuble;
+            }
+            
+            const code = generateCode();
+
+            // Нормализация: телефон только цифрами, код заглавными
+            const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+            const normCode = code.toUpperCase().replace(/\s/g, '');
+
+            const hashStr = normPhone + normCode;
+            const encoder = new TextEncoder();
+            const data = encoder.encode(hashStr);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = new Uint8Array(hashBuffer);
+            const hash = Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // Считаем phoneHash для новой записи
+            const phoneHash = await calculatePhoneHash(phone);
+
+            const monthlyPayment = total / term;
+
+            const schedule = [];
+            const start = new Date(startDate);
+            for (let i = 0; i < term; i++) {
+                const paymentDate = new Date(start);
+                paymentDate.setMonth(start.getMonth() + i);
+                schedule.push({
+                    date: paymentDate.toISOString().split('T')[0],
+                    sum: Math.round(monthlyPayment),
+                    paid: false
+                });
+            }
+
+            let clients = [];
+            try {
+                const response = await fetch('data/clients.json?' + Date.now());
+                clients = await response.json();
+            } catch (e) {
+                clients = [];
+            }
+
+            // Проверка реферального кода
+            const inputRefCode = document.getElementById('ncRefCode').value.trim().toUpperCase();
+            let refByValue = '';
+            if (inputRefCode) {
+                const foundClient = clients.find(c => c.refCode && c.refCode.toUpperCase() === inputRefCode);
+                if (foundClient) {
+                    refByValue = inputRefCode;
+                }
+                // Если не найден - предупреждение уже показано, но создаём без привязки
+            }
+
+            const newClient = {
+                hash: hash,
+                phoneHash: phoneHash,
+                name: name,
+                item: item,
+                total: Math.round(total),
+                schedule: schedule,
+                bonus: 0,
+                mode: currentMode,
+                refCode: generateRefCode(),
+                refBy: refByValue
+            };
+            clients.push(newClient);
+
+            const jsonStr = JSON.stringify(clients, null, 2);
+
+            const waText = `Здравствуйте, ${name}! Ваша рассрочка YuNur оформлена. Код для входа в «Мои платежи»: ${code}. Введите телефон и код на сайте.`;
+            document.getElementById('waText').textContent = waText;
+
+            document.getElementById('ncResult').classList.remove('hidden');
+
+            window.currentClients = clients;
+            window.currentCode = code;
+
+            // Автосохранение в GitHub
+            const autoSaved = await commitToGithub(jsonStr, 'client: add ' + name);
+            if (autoSaved) {
+                document.getElementById('jsonOutput').textContent = '✅ Клиент АВТОСОХРАНЁН в базе! Файл копировать не нужно.';
+            } else {
+                document.getElementById('jsonOutput').textContent = jsonStr + '\n\n⚠️ Автосохранение не сработало (нет токена или он невалиден). Скопируй файл и вставь в GitHub вручную.';
+            }
+        }
+
+        function copyWaText() {
+            const text = document.getElementById('waText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Скопировано!');
+            });
+        }
+
+        function copyJson() {
+            const json = document.getElementById('jsonOutput').textContent;
+            navigator.clipboard.writeText(json).then(() => {
+                alert('JSON скопирован!');
+            });
+        }
+
+        function downloadJson() {
+            const json = document.getElementById('jsonOutput').textContent;
+            const blob = new Blob([json], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'clients.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function findClient() {
+            const phone = document.getElementById('payPhone').value.trim();
+            const code = document.getElementById('payCode').value.trim();
+
+            if (!phone || !code) {
+                alert('Введите телефон и код клиента');
+                return;
+            }
+
+            let clients = [];
+            try {
+                const response = await fetch('data/clients.json?' + Date.now());
+                clients = await response.json();
+            } catch (e) {
+                alert('Ошибка загрузки данных');
+                return;
+            }
+
+            // Нормализация та же, что при генерации
+            const normPhone = phone.replace(/\D/g, '').replace(/^8/, '7');
+            const normCode = code.toUpperCase().replace(/\s/g, '');
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(normPhone + normCode);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = new Uint8Array(hashBuffer);
+            const computedHash = Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const foundClient = clients.find(c => c.hash === computedHash);
+
+            if (!foundClient) {
+                alert('Клиент не найден');
+                return;
+            }
+
+            window.currentPayClient = foundClient;
+            displayClient(foundClient);
+        }
+
+        function displayClient(client) {
+            // Находим кто привёл этого клиента и сколько он привёл
+            const referrer = client.refBy ? window.allClients.find(c => c.refCode === client.refBy) : null;
+            const referredCount = window.allClients.filter(c => c.refBy === client.refCode).length;
+            
+            let refInfoHtml = '';
+            if (client.refBy) {
+                const referrerName = referrer ? referrer.name : 'не найден';
+                refInfoHtml = `<p><strong>Привёл:</strong> ${referrerName}</p>`;
+            }
+            if (referredCount > 0) {
+                refInfoHtml += `<p><strong>Приведено клиентов:</strong> ${referredCount}</p>`;
+            }
+            
+            // Реферальный бонус
+            let refBonusHtml = '';
+            if (client.refBonusGiven) {
+                refBonusHtml = `<p style="color:#1b5e20;"><strong>Реферальный бонус:</strong> +500 ₽ (получен)</p>`;
+            }
+            
+            document.getElementById('clientInfo').innerHTML = `
+                <p><strong>Имя:</strong> ${client.name}</p>
+                <p><strong>Товар:</strong> ${client.item}</p>
+                <p><strong>Общая сумма:</strong> ${client.total} ₽</p>
+                <p><strong>Бонус:</strong> ${client.bonus} ₽</p>
+                ${refInfoHtml}
+                ${refBonusHtml}
+            `;
+
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = '';
+
+            client.schedule.forEach((payment, index) => {
+                const tr = document.createElement('tr');
+                
+                // Определяем статус по paidSum
+                const paidSum = payment.paidSum || 0;
+                const planSum = payment.sum;
+                let statusClass = payment.paid ? 'paid' : 'unpaid';
+                let statusText = payment.paid ? '✓ Оплачен' : '○ Не оплачен';
+                
+                if (payment.paid && paidSum > 0) {
+                    if (paidSum >= planSum) {
+                        statusText = `✓ Оплачен (${paidSum.toLocaleString()} ₽)`;
+                    } else if (paidSum > 0 && paidSum < planSum) {
+                        statusClass = 'partial';
+                        statusText = `◐ Частично (${paidSum.toLocaleString()} из ${planSum.toLocaleString()} ₽)`;
+                    }
+                }
+                
+                tr.innerHTML = `
+                    <td>${payment.date}</td>
+                    <td>${payment.sum} ₽</td>
+                    <td class="${statusClass}"
+                        ${!payment.paid ? `onclick="markPaid(${index})"` : ''}>
+                        ${statusText}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('payResult').classList.remove('hidden');
+        }
+
+        function markPaid(index) {
+            const client = window.currentPayClient;
+            if (!client || client.schedule[index].paid) return;
+            
+            // Открываем inline-поле ввода суммы (аналогично collections)
+            const payment = client.schedule[index];
+            const planSum = payment.sum;
+            
+            // Создаём временный UI для ввода суммы
+            const tbody = document.getElementById('scheduleBody');
+            const row = tbody.rows[index];
+            const originalCellHtml = row.cells[2].innerHTML;
+            
+            row.cells[2].innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:12px; color:#666;">Получено:</span>
+                    <input type="number" id="inline-pay-input-${index}" value="${planSum}" min="0" step="100" 
+                        style="width:100px; padding:4px 8px; font-size:12px; border:1px solid #ccc; border-radius:4px;" />
+                    <button id="inline-confirm-${index}" class="btn btn-primary" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">Подтвердить</button>
+                    <button id="inline-cancel-${index}" class="btn btn-outline" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">✕</button>
+                </div>
+            `;
+            
+            const inputEl = document.getElementById(`inline-pay-input-${index}`);
+            const confirmBtn = document.getElementById(`inline-confirm-${index}`);
+            const cancelBtn = document.getElementById(`inline-cancel-${index}`);
+            
+            if (!inputEl || !confirmBtn || !cancelBtn) return;
+            
+            inputEl.focus();
+            inputEl.select();
+            
+            cancelBtn.onclick = () => {
+                row.cells[2].innerHTML = originalCellHtml;
+            };
+            
+            confirmBtn.onclick = async () => {
+                const enteredSum = parseFloat(inputEl.value) || 0;
+                if (enteredSum < 0) {
+                    alert('Сумма не может быть отрицательной');
+                    return;
+                }
+                
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Сохранение…';
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const paymentDate = new Date(payment.date);
+                const deadline = new Date(paymentDate);
+                deadline.setDate(deadline.getDate() + 3);
+                const isOnTime = today <= deadline;
+                
+                // Сохраняем исходное состояние
+                const originalBonus = client.bonus;
+                const originalSchedule = JSON.parse(JSON.stringify(client.schedule));
+                
+                let bonusChange = 0;
+                
+                payment.paid = true;
+                payment.paidSum = enteredSum;
+                
+                // Начисление бонуса только если вовремя и ещё не был начислен
+                if (isOnTime && !payment.bonusGiven) {
+                    bonusChange = Math.round(enteredSum * 0.008 * 100) / 100;
+                    payment.bonusGiven = true;
+                }
+                
+                // Проверяем реферальный бонус (+500 за первого платежа приведённого клиента)
+                let refBonusApplied = false;
+                if (client.refBy && !client.refBonusGiven) {
+                    // Ищем приведшего по refCode
+                    const referrer = window.allClients.find(c => c.refCode === client.refBy);
+                    if (referrer) {
+                        referrer.bonus = Math.round((referrer.bonus + 500) * 100) / 100;
+                        client.refBonusGiven = true;
+                        refBonusApplied = true;
+                    }
+                }
+                
+                // Обработка переплаты
+                let overflow = 0;
+                if (payment.paidSum > planSum) {
+                    overflow = payment.paidSum - planSum;
+                }
+                
+                if (overflow > 0) {
+                    for (let i = index + 1; i < client.schedule.length && overflow > 0; i++) {
+                        const nextP = client.schedule[i];
+                        if (!nextP.paid || (nextP.paid && (nextP.paidSum || 0) < nextP.sum)) {
+                            const currentNextPaid = nextP.paidSum || 0;
+                            const remainingNeeded = nextP.sum - currentNextPaid;
+                            
+                            if (remainingNeeded > 0) {
+                                const applyOverflow = Math.min(overflow, remainingNeeded);
+                                nextP.paid = true;
+                                nextP.paidSum = currentNextPaid + applyOverflow;
+                                overflow -= applyOverflow;
+                                
+                                // Бонус за переплаченный следующий платёж если вовремя
+                                if (nextP.paidSum >= nextP.sum) {
+                                    const nextDate = new Date(nextP.date);
+                                    const nextDeadline = new Date(nextDate);
+                                    nextDeadline.setDate(nextDeadline.getDate() + 3);
+                                    if (today <= nextDeadline && !nextP.bonusGiven) {
+                                        const nextBonus = Math.round(nextP.paidSum * 0.008 * 100) / 100;
+                                        client.bonus = Math.round((client.bonus + nextBonus) * 100) / 100;
+                                        nextP.bonusGiven = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                client.bonus = Math.round((client.bonus + bonusChange) * 100) / 100;
+                
+                // Автосохранение
+                const jsonStr = JSON.stringify(window.allClients, null, 2);
+                const commitMsg = refBonusApplied 
+                    ? `payment: ${client.name} - первый платёж (реферальный бонус)`
+                    : `payment: ${client.name} - ${payment.date}`;
+                
+                const saved = await commitToGithub(jsonStr, commitMsg);
+                
+                if (saved) {
+                    showInlineMessage(confirmBtn.parentElement, 'Сохранено ✓', false);
+                    setTimeout(() => displayClient(client), 1000);
+                } else {
+                    // Откат
+                    client.bonus = originalBonus;
+                    client.schedule = originalSchedule;
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Подтвердить';
+                    showInlineMessage(confirmBtn.parentElement, 'НЕ СОХРАНЕНО — повтори', true, true);
+                }
+            };
+        }
+        
+        function showInlineMessage(parentEl, text, isError, stay = false) {
+            const msgEl = document.createElement('span');
+            msgEl.style.cssText = `font-size:11px; margin-left:8px; color:${isError ? '#d32f2f' : '#1b5e20'}; font-weight:500;`;
+            msgEl.textContent = text;
+            parentEl.appendChild(msgEl);
+            if (!stay) {
+                setTimeout(() => msgEl.remove(), 3000);
+            }
+        }
+
+        function displayClient(client, justPaidIndex = -1, isLatePayment = false) {
+            document.getElementById('clientInfo').innerHTML = `
+                <p><strong>Имя:</strong> ${client.name}</p>
+                <p><strong>Товар:</strong> ${client.item}</p>
+                <p><strong>Общая сумма:</strong> ${client.total} ₽</p>
+                <p><strong>Бонус:</strong> ${client.bonus} ₽ <span style="font-size:12px; color:#666;">(начисляется за оплату вовремя, выплачивается на мобильный)</span></p>
+            `;
+
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = '';
+
+            client.schedule.forEach((payment, i) => {
+                const tr = document.createElement('tr');
+                let statusText = payment.paid ? '✓ Оплачен' : '○ Не оплачен';
+                
+                if (i === justPaidIndex && isLatePayment) {
+                    statusText += ' — без бонуса (просрочка)';
+                }
+                
+                tr.innerHTML = `
+                    <td>${payment.date}</td>
+                    <td>${payment.sum} ₽</td>
+                    <td class="${payment.paid ? 'paid' : 'unpaid'}"
+                        ${!payment.paid ? `onclick="markPaid(${i})"` : ''}>
+                        ${statusText}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('payResult').classList.remove('hidden');
+        }
+
+        function getClientStatus(client) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const hasUnpaidOld = client.schedule.some(p => {
+                if (p.paid) return false;
+                const pd = new Date(p.date);
+                const deadline = new Date(pd);
+                deadline.setDate(deadline.getDate() + 3);
+                return today > deadline;
+            });
+            if (hasUnpaidOld) return 'просрочен';
+            
+            const allPaid = client.schedule.every(p => p.paid);
+            if (allPaid) return 'завершён';
+            
+            return 'активен';
+        }
+
+        function getPhoneTail(phoneHash, clients) {
+            for (const c of clients) {
+                if (c.phoneHash === phoneHash && c.name) {
+                    const normPhone = Object.keys(window.allClients || {}).find(k => {
+                        const h = calculatePhoneHashSync(k);
+                        return h === phoneHash;
+                    });
+                    if (normPhone) return normPhone.slice(-3);
+                }
+            }
+            return '???';
+        }
+
+        function renderCollections() {
+            fetch('data/clients.json?' + Date.now())
+                .then(r => r.json())
+                .then(clients => {
+                    window.allClients = clients;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    let overdueCount = 0, overdueSum = 0;
+                    let weekCount = 0, weekSum = 0;
+                    
+                    const clientData = [];
+                    let completedClients = [];
+                    
+                    clients.forEach(client => {
+                        const status = getClientStatus(client);
+                        const tail = (client.phoneTail || '???');
+                        
+                        let clientOverdueCount = 0, clientOverdueSum = 0;
+                        let clientWeekCount = 0, clientWeekSum = 0;
+                        let nearestPayment = null;
+                        let nearestDate = null;
+                        const unpaidPayments = [];
+                        
+                        client.schedule.forEach(p => {
+                            if (p.paid) return;
+                            
+                            const pd = new Date(p.date);
+                            const deadline = new Date(pd);
+                            deadline.setDate(deadline.getDate() + 3);
+                            
+                            let label = 'запланирован';
+                            let isOverdue = false;
+                            let isWeek = false;
+                            
+                            if (today > deadline) {
+                                label = 'просрочен';
+                                isOverdue = true;
+                                clientOverdueCount++;
+                                clientOverdueSum += p.sum;
+                                overdueCount++;
+                                overdueSum += p.sum;
+                            } else {
+                                const weekLater = new Date(today);
+                                weekLater.setDate(weekLater.getDate() + 7);
+                                if (pd <= weekLater) {
+                                    label = 'на этой неделе';
+                                    isWeek = true;
+                                    clientWeekCount++;
+                                    clientWeekSum += p.sum;
+                                    weekCount++;
+                                    weekSum += p.sum;
+                                }
+                            }
+                            
+                            unpaidPayments.push({ ...p, label, isOverdue, isWeek });
+                            
+                            if (nearestDate === null || pd < nearestDate) {
+                                nearestDate = pd;
+                                nearestPayment = p;
+                            }
+                        });
+                        
+                        const clientRow = {
+                            name: client.name,
+                            tail: tail,
+                            status: status,
+                            overdueCount: clientOverdueCount,
+                            overdueSum: clientOverdueSum,
+                            weekCount: clientWeekCount,
+                            weekSum: clientWeekSum,
+                            nearestPayment: nearestPayment,
+                            unpaidPayments: unpaidPayments,
+                            client: client
+                        };
+                        
+                        if (status === 'завершён') {
+                            completedClients.push(clientRow);
+                        } else {
+                            clientData.push(clientRow);
+                        }
+                    });
+                    
+                    // Сортировка: сначала просрочка, затем неделя, потом по дате ближайшего платежа
+                    clientData.sort((a, b) => {
+                        const aHasOverdue = a.overdueCount > 0 ? 1 : 0;
+                        const bHasOverdue = b.overdueCount > 0 ? 1 : 0;
+                        if (aHasOverdue !== bHasOverdue) return bHasOverdue - aHasOverdue;
+                        
+                        const aHasWeek = a.weekCount > 0 ? 1 : 0;
+                        const bHasWeek = b.weekCount > 0 ? 1 : 0;
+                        if (aHasWeek !== bHasWeek) return bHasWeek - aHasWeek;
+                        
+                        if (a.nearestPayment && b.nearestPayment) {
+                            return new Date(a.nearestPayment.date) - new Date(b.nearestPayment.date);
+                        }
+                        return 0;
+                    });
+                    
+                    document.getElementById('collectionsSummary').innerHTML = 
+                        `<strong>Просрочено:</strong> ${overdueCount} плат. на ${overdueSum.toLocaleString()} ₽ · ` +
+                        `<strong>На этой неделе:</strong> ${weekCount} плат. на ${weekSum.toLocaleString()} ₽`;
+                    
+                    // Показываем кнопку для завершённых если они есть
+                    const showCompletedBtn = document.getElementById('showCompletedBtn');
+                    const completedCountSpan = document.getElementById('completedCount');
+                    if (completedClients.length > 0) {
+                        completedCountSpan.textContent = completedClients.length;
+                        showCompletedBtn.style.display = 'inline-block';
+                    } else {
+                        showCompletedBtn.style.display = 'none';
+                    }
+                    
+                    // Сохраняем данные для переключения
+                    window.activeClientData = clientData;
+                    window.showingCompleted = false;
+                    
+                    renderClientRows(clientData);
+                });
+        }
+        
+        function toggleCompletedClients() {
+            if (window.showingCompleted) {
+                window.showingCompleted = false;
+                renderClientRows(window.activeClientData);
+                document.getElementById('showCompletedBtn').style.display = 'inline-block';
+            } else {
+                // Получаем завершённых клиентов из allClients
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const completedClients = window.allClients.filter(c => getClientStatus(c) === 'завершён').map(client => {
+                    const tail = (client.phoneTail || '???');
+                    const paidSum = client.schedule.filter(p => p.paid).reduce((s, p) => s + p.sum, 0);
+                    const remainder = client.total - paidSum;
+                    const unpaid = client.schedule.filter(p => !p.paid);
+                    unpaid.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    const nextPayment = unpaid.length > 0 ? unpaid[0].date : '-';
+                    
+                    return {
+                        name: client.name,
+                        tail: tail,
+                        status: 'завершён',
+                        overdueCount: 0,
+                        overdueSum: 0,
+                        weekCount: 0,
+                        weekSum: 0,
+                        nearestPayment: { date: nextPayment, sum: remainder },
+                        unpaidPayments: [],
+                        client: client
+                    };
+                });
+                
+                window.showingCompleted = true;
+                renderClientRows(completedClients);
+                document.getElementById('showCompletedBtn').style.display = 'none';
+            }
+        }
+        
+        function renderClientRows(clientData) {
+            const tbody = document.getElementById('collectionsBody');
+            tbody.innerHTML = '';
+            
+            clientData.forEach(c => {
+                // Основная строка клиента
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                
+                let statusColor = '#000';
+                if (c.status === 'просрочен') statusColor = '#d32f2f';
+                else if (c.status === 'активен') statusColor = '#1b5e20';
+                else if (c.status === 'завершён') statusColor = '#9e9e9e';
+                
+                // Формируем бейджи
+                let badgesHtml = '';
+                if (c.overdueCount > 0) {
+                    badgesHtml += `<span style="background:#ffcdd2; color:#c62828; padding:4px 8px; border-radius:4px; font-size:12px; margin-right:5px;">просрочка: ${c.overdueCount} плат., ${c.overdueSum.toLocaleString()} ₽</span>`;
+                }
+                if (c.weekCount > 0) {
+                    badgesHtml += `<span style="background:#fff9c4; color:#f57f17; padding:4px 8px; border-radius:4px; font-size:12px;">на неделе: ${c.weekCount} плат., ${c.weekSum.toLocaleString()} ₽</span>`;
+                }
+                if (badgesHtml === '') badgesHtml = '<span style="color:#9e9e9e;">—</span>';
+                
+                // Ближайший платёж
+                let nearestText = '—';
+                if (c.nearestPayment && c.nearestPayment.date) {
+                    const dateStr = typeof c.nearestPayment.date === 'string' ? c.nearestPayment.date : c.nearestPayment.date.toISOString().split('T')[0];
+                    const sumStr = c.nearestPayment.sum ? c.nearestPayment.sum.toLocaleString() : '0';
+                    nearestText = `${dateStr} / ${sumStr} ₽`;
+                }
+                
+                tr.innerHTML = `
+                    <td style="font-weight:500;">${c.name}</td>
+                    <td>…${c.tail}</td>
+                    <td style="color:${statusColor}; font-weight:500;">${c.status}</td>
+                    <td>${badgesHtml}</td>
+                    <td>${nearestText}</td>
+                `;
+                
+                tbody.appendChild(tr);
+                
+                // Строка-аккордеон для платежей
+                const accordionTr = document.createElement('tr');
+                accordionTr.id = `accordion-${c.name.replace(/\s+/g, '-')}`;
+                accordionTr.style.display = 'none';
+                
+                // Создаём все платежи (и оплаченные, и нет) для аккордеона
+                const allPaymentsForAccordion = c.client.schedule.map((p, idx) => {
+                    let label = 'запланирован';
+                    if (!p.paid) {
+                        const pd = new Date(p.date);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const deadline = new Date(pd);
+                        deadline.setDate(deadline.getDate() + 3);
+                        if (today > deadline) {
+                            label = 'просрочен';
+                        } else {
+                            const weekLater = new Date(today);
+                            weekLater.setDate(weekLater.getDate() + 7);
+                            if (pd <= weekLater) label = 'на этой неделе';
+                        }
+                    }
+                    return { ...p, label, originalIndex: idx };
+                });
+                
+                accordionTr.innerHTML = `
+                    <td colspan="5" style="padding:15px; background:#f5f5f5;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div style="font-weight:500; color:#1b5e20;">Платежи:</div>
+                            <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer;">
+                                <input type="checkbox" id="onlyUnpaidToggle-${c.client.hash.replace(/[^a-z0-9]/g,'')}" onchange="toggleOnlyUnpaid('${c.client.hash.replace(/[^a-z0-9]/g,'')}')" style="width:auto;">
+                                Только неоплаченные
+                            </label>
+                        </div>
+                        <div id="payments-list-${c.client.hash.replace(/[^a-z0-9]/g,'')}">
+                        ${allPaymentsForAccordion.length > 0 ? `
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#e0e0e0;">
+                                    <th style="padding:8px; text-align:left;">Дата</th>
+                                    <th style="padding:8px; text-align:left;">Сумма</th>
+                                    <th style="padding:8px; text-align:left;">Метка</th>
+                                    <th style="padding:8px; text-align:left;">Действие</th>
+                                </tr>
+                            </thead>
+                            <tbody class="payments-tbody" data-client-hash="${c.client.hash.replace(/[^a-z0-9]/g,'')}">
+                                ${renderPaymentsRows(allPaymentsForAccordion, c.client.hash)}
+                            </tbody>
+                        </table>
+                        ` : '<div style="color:#9e9e9e;">Нет платежей</div>'}
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(accordionTr);
+                
+                // Обработчик клика для аккордеона
+                tr.onclick = () => {
+                    const acc = document.getElementById(`accordion-${c.name.replace(/\s+/g, '-')}`);
+                    if (acc.style.display === 'none') {
+                        acc.style.display = 'table-row';
+                        tr.style.background = '#e8f5e9';
+                    } else {
+                        acc.style.display = 'none';
+                        tr.style.background = '';
+                    }
+                };
+            });
+        }
+        
+        // Открытие inline-поля ввода суммы для оплаты/доплаты/отмены
+        function openPaymentInput(clientHash, scheduleIndex, btnElement, existingPaidSum = 0) {
+            const client = window.allClients.find(c => c.hash === clientHash);
+            if (!client || scheduleIndex >= client.schedule.length) return;
+            
+            const payment = client.schedule[scheduleIndex];
+            const planSum = payment.sum;
+            const isEditing = existingPaidSum > 0;
+            
+            // Защита от повторного нажатия
+            if (btnElement.disabled) return;
+            
+            // Заменяем кнопку на inline-форму
+            const originalBtnHtml = btnElement.outerHTML;
+            const inputId = `payment-input-${clientHash}-${scheduleIndex}`;
+            const confirmId = `payment-confirm-${clientHash}-${scheduleIndex}`;
+            const cancelId = `payment-cancel-${clientHash}-${scheduleIndex}`;
+            
+            const defaultVal = isEditing ? existingPaidSum : planSum;
+            
+            btnElement.outerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:12px; color:#666;">Получено:</span>
+                    <input type="number" id="${inputId}" value="${defaultVal}" min="0" step="100" 
+                        style="width:100px; padding:4px 8px; font-size:12px; border:1px solid #ccc; border-radius:4px;" />
+                    <button id="${confirmId}" class="btn btn-primary" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">Подтвердить</button>
+                    <button id="${cancelId}" class="btn btn-outline" 
+                        style="padding:4px 10px; font-size:11px; min-width:auto;">✕</button>
+                </div>
+            `;
+            
+            const inputEl = document.getElementById(inputId);
+            const confirmBtn = document.getElementById(confirmId);
+            const cancelBtn = document.getElementById(cancelId);
+            
+            if (!inputEl || !confirmBtn || !cancelBtn) return;
+            
+            inputEl.focus();
+            inputEl.select();
+            
+            // Отмена
+            cancelBtn.onclick = () => {
+                // Восстанавливаем оригинальную кнопку
+                renderPaymentsRows(client.schedule.map((p, i) => ({...p, originalIndex: i})), clientHash);
+            };
+            
+            // Подтверждение
+            confirmBtn.onclick = () => {
+                const enteredSum = parseFloat(inputEl.value) || 0;
+                if (enteredSum < 0) {
+                    alert('Сумма не может быть отрицательной');
+                    return;
+                }
+                
+                // Блокируем кнопку на время сохранения
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Сохранение…';
+                
+                // Сохраняем исходное состояние для отката
+                const originalPaid = payment.paid;
+                const originalPaidSum = payment.paidSum || 0;
+                const originalBonusGiven = !!payment.bonusGiven;
+                const originalClientBonus = client.bonus;
+                const originalSchedule = JSON.parse(JSON.stringify(client.schedule));
+                
+                // Проверяем, вовремя ли оплата
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const paymentDate = new Date(payment.date);
+                const deadline = new Date(paymentDate);
+                deadline.setDate(deadline.getDate() + 3);
+                const isOnTime = today <= deadline;
+                
+                // Логика обновления платежа
+                let bonusChange = 0;
+                
+                if (enteredSum === 0) {
+                    // Отмена оплаты
+                    payment.paid = false;
+                    payment.paidSum = 0;
+                    if (originalBonusGiven) {
+                        bonusChange = -Math.round(originalPaidSum * 0.008 * 100) / 100;
+                        delete payment.bonusGiven;
+                    }
+                } else {
+                    // Установка paidSum
+                    const oldPaidSum = payment.paidSum || 0;
+                    
+                    if (!payment.paid || oldPaidSum === 0) {
+                        // Первая оплата или переход из unpaid
+                        payment.paid = true;
+                        payment.paidSum = enteredSum;
+                        
+                        // Начисление бонуса только если его ещё не было и оплата вовремя
+                        if (isOnTime && !payment.bonusGiven) {
+                            bonusChange = Math.round(enteredSum * 0.008 * 100) / 100;
+                            payment.bonusGiven = true;
+                        }
+                    } else {
+                        // Доплата или изменение суммы
+                        const bonusAlreadyGiven = payment.bonusGiven;
+                        payment.paidSum = enteredSum;
+                        
+                        // Пересчёт бонуса если изменилась сумма и бонус уже был начислен
+                        if (bonusAlreadyGiven && isOnTime) {
+                            const oldBonus = Math.round(oldPaidSum * 0.008 * 100) / 100;
+                            const newBonus = Math.round(enteredSum * 0.008 * 100) / 100;
+                            bonusChange = newBonus - oldBonus;
+                        } else if (!bonusAlreadyGiven && isOnTime) {
+                            // Бонус ещё не начислялся, но теперь можно
+                            bonusChange = Math.round(enteredSum * 0.008 * 100) / 100;
+                            payment.bonusGiven = true;
+                        }
+                    }
+                }
+                
+                // Применяем изменение бонуса
+                if (bonusChange !== 0) {
+                    client.bonus = Math.round((client.bonus + bonusChange) * 100) / 100;
+                }
+                
+                // Обработка переплаты: перенос излишка на следующие платежи
+                let overflow = 0;
+                if (payment.paid && payment.paidSum > planSum) {
+                    overflow = payment.paidSum - planSum;
+                }
+                
+                if (overflow > 0) {
+                    // Распределяем переплату на следующие неоплаченные платежи
+                    for (let i = scheduleIndex + 1; i < client.schedule.length && overflow > 0; i++) {
+                        const nextP = client.schedule[i];
+                        if (!nextP.paid || (nextP.paid && (nextP.paidSum || 0) < nextP.sum)) {
+                            const currentNextPaid = nextP.paidSum || 0;
+                            const remainingNeeded = nextP.sum - currentNextPaid;
+                            
+                            if (remainingNeeded > 0) {
+                                const applyOverflow = Math.min(overflow, remainingNeeded);
+                                nextP.paid = true;
+                                nextP.paidSum = currentNextPaid + applyOverflow;
+                                overflow -= applyOverflow;
+                                
+                                // Если следующий платёж полностью оплачен вовремя и бонус ещё не начислен
+                                if (nextP.paidSum >= nextP.sum) {
+                                    const nextDate = new Date(nextP.date);
+                                    const nextDeadline = new Date(nextDate);
+                                    nextDeadline.setDate(nextDeadline.getDate() + 3);
+                                    if (today <= nextDeadline && !nextP.bonusGiven) {
+                                        const nextBonus = Math.round(nextP.paidSum * 0.008 * 100) / 100;
+                                        client.bonus = Math.round((client.bonus + nextBonus) * 100) / 100;
+                                        nextP.bonusGiven = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Сохранение в GitHub
+                const jsonStr = JSON.stringify(window.allClients, null, 2);
+                const commitMsg = isEditing 
+                    ? `payment: ${client.name} - изменение суммы (${payment.date})`
+                    : `payment: ${client.name} - ${payment.date}`;
+                
+                commitToGithub(jsonStr, commitMsg).then(saved => {
+                    if (saved) {
+                        showInlineMessage(confirmBtn.parentElement, 'Сохранено ✓', false);
+                        setTimeout(() => {
+                            if (confirmBtn.parentElement) confirmBtn.parentElement.remove();
+                        }, 1000);
+                        // Перерисовка аккордеона
+                        toggleOnlyUnpaid(clientHash);
+                    } else {
+                        // Откат при ошибке
+                        client.bonus = originalClientBonus;
+                        client.schedule = originalSchedule;
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = 'Подтвердить';
+                        showInlineMessage(confirmBtn.parentElement, 'Не сохранено, повтори', true, true);
+                    }
+                });
+            };
+        }
+        
+        // Устаревшая функция togglePaymentFromCollections теперь вызывает openPaymentInput
+        function togglePaymentFromCollections(clientHash, scheduleIndex, btnElement) {
+            openPaymentInput(clientHash, scheduleIndex, btnElement, 0);
+        }
+        
+        // Обновление визуалов строки платежа (фон, дата) мгновенно
+        function updatePaymentRowVisuals(btnElement, isPaid) {
+            const row = btnElement.closest('tr');
+            if (!row) return;
+            
+            const dateCell = row.cells[0];
+            
+            if (isPaid) {
+                row.style.background = '#e8f5e9';
+                if (dateCell && !dateCell.textContent.trim().startsWith('✓')) {
+                    dateCell.textContent = '✓ ' + dateCell.textContent.replace(/^✓\s*/, '');
+                }
+            } else {
+                row.style.background = '';
+                if (dateCell) {
+                    dateCell.textContent = dateCell.textContent.replace(/^✓\s*/, '');
+                }
+            }
+        }
+        
+        // Показ inline-сообщения рядом с кнопкой
+        function showInlineMessage(btnElement, text, isError, permanent = false) {
+            const existingMsg = btnElement.parentElement.querySelector('.inline-msg');
+            if (existingMsg) existingMsg.remove();
+            
+            const msgSpan = document.createElement('span');
+            msgSpan.className = 'inline-msg';
+            msgSpan.textContent = text;
+            msgSpan.style.cssText = 'margin-left:8px; font-size:11px; color:' + (isError ? '#d32f2f' : '#1b5e20') + '; font-weight:500;';
+            btnElement.parentElement.appendChild(msgSpan);
+            
+            if (!permanent) {
+                setTimeout(() => {
+                    if (msgSpan.parentElement) msgSpan.remove();
+                }, 3000);
+            }
+        }
+        
+        // Рендер строк платежей для аккордеона с поддержкой paidSum и частичной оплаты
+        function renderPaymentsRows(payments, clientHash) {
+            const onlyUnpaid = document.getElementById(`onlyUnpaidToggle-${clientHash.replace(/[^a-z0-9]/g,'')}`)?.checked || false;
+            
+            return payments.map((p, idx) => {
+                const isPaid = p.paid;
+                const bonusGiven = p.bonusGiven;
+                const paidSum = p.paidSum || 0;
+                const planSum = p.sum;
+                
+                // Определяем статус по факту оплаты
+                let statusType = 'unpaid'; // unpaid, partial, paid, overpaid
+                if (paidSum > 0) {
+                    if (paidSum >= planSum) {
+                        statusType = paidSum > planSum ? 'overpaid' : 'paid';
+                    } else {
+                        statusType = 'partial';
+                    }
+                }
+                
+                // Если включён фильтр "Только неоплаченные", показываем только unpaid и partial
+                if (onlyUnpaid && statusType === 'paid') return '';
+                
+                let labelColor = '#000';
+                let rowStyle = '';
+                let datePrefix = '';
+                let statusText = '';
+                
+                if (statusType === 'unpaid') {
+                    if (p.label === 'просрочен') labelColor = '#d32f2f';
+                    else if (p.label === 'на этой неделе') labelColor = '#f57f17';
+                    rowStyle = '';
+                } else if (statusType === 'partial') {
+                    labelColor = '#ef6c00';
+                    rowStyle = 'background:#fff3e0;';
+                    const remainder = planSum - paidSum;
+                    statusText = `<span style="font-size:11px; color:#ef6c00;">получено ${paidSum.toLocaleString()} из ${planSum.toLocaleString()}, остаток ${remainder.toLocaleString()}</span>`;
+                } else if (statusType === 'paid') {
+                    labelColor = '#1b5e20';
+                    rowStyle = 'background:#e8f5e9;';
+                    datePrefix = '✓ ';
+                } else if (statusType === 'overpaid') {
+                    labelColor = '#1b5e20';
+                    rowStyle = 'background:#c8e6c9;';
+                    datePrefix = '✓ ';
+                    const overflow = paidSum - planSum;
+                    statusText = `<span style="font-size:11px; color:#2e7d32;">переплата ${overflow.toLocaleString()} ₽</span>`;
+                }
+                
+                const labelText = `${p.label}${statusType !== 'unpaid' ? ' — ' + (statusType === 'partial' ? 'частично' : statusType === 'overpaid' ? 'переплата' : 'оплачен') : ''}`;
+                
+                // Кнопка действия
+                let btnHtml = '';
+                if (statusType === 'unpaid') {
+                    btnHtml = `<button class="btn btn-primary" 
+                        onclick="openPaymentInput('${clientHash}', ${idx}, this)" 
+                        style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
+                        ✓ Оплачен
+                    </button>`;
+                } else if (statusType === 'partial') {
+                    btnHtml = `<button class="btn btn-warning" 
+                        onclick="openPaymentInput('${clientHash}', ${idx}, this, ${paidSum})" 
+                        style="padding:6px 12px; font-size:12px; min-width:auto; width:auto; background:#ff9800; border-color:#f57c00; color:#fff;">
+                        Доплатить
+                    </button>`;
+                } else {
+                    // paid или overpaid — кнопка отмены/редактирования
+                    btnHtml = `<button class="btn btn-outline" 
+                        onclick="openPaymentInput('${clientHash}', ${idx}, this, ${paidSum})" 
+                        style="padding:6px 12px; font-size:12px; min-width:auto; width:auto;">
+                        ${statusType === 'overpaid' ? '↺ Изменить' : '↺ Отменить'}
+                    </button>`;
+                }
+                
+                return `
+                <tr style="${rowStyle}">
+                    <td style="padding:8px;">${datePrefix}${p.date}</td>
+                    <td style="padding:8px;">${planSum.toLocaleString()} ₽</td>
+                    <td style="padding:8px; color:${labelColor}; font-weight:500;">
+                        ${labelText}<br>${statusText}
+                    </td>
+                    <td style="padding:8px;">
+                        ${btnHtml}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+        
+        // Переключатель "Только неоплаченные"
+        function toggleOnlyUnpaid(clientHash) {
+            const tbody = document.querySelector(`.payments-tbody[data-client-hash="${clientHash.replace(/[^a-z0-9]/g,'')}"]`);
+            if (!tbody) return;
+            
+            // Перерисовываем строки платежей
+            const client = window.allClients.find(c => c.hash === clientHash);
+            if (!client) return;
+            
+            const allPaymentsForAccordion = client.schedule.map((p, idx) => {
+                let label = 'запланирован';
+                if (!p.paid) {
+                    const pd = new Date(p.date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const deadline = new Date(pd);
+                    deadline.setDate(deadline.getDate() + 3);
+                    if (today > deadline) {
+                        label = 'просрочен';
+                    } else {
+                        const weekLater = new Date(today);
+                        weekLater.setDate(weekLater.getDate() + 7);
+                        if (pd <= weekLater) label = 'на этой неделе';
+                    }
+                }
+                return { ...p, label, originalIndex: idx };
+            });
+            
+            tbody.innerHTML = renderPaymentsRows(allPaymentsForAccordion, clientHash);
+        }
+
+        function goToPayment(clientHash) {
+            // Переключаемся на вкладку "Платежи"
+            switchTab('payments');
+            
+            // Находим клиента по хешу и заполняем поле поиска
+            const client = window.allClients.find(c => c.hash === clientHash);
+            if (client) {
+                // В payments.html поиск по hash не реализован напрямую через UI
+                // Поэтому просто покажем сообщение или можно добавить функционал
+                alert(`Клиент найден: ${client.name}. Используйте поиск по телефону/коду во вкладке "Платежи".`);
+            }
+        }
+
+        function exportCollectionsCSV() {
+            fetch('data/clients.json?' + Date.now())
+                .then(r => r.json())
+                .then(clients => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    let csv = '\uFEFF'; // BOM for UTF-8
+                    csv += 'имя;хвост;статус;остаток;ближайший платеж;paidSum\n';
+                    
+                    clients.forEach(client => {
+                        const status = getClientStatus(client);
+                        const tail = client.phoneTail || '???';
+                        
+                        const paidSum = client.schedule.reduce((s, p) => s + (p.paidSum || 0), 0);
+                        const remainder = client.total - paidSum;
+                        
+                        const unpaid = client.schedule.filter(p => !p.paid || (p.paidSum || 0) < p.sum);
+                        unpaid.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        const nextPayment = unpaid.length > 0 ? unpaid[0].date : '-';
+                        
+                        csv += `${client.name};${tail};${status};${remainder};${nextPayment};${paidSum}\n`;
+                    });
+                    
+                    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'yunur-clients.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+        }
+
+        // === Инвесторы ===
+        let currentInvestors = [];
+        let selectedInvestorIndex = -1;
+        
+        async function loadInvestors() {
+            try {
+                const response = await fetch('data/investors.json?' + Date.now());
+                if (!response.ok) {
+                    renderInvestors([]);
+                    return;
+                }
+                let investors = await response.json();
+                
+                // Миграция: присвоение tier по первому взносу (500000–999999 → mini, иначе base)
+                let migrationChanged = false;
+                for (let inv of investors) {
+                    if (!inv.tier) {
+                        const totalDeposit = (inv.transactions || [])
+                            .filter(t => t.type === 'deposit' || t.type === 'topup')
+                            .reduce((sum, t) => sum + t.amount, 0);
+                        inv.tier = (totalDeposit >= 500000 && totalDeposit <= 999999) ? 'mini' : 'base';
+                        migrationChanged = true;
+                    }
+                }
+                if (migrationChanged) {
+                    const jsonStr = JSON.stringify(investors, null, 2);
+                    await commitInvestorsToGithub(jsonStr, 'investor: migrate tier by first deposit');
+                }
+                
+                // Генерация invCode и phoneTail для существующих записей без них
+                let changed = false;
+                const hexChars = '0123456789ABCDEF';
+                for (let inv of investors) {
+                    if (!inv.invCode) {
+                        let code;
+                        do {
+                            code = 'INV-';
+                            for (let i = 0; i < 4; i++) {
+                                code += hexChars[Math.floor(Math.random() * 16)];
+                            }
+                        } while (investors.some(i => i.invCode === code));
+                        inv.invCode = code;
+                        changed = true;
+                    }
+                    if (!inv.phoneTail) {
+                        inv.phoneTail = '000';
+                        changed = true;
+                    }
+                }
+                
+                if (changed) {
+                    const jsonStr = JSON.stringify(investors, null, 2);
+                    await commitInvestorsToGithub(jsonStr, 'investor: add invCode and phoneTail to existing records');
+                }
+                
+                currentInvestors = investors;
+                // Автончисление дохода при открытии вкладки
+                await processAutoAccrual(currentInvestors);
+                renderInvestors(currentInvestors);
+            } catch (e) {
+                renderInvestors([]);
+            }
+        }
+
+        // Автончисление дохода по сделкам
+        async function processAutoAccrual(investors) {
+            let changed = false;
+            const today = new Date();
+            
+            for (let inv of investors) {
+                if (!inv.deals) inv.deals = [];
+                if (!inv.transactions) inv.transactions = [];
+                
+                for (let deal of inv.deals) {
+                    if (!deal.active) continue;
+                    
+                    const dealStartDate = new Date(deal.date);
+                    const termMonths = parseInt(deal.term);
+                    
+                    // Проверяем каждый месяц срока
+                    for (let monthNum = 1; monthNum <= termMonths; monthNum++) {
+                        const accrualDate = new Date(dealStartDate);
+                        accrualDate.setMonth(accrualDate.getMonth() + monthNum);
+                        
+                        // Если дата начисления наступила или сегодня
+                        if (accrualDate <= today) {
+                            const accrualKey = `accrual_${deal.id}_month_${monthNum}`;
+                            
+                            // Проверяем, не было ли уже начисления для этого месяца
+                            const alreadyAccrued = inv.transactions.some(t => t.key === accrualKey);
+                            
+                            if (!alreadyAccrued) {
+                                // Создаём запись о начислении
+                                inv.transactions.push({
+                                    date: accrualDate.toISOString().split('T')[0],
+                                    type: 'income',
+                                    name: `доход по сделке "${deal.productName}", месяц ${monthNum}`,
+                                    amount: deal.monthlyIncome,
+                                    key: accrualKey
+                                });
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Если были изменения - сохраняем
+            if (changed) {
+                const jsonStr = JSON.stringify(investors, null, 2);
+                await commitInvestorsToGithub(jsonStr, 'investor: auto accrual income');
+            }
+        }
+
+        function calculateInvestorMetrics(inv) {
+            let onAccount = 0;
+            let inTurnover = 0;
+            let accruedIncome = 0;
+            let totalTurnover = 0;
+            
+            if (!inv.transactions) inv.transactions = [];
+            
+            for (const t of inv.transactions) {
+                if (t.type === 'deposit' || t.type === 'topup') {
+                    onAccount += t.amount;
+                } else if (t.type === 'take_for_product') {
+                    onAccount -= t.amount;
+                    inTurnover += t.amount;
+                    totalTurnover += t.amount;
+                } else if (t.type === 'income') {
+                    onAccount += t.amount;
+                    accruedIncome += t.amount;
+                }
+            }
+            
+            return { onAccount, inTurnover, accruedIncome, totalTurnover };
+        }
+
+        // Get tier for investor based on total contributions
+        function getInvestorTier(investor) {
+            const totalSum = (investor.transactions || [])
+                .filter(t => t.type === 'deposit' || t.type === 'topup')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            if (totalSum >= 1000000 && totalSum <= 5000000) {
+                return 'base';
+            } else if (totalSum >= 500000 && totalSum < 1000000) {
+                return 'mini';
+            }
+            return 'base'; // default
+        }
+
+        // Update tier by amount input in form
+        function updateTierByAmount() {
+            const sumInput = document.getElementById('invSum');
+            const tierSelect = document.getElementById('invTier');
+            const tierHint = document.getElementById('tierHint');
+            const errorHint = document.getElementById('invErrorHint');
+            
+            const sum = parseInt(sumInput.value) || 0;
+            
+            if (sum <= 0) {
+                tierHint.textContent = '';
+                errorHint.classList.remove('visible');
+                return;
+            }
+            
+            // Auto-switch tier based on amount
+            if (sum >= 1000000 && sum <= 5000000) {
+                tierSelect.value = 'base';
+                tierHint.textContent = 'База (1–5 млн ₽)';
+                tierHint.style.color = '#c9a227';
+                errorHint.classList.remove('visible');
+            } else if (sum >= 500000 && sum < 1000000) {
+                tierSelect.value = 'mini';
+                tierHint.textContent = 'Мини (500 тыс–1 млн ₽)';
+                tierHint.style.color = '#2e7d32';
+                errorHint.classList.remove('visible');
+            } else if (sum < 500000) {
+                tierHint.textContent = 'Минимальная сумма 500 000 ₽';
+                tierHint.style.color = '#d32f2f';
+                errorHint.textContent = 'Сумма вне диапазона: Мини 500 000–999 999 ₽, База 1 000 000–5 000 000 ₽';
+                errorHint.classList.add('visible');
+            } else if (sum > 5000000) {
+                tierHint.textContent = 'Максимальная сумма 5 000 000 ₽';
+                tierHint.style.color = '#d32f2f';
+                errorHint.textContent = 'Сумма вне диапазона: Мини 500 000–999 999 ₽, База 1 000 000–5 000 000 ₽';
+                errorHint.classList.add('visible');
+            }
+        }
+
+        function renderInvestors(investors) {
+            const tbody = document.getElementById('investorsBody');
+            const summary = document.getElementById('investorsSummary');
+            const card = document.getElementById('investorCard');
+            const addForm = document.getElementById('investorAddForm');
+            
+            // Если открыта карточка - не перерисовываем список
+            if (!card.classList.contains('hidden')) {
+                return;
+            }
+            
+            // Сортируем: новые сверху (по дате убывание)
+            investors.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            tbody.innerHTML = '';
+            investors.forEach((inv, idx) => {
+                const metrics = calculateInvestorMetrics(inv);
+                // Расчёт даты окончания
+                const startDate = new Date(inv.date);
+                const termMonths = parseInt(inv.term) || 24;
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + termMonths);
+                const endDateStr = endDate.toLocaleDateString('ru-RU');
+                
+                // Get tier
+                const tier = inv.tier || getInvestorTier(inv);
+                const tierBadgeHtml = tier === 'mini' 
+                    ? '<span class="tier-badge tier-mini">Мини</span>' 
+                    : '<span class="tier-badge tier-base">База</span>';
+                
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.onclick = () => showInvestorCard(idx);
+                const invCodeDisplay = inv.invCode || '---';
+                row.innerHTML = `
+                    <td><strong>${invCodeDisplay}</strong><br>${inv.name}</td>
+                    <td>${tierBadgeHtml}</td>
+                    <td>${metrics.onAccount.toLocaleString('ru-RU')}</td>
+                    <td>${metrics.inTurnover.toLocaleString('ru-RU')}</td>
+                    <td>${metrics.accruedIncome.toLocaleString('ru-RU')}</td>
+                    <td>${endDateStr}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Итог по всем инвесторам
+            let totalOnAccount = 0, totalInTurnover = 0, totalAccrued = 0;
+            investors.forEach(inv => {
+                const m = calculateInvestorMetrics(inv);
+                totalOnAccount += m.onAccount;
+                totalInTurnover += m.inTurnover;
+                totalAccrued += m.accrued;
+            });
+            
+            summary.textContent = `Инвесторов: ${investors.length} · На счетах: ${totalOnAccount.toLocaleString('ru-RU')} ₽ · В обороте: ${totalInTurnover.toLocaleString('ru-RU')} ₽ · Начислено дохода: ${totalAccrued.toLocaleString('ru-RU')} ₽`;
+        }
+
+        function showInvestorCard(index) {
+            selectedInvestorIndex = index;
+            const inv = currentInvestors[index];
+            
+            document.getElementById('investorCard').classList.remove('hidden');
+            document.getElementById('investorAddForm').classList.add('hidden');
+            document.getElementById('investorsTable').classList.add('hidden');
+            document.getElementById('investorsSummary').classList.add('hidden');
+            
+            const invCodeDisplay = inv.invCode || '---';
+            const tier = inv.tier || getInvestorTier(inv);
+            const tierBadgeHtml = tier === 'mini' 
+                ? '<span class="tier-badge tier-mini" style="margin-left: 10px;">Мини</span>' 
+                : '<span class="tier-badge tier-base" style="margin-left: 10px;">База</span>';
+            document.getElementById('cardInvestorName').innerHTML = `${inv.name} <span style="color: #c9a227; font-size: 1.2em;">${invCodeDisplay}</span>${tierBadgeHtml}`;
+            
+            updateInvestorCardDisplay(inv);
+        }
+        
+        function updateInvestorCardDisplay(inv) {
+            const metrics = calculateInvestorMetrics(inv);
+            document.getElementById('cardOnAccount').textContent = metrics.onAccount.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('cardInTurnover').textContent = metrics.inTurnover.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('cardAccruedIncome').textContent = metrics.accruedIncome.toLocaleString('ru-RU') + ' ₽';
+            
+            // Дата окончания
+            const startDate = new Date(inv.date);
+            const termMonths = parseInt(inv.term) || 24;
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + termMonths);
+            document.getElementById('cardEndDate').textContent = endDate.toLocaleDateString('ru-RU');
+            
+            // Общий оборот
+            document.getElementById('cardTotalTurnover').textContent = metrics.totalTurnover.toLocaleString('ru-RU') + ' ₽';
+            
+            // Книжка операций
+            const tbody = document.getElementById('transactionsBody');
+            tbody.innerHTML = '';
+            
+            if (inv.transactions && inv.transactions.length > 0) {
+                // Сортируем по дате (новые сверху)
+                const sortedTx = [...inv.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                sortedTx.forEach(t => {
+                    const row = document.createElement('tr');
+                    let amountClass = '';
+                    let amountPrefix = '';
+                    if (t.type === 'deposit' || t.type === 'topup' || t.type === 'income') {
+                        amountClass = 'style="color: #1b5e20;"';
+                        amountPrefix = '+';
+                    } else if (t.type === 'take_for_product') {
+                        amountClass = 'style="color: #d32f2f;"';
+                        amountPrefix = '−';
+                    }
+                    row.innerHTML = `
+                        <td>${t.date}</td>
+                        <td ${amountClass}>${t.type === 'deposit' ? 'взнос' : t.type === 'topup' ? 'пополнение' : t.type === 'take_for_product' ? 'взято на товар' : 'начислен доход'}</td>
+                        <td>${t.name}</td>
+                        <td ${amountClass}>${amountPrefix}${t.amount.toLocaleString('ru-RU')}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        function showInvestorList() {
+            document.getElementById('investorCard').classList.add('hidden');
+            document.getElementById('investorAddForm').classList.remove('hidden');
+            document.getElementById('investorsTable').classList.remove('hidden');
+            document.getElementById('investorsSummary').classList.remove('hidden');
+            document.getElementById('topUpForm').classList.add('hidden');
+            document.getElementById('takeForProductForm').classList.add('hidden');
+            selectedInvestorIndex = -1;
+            renderInvestors(currentInvestors);
+        }
+
+        function toggleTopUpForm() {
+            const form = document.getElementById('topUpForm');
+            form.classList.toggle('hidden');
+            document.getElementById('takeForProductForm').classList.add('hidden');
+        }
+
+        function toggleTakeForProductForm() {
+            const form = document.getElementById('takeForProductForm');
+            form.classList.toggle('hidden');
+            document.getElementById('topUpForm').classList.add('hidden');
+        }
+
+        function validateTopUpAmount() {
+            const amountInput = document.getElementById('topUpAmount');
+            const errorHint = document.getElementById('topUpErrorHint');
+            const amount = parseInt(amountInput.value) || 0;
+            
+            if (!currentInvestors || selectedInvestorIndex < 0 || amount <= 0) {
+                errorHint.classList.remove('visible');
+                return;
+            }
+            
+            const inv = currentInvestors[selectedInvestorIndex];
+            const tier = inv.tier || getInvestorTier(inv);
+            const currentTotal = (inv.transactions || [])
+                .filter(t => t.type === 'deposit' || t.type === 'topup')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const ceiling = tier === 'mini' ? 1000000 : 5000000;
+            
+            if (currentTotal + amount > ceiling) {
+                errorHint.textContent = `Превышен потолок tier ${tier === 'mini' ? 'Мини' : 'База'} (${ceiling.toLocaleString('ru-RU')} ₽)`;
+                errorHint.classList.add('visible');
+            } else {
+                errorHint.classList.remove('visible');
+            }
+        }
+
+        async function doTopUp() {
+            const amountInput = document.getElementById('topUpAmount');
+            const errorHint = document.getElementById('topUpErrorHint');
+            const amount = parseInt(amountInput.value);
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму больше 0');
+                return;
+            }
+            
+            const inv = currentInvestors[selectedInvestorIndex];
+            const tier = inv.tier || getInvestorTier(inv);
+            const currentTotal = (inv.transactions || [])
+                .filter(t => t.type === 'deposit' || t.type === 'topup')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const ceiling = tier === 'mini' ? 1000000 : 5000000;
+            
+            // Валидация потолка tier
+            if (currentTotal + amount > ceiling) {
+                errorHint.textContent = `Превышен потолок tier ${tier === 'mini' ? 'Мини' : 'База'} (${ceiling.toLocaleString('ru-RU')} ₽)`;
+                errorHint.classList.add('visible');
+                return;
+            }
+            errorHint.classList.remove('visible');
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            inv.transactions.push({
+                date: today,
+                type: 'topup',
+                name: 'Пополнение счёта',
+                amount: amount
+            });
+            
+            // Сохраняем
+            const jsonStr = JSON.stringify(currentInvestors, null, 2);
+            const saved = await commitInvestorsToGithub(jsonStr, `investor: top up ${inv.name}`);
+            
+            if (saved) {
+                amountInput.value = '';
+                document.getElementById('topUpForm').classList.add('hidden');
+                updateInvestorCardDisplay(inv);
+            }
+        }
+
+        function updateDealOptions() {
+            const inv = currentInvestors[selectedInvestorIndex];
+            const tier = inv.tier || getInvestorTier(inv);
+            const modeSelect = document.getElementById('takeDealMode');
+            const baseOption = modeSelect.querySelector('option[value="base"]');
+            const miniOption = modeSelect.querySelector('option[value="mini"]');
+            const baseDepositGroup = document.getElementById('baseDepositGroup');
+            const miniDepositGroup = document.getElementById('investorMiniDepositGroup');
+            const takeTermGroup = document.getElementById('takeTermGroup');
+
+            if (tier === 'mini') {
+                // Mini investor: only Mini mode available
+                modeSelect.value = 'mini';
+                baseOption.disabled = true;
+                baseOption.textContent = 'База (доступно в tier База)';
+                miniOption.disabled = false;
+                miniOption.textContent = 'Мини';
+                
+                baseDepositGroup.style.display = 'none';
+                miniDepositGroup.style.display = 'block';
+                
+                // Mini: terms 1-6 months
+                takeTermGroup.innerHTML = `<label>Срок (мес)</label>
+                    <select id="takeTerm" onchange="calculateDealPreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>`;
+            } else {
+                // Base investor: only Base mode available
+                modeSelect.value = 'base';
+                miniOption.disabled = true;
+                miniOption.textContent = 'Мини (недоступно)';
+                baseOption.disabled = false;
+                baseOption.textContent = 'База';
+                
+                baseDepositGroup.style.display = 'block';
+                miniDepositGroup.style.display = 'none';
+                
+                // Base: terms 3, 6, 10 months
+                takeTermGroup.innerHTML = `<label>Срок (мес)</label>
+                    <select id="takeTerm" onchange="calculateDealPreview()">
+                        <option value="">Выбрать...</option>
+                        <option value="3">3</option>
+                        <option value="6">6</option>
+                        <option value="10">10</option>
+                    </select>`;
+            }
+            calculateDealPreview();
+        }
+
+        function calculateDealPreview() {
+            const amount = parseInt(document.getElementById('takeProductAmount').value) || 0;
+            const mode = document.getElementById('takeDealMode').value;
+            const termSelect = document.getElementById('takeTerm');
+            const depositSelect = mode === 'base' ? document.getElementById('takeBaseDeposit') : document.getElementById('takeMiniDeposit');
+            
+            const depositPercent = parseInt(depositSelect.value) || 0;
+            const term = parseInt(termSelect.value) || 0;
+            
+            if (!amount || !depositPercent || !term) {
+                document.getElementById('dealMonthlyIncome').textContent = '0';
+                return;
+            }
+            
+            // Расчёт финансирования (сумма минус взнос)
+            const depositRuble = Math.round(amount * depositPercent / 100);
+            const financing = amount - depositRuble;
+            
+            let markupRuble;
+            if (mode === 'base') {
+                // База: базовая наценка + срок × 1%
+                const BASE_MARKUP = { 25: 39, 40: 29, 50: 24 };
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const totalMarkupPercent = baseMarkupPercent + (term * 1);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
+            } else {
+                // Мини: 8% в месяц от финансирования
+                const MINI_MONTHLY_RATE = 0.08;
+                const totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
+            }
+            
+            // Доход инвестора = (наценка / срок в месяцах) × 0.5 (деление 50/50)
+            const monthlyIncome = term > 0 ? Math.round((markupRuble / term) * 0.5) : 0;
+            
+            document.getElementById('dealMonthlyIncome').textContent = monthlyIncome.toLocaleString('ru-RU');
+        }
+
+        async function doTakeForProduct() {
+            const productName = document.getElementById('takeProductName').value.trim();
+            const amount = parseInt(document.getElementById('takeProductAmount').value);
+            const mode = document.getElementById('takeDealMode').value;
+            const depositPercent = parseInt(document.getElementById('takeBaseDeposit').value) || parseInt(document.getElementById('takeMiniDeposit').value);
+            const term = parseInt(document.getElementById('takeTerm').value);
+            
+            if (!productName || !amount || !depositPercent || !term) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            const inv = currentInvestors[selectedInvestorIndex];
+            const metrics = calculateInvestorMetrics(inv);
+            
+            // Проверка достаточности средств на счёте
+            if (metrics.onAccount < amount) {
+                alert(`Недостаточно средств на счёте. Доступно: ${metrics.onAccount.toLocaleString('ru-RU')} ₽`);
+                return;
+            }
+            
+            // Расчёт финансирования и наценки как в калькуляторе сайта
+            const depositRuble = Math.round(amount * depositPercent / 100);
+            const financing = amount - depositRuble;
+            
+            let markupRuble, monthlyIncome;
+            if (mode === 'base') {
+                // База: базовая наценка + срок × 1% от финансирования
+                const BASE_MARKUP = { 25: 39, 40: 29, 50: 24 };
+                const baseMarkupPercent = BASE_MARKUP[depositPercent] || 0;
+                const totalMarkupPercent = baseMarkupPercent + (term * 1);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
+                // Доход инвестора = 50% от наценки / срок
+                monthlyIncome = Math.round((markupRuble / term) * 0.5);
+            } else {
+                // Мини: 8% в месяц от финансирования, инвестору 50% (4% в месяц)
+                const MINI_MONTHLY_RATE = 0.08;
+                const totalMarkupPercent = Math.round(MINI_MONTHLY_RATE * term * 100);
+                markupRuble = Math.round(financing * totalMarkupPercent / 100);
+                // Доход инвестора = 50% от общей наценки / срок = 4% в месяц
+                monthlyIncome = term > 0 ? Math.round((markupRuble / term) * 0.5) : 0;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            const dealId = 'deal_' + Date.now();
+            
+            // Добавляем транзакцию взятия на товар
+            inv.transactions.push({
+                date: today,
+                type: 'take_for_product',
+                name: productName,
+                amount: amount
+            });
+            
+            // Добавляем сделку
+            inv.deals.push({
+                id: dealId,
+                date: today,
+                productName: productName,
+                amount: amount,
+                depositPercent: depositPercent,
+                term: term,
+                markupRuble: markupRuble,
+                monthlyIncome: monthlyIncome,
+                active: true
+            });
+            
+            // Сохраняем
+            const jsonStr = JSON.stringify(currentInvestors, null, 2);
+            const saved = await commitInvestorsToGithub(jsonStr, `investor: take for product ${productName}`);
+            
+            if (saved) {
+                document.getElementById('takeProductName').value = '';
+                document.getElementById('takeProductAmount').value = '';
+                document.getElementById('takeBaseDeposit').value = '';
+                document.getElementById('takeMiniDeposit').value = '';
+                document.getElementById('takeTerm').value = '';
+                document.getElementById('takeForProductForm').classList.add('hidden');
+                updateInvestorCardDisplay(inv);
+            }
+        }
+
+        async function addInvestor() {
+            const nameInput = document.getElementById('invName');
+            const phoneTailInput = document.getElementById('invPhoneTail');
+            const sumInput = document.getElementById('invSum');
+            const tierSelect = document.getElementById('invTier');
+            const termInput = document.getElementById('invTerm');
+            const savedMsg = document.getElementById('invSavedMsg');
+            const errorHint = document.getElementById('invErrorHint');
+            
+            const name = nameInput.value.trim();
+            const phoneTail = (phoneTailInput.value || '').trim().slice(-3);
+            const sum = parseInt(sumInput.value);
+            const tier = tierSelect.value;
+            const term = parseInt(termInput.value) || 24;
+            
+            if (!name || !sum || sum <= 0) {
+                alert('Введите имя и сумму больше 0');
+                return;
+            }
+            
+            // Валидация диапазона tier
+            if (tier === 'mini' && (sum < 500000 || sum > 999999)) {
+                errorHint.textContent = 'Мини: 500 000–999 999 ₽';
+                errorHint.classList.add('visible');
+                return;
+            }
+            if (tier === 'base' && (sum < 1000000 || sum > 5000000)) {
+                errorHint.textContent = 'База: 1 000 000–5 000 000 ₽';
+                errorHint.classList.add('visible');
+                return;
+            }
+            errorHint.classList.remove('visible');
+            
+            // Генерация уникального invCode
+            let invCode;
+            let investorsCheck = [];
+            try {
+                const response = await fetch('data/investors.json?' + Date.now());
+                if (response.ok) {
+                    investorsCheck = await response.json();
+                }
+            } catch (e) {
+                investorsCheck = [];
+            }
+            
+            const hexChars = '0123456789ABCDEF';
+            do {
+                let code = 'INV-';
+                for (let i = 0; i < 4; i++) {
+                    code += hexChars[Math.floor(Math.random() * 16)];
+                }
+                invCode = code;
+            } while (investorsCheck.some(inv => inv.invCode === invCode));
+            
+            const today = new Date().toISOString().split('T')[0];
+            const newInvestor = { 
+                name, 
+                phoneTail: phoneTail || '000',
+                invCode,
+                sum, 
+                tier,
+                date: today,
+                term: term,
+                transactions: [{
+                    date: today,
+                    type: 'deposit',
+                    name: 'Первоначальный взнос',
+                    amount: sum
+                }],
+                deals: []
+            };
+            
+            // Загружаем текущих инвесторов
+            let investors = investorsCheck;
+            
+            // Добавляем нового инвестора
+            investors.push(newInvestor);
+            
+            // Сохраняем в GitHub
+            const jsonStr = JSON.stringify(investors, null, 2);
+            const saved = await commitInvestorsToGithub(jsonStr, 'investor: add ' + name + ' (' + invCode + ')');
+            
+            // Очищаем форму
+            nameInput.value = '';
+            phoneTailInput.value = '';
+            sumInput.value = '';
+            termInput.value = '24';
+            
+            // Показываем сообщение о сохранении
+            if (saved) {
+                savedMsg.style.display = 'block';
+                setTimeout(() => { savedMsg.style.display = 'none'; }, 2000);
+            }
+            
+            // Обновляем таблицу
+            currentInvestors = investors;
+            renderInvestors(investors);
+        }
+
+        function exportInvestorsCSV() {
+            let csv = '\uFEFF'; // BOM для UTF-8
+            csv += 'Имя;На счёте;В обороте;Начислено дохода;Число сделок\n';
+            
+            currentInvestors.forEach(inv => {
+                const metrics = calculateInvestorMetrics(inv);
+                const dealsCount = inv.deals ? inv.deals.filter(d => d.active).length : 0;
+                csv += `${inv.name};${metrics.onAccount};${metrics.inTurnover};${metrics.accruedIncome};${dealsCount}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'investors.csv';
+            link.click();
+        }
+    </script>
+</body>
+</html>
