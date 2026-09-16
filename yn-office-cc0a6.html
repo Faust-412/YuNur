@@ -1945,7 +1945,7 @@
                     if (!inv.tier) {
                         const totalDeposit = (inv.transactions || [])
                             .filter(t => t.type === 'deposit' || t.type === 'topup')
-                            .reduce((sum, t) => sum + t.amount, 0);
+                            .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
                         inv.tier = (totalDeposit >= 500000 && totalDeposit <= 999999) ? 'mini' : 'base';
                         migrationChanged = true;
                     }
@@ -2069,7 +2069,7 @@
         function getInvestorTier(investor) {
             const totalSum = (investor.transactions || [])
                 .filter(t => t.type === 'deposit' || t.type === 'topup')
-                .reduce((sum, t) => sum + t.amount, 0);
+                .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
             
             if (totalSum >= 1000000 && totalSum <= 5000000) {
                 return 'base';
@@ -2277,7 +2277,7 @@
             const tier = inv.tier || getInvestorTier(inv);
             const currentTotal = (inv.transactions || [])
                 .filter(t => t.type === 'deposit' || t.type === 'topup')
-                .reduce((sum, t) => sum + t.amount, 0);
+                .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
             const ceiling = tier === 'mini' ? 1000000 : 5000000;
             
             if (currentTotal + amount > ceiling) {
@@ -2302,7 +2302,7 @@
             const tier = inv.tier || getInvestorTier(inv);
             const currentTotal = (inv.transactions || [])
                 .filter(t => t.type === 'deposit' || t.type === 'topup')
-                .reduce((sum, t) => sum + t.amount, 0);
+                .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
             const ceiling = tier === 'mini' ? 1000000 : 5000000;
             
             // Валидация потолка tier
