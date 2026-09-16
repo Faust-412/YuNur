@@ -1,3 +1,3 @@
-The input shows only a directory addition 'YuNur-Investors/' with no specific file changes listed. Since there are no build artifacts, dependency directories, compiled files, or other ignorable items in the provided change list, and the current .gitignore is empty, no additions are needed.
+Nothing can be determined for .gitignore from just the addition of a directory 'YuNur-Investors/'. No specific file types or patterns to ignore are evident from the provided information. 
 
-(empty — output nothing)
+Output: (empty)
