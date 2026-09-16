@@ -31,6 +31,7 @@
       }
     ],
     "invCode": "INV-B72D",
-    "phoneTail": "000"
+    "phoneTail": "000",
+    "tier": "base"
   }
 ]
