@@ -1,3 +1,18 @@
-Nothing can be determined for .gitignore from just the addition of a directory 'YuNur-Investors/'. No specific file types or patterns to ignore are evident from the provided information. 
+```
+# Dependencies
+yn-inv-cc0a6/
 
-Output: (empty)
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+```
