@@ -29,8 +29,23 @@
         "monthlyIncome": 3120,
         "active": true
       }
+    ]
+  },
+  {
+    "name": "Ежмк",
+    "phoneTail": "412",
+    "invCode": "INV-EA9B",
+    "sum": 500000,
+    "date": "2026-09-16",
+    "term": 12,
+    "transactions": [
+      {
+        "date": "2026-09-16",
+        "type": "deposit",
+        "name": "Первоначальный взнос",
+        "amount": 500000
+      }
     ],
-    "invCode": "INV-B422",
-    "phoneTail": "000"
+    "deals": []
   }
 ]
