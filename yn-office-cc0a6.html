@@ -1938,6 +1938,22 @@
                 }
                 let investors = await response.json();
                 
+                // Миграция: присвоение tier по первому взносу (500000–999999 → mini, иначе base)
+                let migrationChanged = false;
+                for (let inv of investors) {
+                    if (!inv.tier) {
+                        const totalDeposit = (inv.transactions || [])
+                            .filter(t => t.type === 'deposit' || t.type === 'topup')
+                            .reduce((sum, t) => sum + t.amount, 0);
+                        inv.tier = (totalDeposit >= 500000 && totalDeposit <= 999999) ? 'mini' : 'base';
+                        migrationChanged = true;
+                    }
+                }
+                if (migrationChanged) {
+                    const jsonStr = JSON.stringify(investors, null, 2);
+                    await commitInvestorsToGithub(jsonStr, 'investor: migrate tier by first deposit');
+                }
+                
                 // Генерация invCode и phoneTail для существующих записей без них
                 let changed = false;
                 const hexChars = '0123456789ABCDEF';
@@ -2329,7 +2345,7 @@
                 // Mini investor: only Mini mode available
                 modeSelect.value = 'mini';
                 baseOption.disabled = true;
-                baseOption.textContent = 'База (недоступно)';
+                baseOption.textContent = 'База (доступно в tier База)';
                 miniOption.disabled = false;
                 miniOption.textContent = 'Мини';
                 
