@@ -2049,7 +2049,7 @@
             if (!inv.transactions) inv.transactions = [];
             
             for (const t of inv.transactions) {
-                const amount = t.amount || 0;
+                const amount = Number(t.amount) || 0;
                 if (t.type === 'deposit' || t.type === 'topup') {
                     onAccount += amount;
                 } else if (t.type === 'take_for_product') {
