@@ -35,6 +35,7 @@
         .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: 'DM Sans', sans-serif; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: #c9a227; }
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .form-row.align-end { align-items: flex-end; }
         .result-box { background: white; padding: 25px; border-radius: 12px; margin-top: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .result-box h3 { color: #1b5e20; margin-bottom: 15px; }
         .result-box pre { background: #f5f5f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin-bottom: 15px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
@@ -101,7 +102,7 @@
                 </div>
             </div>
             
-            <div class="form-row">
+            <div class="form-row align-end">
                 <div class="form-group">
                     <label>Телефон</label>
                     <input type="tel" id="ncPhone" placeholder="+7 (___) ___-__-__">
@@ -2048,15 +2049,16 @@
             if (!inv.transactions) inv.transactions = [];
             
             for (const t of inv.transactions) {
+                const amount = t.amount || 0;
                 if (t.type === 'deposit' || t.type === 'topup') {
-                    onAccount += t.amount;
+                    onAccount += amount;
                 } else if (t.type === 'take_for_product') {
-                    onAccount -= t.amount;
-                    inTurnover += t.amount;
-                    totalTurnover += t.amount;
+                    onAccount -= amount;
+                    inTurnover += amount;
+                    totalTurnover += amount;
                 } else if (t.type === 'income') {
-                    onAccount += t.amount;
-                    accruedIncome += t.amount;
+                    onAccount += amount;
+                    accruedIncome += amount;
                 }
             }
             
