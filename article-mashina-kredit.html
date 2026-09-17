@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Машина в кредит — YuNur</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:linear-gradient(135deg,#1E3A1A 0%,#14290F 100%);min-height:100vh;color:#E8EDE8;position:relative;overflow-x:hidden;line-height:1.7}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0L48 16L64 16L52 28L56 44L40 36L24 44L28 28L16 16L32 16L40 0Z' fill='%23C9A227' opacity='0.06'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+header{background:linear-gradient(135deg,#1E3A1A 0%,#14290F 100%);padding:0;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(201,162,39,0.2)}
+.flag-bar{height:4px;display:flex;width:100%}
+.flag-bar span{flex:1;height:100%}
+.flag-green{background:#009B4D}
+.flag-blue{background:#0077C8}
+.flag-red{background:#D21034}
+.header-content{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;gap:16px;flex-wrap:wrap}
+.logo{background:linear-gradient(135deg,#C9A227,#E8D68A);color:#1E3A1A;font-weight:700;padding:10px 18px;border-radius:12px;text-decoration:none;font-size:18px;letter-spacing:0.5px}
+.back-btn{color:#C9A227;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:8px;transition:all 0.2s;padding:8px 14px;border-radius:8px;border:1px solid rgba(201,162,39,0.3)}
+.back-btn:hover{background:rgba(201,162,39,0.1);border-color:#C9A227}
+main{max-width:900px;margin:0 auto;padding:48px 24px;position:relative;z-index:1}
+.article-title{text-align:center;font-size:38px;font-weight:700;background:linear-gradient(135deg,#C9A227,#E8D68A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;line-height:1.3}
+.article-lead{color:#B8C4BC;font-size:18px;text-align:center;max-width:700px;margin:0 auto 48px;line-height:1.7}
+.toc{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border:1px solid rgba(201,162,39,0.3);border-radius:16px;padding:24px;margin-bottom:48px}
+.toc h3{color:#C9A227;font-size:16px;margin-bottom:16px;font-weight:600}
+.toc ul{list-style:none}
+.toc li{margin-bottom:10px}
+.toc a{color:#E8EDE8;text-decoration:none;font-size:14px;transition:color 0.2s;display:block;padding:6px 0}
+.toc a:hover{color:#C9A227}
+article h2{color:#C9A227;font-size:26px;font-weight:600;margin:40px 0 20px;padding-top:20px}
+article h3{color:#E8D68A;font-size:20px;font-weight:600;margin:28px 0 14px}
+article p{margin:16px 0;color:#D8E0D8;font-size:16px;line-height:1.8}
+article ul{margin:16px 0 16px 24px}
+article li{margin:10px 0;color:#D8E0D8;line-height:1.7}
+.quote{border-left:3px solid #C9A227;padding:16px 20px;margin:24px 0;background:rgba(201,162,39,0.08);border-radius:0 12px 12px 0;font-style:italic;color:#E8D68A}
+.final-block{background:linear-gradient(135deg,rgba(201,162,39,0.1),rgba(232,214,138,0.05));border:1px solid rgba(201,162,39,0.4);border-radius:20px;padding:32px;margin-top:48px;text-align:center}
+.final-block h2{color:#C9A227;font-size:28px;margin-bottom:16px;margin-top:0}
+.final-block p{color:#E8EDE8;font-size:17px;line-height:1.8;margin-bottom:0}
+footer{background:rgba(30,58,26,0.9);border-top:1px solid rgba(201,162,39,0.2);padding:32px 24px;text-align:center;position:relative;z-index:1}
+.footer-content{max-width:900px;margin:0 auto}
+.footer-text{color:#B8C4BC;font-size:14px;margin-bottom:12px}
+.footer-link{color:#C9A227;text-decoration:none;font-weight:500;transition:color 0.2s}
+.footer-link:hover{color:#E8D68A}
+@media(max-width:768px){.article-title{font-size:28px}.toc{padding:18px}}
+@media(max-width:375px){.article-title{font-size:24px}main{padding:32px 16px}}
+</style>
+</head>
+<body>
+<header>
+<div class="flag-bar">
+<span class="flag-green"></span>
+<span class="flag-blue"></span>
+<span class="flag-red"></span>
+</div>
+<div class="header-content">
+<a href="index.html" class="logo">YuNur</a>
+<a href="articles.html" class="back-btn">← К статьям</a>
+</div>
+</header>
+<main>
+<h1 class="article-title">Машина в кредит: почему я всегда говорю — не спеши</h1>
+<p class="article-lead">Машина — это расход, а не актив. Считаем реальную цену кредита и показываем, как накопить на авто без долгов.</p>
+
+<nav class="toc">
+<h3>Оглавление</h3>
+<ul>
+<li><a href="#car-expense">Машина — это не актив. Это расход</a></li>
+<li><a href="#calculation">Считаем. Кредит 1 500 000 ₽ на 5 лет</a></li>
+<li><a href="#wait">А если не спешить?</a></li>
+<li><a href="#islam">Что говорит Ислам</a></li>
+<li><a href="#when">Когда покупать можно</a></li>
+</ul>
+</nav>
+
+<article>
+<p>Мне каждую неделю пишут: «Хочу машину, не хватает 500 тысяч. Взять кредит?» Мой ответ всегда один: если приходится спрашивать — не спеши. Сейчас объясню на пальцах.</p>
+
+<h2 id="car-expense">Машина — это не актив. Это расход</h2>
+<p>Актив кладёт деньги в карман. Расход — вынимает. Машина на 100% второе:</p>
+<ul>
+<li>в момент покупки минус 10–20% цены («выехал из салона — уже дешевле»);</li>
+<li>каждый год минус ещё 10–15% стоимости;</li>
+<li>каждый месяц — бензин, страховка, ТО, резина, налоги.</li>
+</ul>
+<p>Машина не делает тебя богаче. Она делает беднее — плавно, но гарантированно.</p>
+
+<h2 id="calculation">Считаем. Кредит 1 500 000 ₽ на 5 лет</h2>
+<p>Берём честные 20% годовых (это ещё «повезло», ставки бывают выше):</p>
+<ul>
+<li>платёж ≈ 33 000 ₽ в месяц;</li>
+<li>за 5 лет отдашь банку ≈ 2 000 000 ₽ — полмиллиона сверху;</li>
+<li>машина к этому времени стоит ≈ 750 000 ₽ (амортизация);</li>
+<li>плюс содержание: бензин, ОСАГО, ТО — легко 120 000 ₽ в год, за 5 лет — 600 000 ₽.</li>
+</ul>
+<div class="quote">Итог: ты потратил ~2 600 000 ₽, а остался с машиной за 750 000 ₽. Вот цена слова «хочу сейчас».</div>
+<p>А «рассрочка 0%» из салона — не обманывайся: скидка уже зашита в цену, ты переплачиваешь 10–15% ещё до первого платежа.</p>
+
+<h2 id="wait">А если не спешить?</h2>
+<p>Те же 33 000 ₽ в месяц — не банку, а себе. Только не под матрас, а туда, где деньги работают: золото, надёжные акции, или просто копилка с регулярным пополнением.</p>
+<ul>
+<li>за 5 лет отложишь ≈ 1 980 000 ₽;</li>
+<li>золото и рынок исторически прибавляют сверху (10–15% в год на длинной дистанции);</li>
+<li>итог: 2 300 000–2 600 000 ₽ своих денег.</li>
+</ul>
+<p>И вот ты спокойно покупаешь нужную машину на свои, без переплат и долгов — и у тебя ещё остаётся. Машина приходит к тебе, а не ты — к банку.</p>
+<p>Разница между двумя путями простая: в первом — ржавеющий расход и долг на шее. Во втором — капитал и свобода.</p>
+
+<h2 id="islam">Что говорит Ислам</h2>
+<p>Я не проповедую, но факт: риба запрещена — «Аллах дозволил торговлю и запретил рост» (Коран, 2:275). Кредит с процентами — это дыра в баракате. А долг в Исламе — дело серьёзное, а не «финансовый инструмент», как любят писать банки на баннерах.</p>
+<p>Терпение (сабр) — не слабость, а стратегия. Кто умеет подождать и накопить, сильнее того, кто «хочет сейчас» и платит за это тройную цену.</p>
+
+<h2 id="when">Когда покупать можно</h2>
+<p>Просто: есть деньги и машина реально нужна для работы или семьи — покупай, это нормально. Нет денег — не спеши. Год-два терпения плюс регулярные вложения (хоть в золото — оно не тает от инфляции) — и ты покупаешь без петли на шее.</p>
+<p>А если нужда горит и решение твёрдое — хотя бы не лезь в рибу. Рассрочка мурабаха, где цена зафиксирована в договоре и не растёт, лучше кредита, где проценты капают каждый день. Но даже так — сначала спроси себя: это правда нужно мне прямо сейчас?</p>
+
+<div class="final-block">
+<p><strong>Машина — не цель. Это инструмент. Сначала капитал — инструмент приложится.</strong></p>
+<p style="margin-top:16px;font-style:italic">— YuNur, честно о деньгах</p>
+</div>
+</article>
+</main>
+<footer>
+<div class="footer-content">
+<p class="footer-text">© 2026 YuNur. Исламская рассрочка без переплат.</p>
+<p class="footer-text"><a href="articles.html" class="footer-link">← Все статьи</a></p>
+</div>
+</footer>
+</body>
+</html>

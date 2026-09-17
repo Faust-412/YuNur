@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бизнес с друзьями — YuNur</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:linear-gradient(135deg,#1E3A1A 0%,#14290F 100%);min-height:100vh;color:#E8EDE8;position:relative;overflow-x:hidden;line-height:1.7}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0L48 16L64 16L52 28L56 44L40 36L24 44L28 28L16 16L32 16L40 0Z' fill='%23C9A227' opacity='0.06'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+header{background:linear-gradient(135deg,#1E3A1A 0%,#14290F 100%);padding:0;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(201,162,39,0.2)}
+.flag-bar{height:4px;display:flex;width:100%}
+.flag-bar span{flex:1;height:100%}
+.flag-green{background:#009B4D}
+.flag-blue{background:#0077C8}
+.flag-red{background:#D21034}
+.header-content{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;gap:16px;flex-wrap:wrap}
+.logo{background:linear-gradient(135deg,#C9A227,#E8D68A);color:#1E3A1A;font-weight:700;padding:10px 18px;border-radius:12px;text-decoration:none;font-size:18px;letter-spacing:0.5px}
+.back-btn{color:#C9A227;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:8px;transition:all 0.2s;padding:8px 14px;border-radius:8px;border:1px solid rgba(201,162,39,0.3)}
+.back-btn:hover{background:rgba(201,162,39,0.1);border-color:#C9A227}
+main{max-width:900px;margin:0 auto;padding:48px 24px;position:relative;z-index:1}
+.article-title{text-align:center;font-size:38px;font-weight:700;background:linear-gradient(135deg,#C9A227,#E8D68A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px;line-height:1.3}
+.article-lead{color:#B8C4BC;font-size:18px;text-align:center;max-width:700px;margin:0 auto 48px;line-height:1.7}
+.toc{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border:1px solid rgba(201,162,39,0.3);border-radius:16px;padding:24px;margin-bottom:48px}
+.toc h3{color:#C9A227;font-size:16px;margin-bottom:16px;font-weight:600}
+.toc ul{list-style:none}
+.toc li{margin-bottom:10px}
+.toc a{color:#E8EDE8;text-decoration:none;font-size:14px;transition:color 0.2s;display:block;padding:6px 0}
+.toc a:hover{color:#C9A227}
+article h2{color:#C9A227;font-size:26px;font-weight:600;margin:40px 0 20px;padding-top:20px}
+article h3{color:#E8D68A;font-size:20px;font-weight:600;margin:28px 0 14px}
+article p{margin:16px 0;color:#D8E0D8;font-size:16px;line-height:1.8}
+article ul{margin:16px 0 16px 24px}
+article li{margin:10px 0;color:#D8E0D8;line-height:1.7}
+.quote{border-left:3px solid #C9A227;padding:16px 20px;margin:24px 0;background:rgba(201,162,39,0.08);border-radius:0 12px 12px 0;font-style:italic;color:#E8D68A}
+.stories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin:32px 0}
+.story-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border:1px solid rgba(201,162,39,0.3);border-radius:16px;padding:24px;transition:all 0.3s}
+.story-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.2),0 0 20px rgba(201,162,39,0.1)}
+.story-badge{display:inline-block;background:linear-gradient(135deg,#C9A227,#E8D68A);color:#1E3A1A;font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:14px}
+.story-card h4{color:#E8EDE8;font-size:18px;margin-bottom:12px}
+.story-card p{color:#B8C4BC;font-size:14px;line-height:1.6}
+.checklist-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:32px 0}
+.checklist-item{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border:1px solid rgba(201,162,39,0.3);border-radius:14px;padding:20px;transition:all 0.3s}
+.checklist-item:hover{border-color:#C9A227;box-shadow:0 8px 24px rgba(201,162,39,0.1)}
+.checklist-item h4{color:#C9A227;font-size:15px;margin-bottom:8px;font-weight:600}
+.checklist-item p{color:#B8C4BC;font-size:14px;line-height:1.6}
+.final-block{background:linear-gradient(135deg,rgba(201,162,39,0.1),rgba(232,214,138,0.05));border:1px solid rgba(201,162,39,0.4);border-radius:20px;padding:32px;margin-top:48px;text-align:center}
+.final-block h2{color:#C9A227;font-size:28px;margin-bottom:16px;margin-top:0}
+.final-block p{color:#E8EDE8;font-size:17px;line-height:1.8;margin-bottom:0}
+footer{background:rgba(30,58,26,0.9);border-top:1px solid rgba(201,162,39,0.2);padding:32px 24px;text-align:center;position:relative;z-index:1}
+.footer-content{max-width:900px;margin:0 auto}
+.footer-text{color:#B8C4BC;font-size:14px;margin-bottom:12px}
+.footer-link{color:#C9A227;text-decoration:none;font-weight:500;transition:color 0.2s}
+.footer-link:hover{color:#E8D68A}
+@media(max-width:768px){.article-title{font-size:28px}.toc{padding:18px}.stories-grid,.checklist-grid{grid-template-columns:1fr}}
+@media(max-width:375px){.article-title{font-size:24px}main{padding:32px 16px}}
+</style>
+</head>
+<body>
+<header>
+<div class="flag-bar">
+<span class="flag-green"></span>
+<span class="flag-blue"></span>
+<span class="flag-red"></span>
+</div>
+<div class="header-content">
+<a href="index.html" class="logo">YuNur</a>
+<a href="articles.html" class="back-btn">← К статьям</a>
+</div>
+</header>
+<main>
+<h1 class="article-title">Бизнес с друзьями: как не потерять ни денег, ни дружбы</h1>
+<p class="article-lead">«Не занимай друзьям и не начинай с ними бизнес» — эту мудрость повторяют так часто, что многие даже не пробуют. А зря: партнёрство с близкими людьми может быть самым крепким видом бизнеса — если сразу выстроить то, что защитит и деньги, и отношения.</p>
+
+<nav class="toc">
+<h3>Оглавление</h3>
+<ul>
+<li><a href="#why-fear">Почему все боятся и когда страх оправдан</a></li>
+<li><a href="#rule1">Правило 1. Договорённости — до первых денег</a></li>
+<li><a href="#rule2">Правило 2. Прозрачность сильнее доверия</a></li>
+<li><a href="#rule3">Правило 3. Правила выше настроения</a></li>
+<li><a href="#rule4">Правило 4. Роли, а не родство</a></li>
+<li><a href="#rule5">Правило 5. Деньги любят расписание</a></li>
+<li><a href="#rule6">Правило 6. Протокол конфликта — заранее</a></li>
+<li><a href="#rule7">Правило 7. Бумаги — это форма уважения</a></li>
+<li><a href="#red-flags">Когда с друзьями бизнес начинать НЕ стоит</a></li>
+<li><a href="#stories">Три истории, которые вы наверняка слышали</a></li>
+<li><a href="#checklist">Чек-лист: что обсудить до первого рубля</a></li>
+<li><a href="#conclusion">Итог</a></li>
+</ul>
+</nav>
+
+<article>
+<h2 id="why-fear">Почему все боятся и когда страх оправдан</h2>
+<p>Опасность не в том, что друг окажется мошенником. Настоящая опасность — размытость. Друзья по умолчанию избегают «неудобных» разговоров о деньгах: о долях, сроках, выходе, прибыли. В результате каждый носит в голове свою версию договорённостей, и первое же расхождение версий воспринимается как предательство. Бизнес с друзьями рушится не от жадности, а от недосказанности, которой дали созреть.</p>
+
+<h2 id="rule1">Правило 1. Договорённости — до первых денег</h2>
+<p>Всё, что может стать конфликтом через год, проговаривается в первый день: кто сколько вкладывает, как делится прибыль, каков срок вложения, как и когда деньги возвращаются, что происходит при форс-мажоре и при выходе одного из партнёров. Важный признак зрелости договорённостей: их можно пересказать вслух одинаково с двух сторон. Если один говорит «через год вернём», а второй слышал «когда получится» — бизнес уже начал умирать, просто ещё не заметил.</p>
+<div class="quote">Если один говорит «через год вернём», а второй слышал «когда получится» — бизнес уже начал умирать.</div>
+
+<h2 id="rule2">Правило 2. Прозрачность сильнее доверия</h2>
+<p>Доверие — фундамент, но фундаменту нужна проверка на просадку. Любое партнёрство живёт дольше, если у обеих сторон есть доступ к картине денег: какие суммы вошли, на что ушли, что начислено, что в обороте. Формат не важен — таблица, общая папка, личный кабинет инвестора, — важен принцип: никому не приходится верить на слово, потому что всё видно. Парадокс в том, что чем меньше нужна вера в мелочах, тем крепче доверие в главном.</p>
+
+<h2 id="rule3">Правило 3. Правила выше настроения</h2>
+<p>Самое разрушительное в дружеских деньгах — исключение. «Выручи до пятницы», «давай сейчас заберу, потом верну», «в этот раз без учёта». Одно исключение отменяет правило, а отменённое правило отменяет безопасность. Деньги партнёрства ходят только по заранее описанным маршрутам и датам. Это не холодность: это защита обоих от обиды, которая всегда рождается из исключения, сделанного другому.</p>
+
+<h2 id="rule4">Правило 4. Роли, а не родство</h2>
+<p>В рабочие часы у друзей есть роли: кто считает, кто решает, кто отвечает за товар, кто говорит с клиентами. Спор по рабочему вопросу ведут роли, а не личности, — и это позволяет вечером остаться братьями, а не оппонентами. Там, где роль не назначена, решение принимает тот, кто громче, и это всегда медленно разрушает и дело, и отношения.</p>
+
+<h2 id="rule5">Правило 5. Деньги любят расписание</h2>
+<p>Вложения, начисления и возвраты живут по календарю, а не по обстоятельствам. График платежей и дат возврата — это не бюрократия, а способ снять с дружбы нагрузку переговоров: когда всё написано, не нужно каждый раз «договариваться заново», рискуя задеть чувства. Дисциплина расписания — самая дешёвая форма уважения к партнёру.</p>
+
+<h2 id="rule6">Правило 6. Протокол конфликта — заранее</h2>
+<p>Хорошие партнёры договариваются не только о том, как работать, но и о том, как спорить: сколько времени даётся на обсуждение разногласия, кто принимает финальное решение в какой зоне, что происходит, если один хочет выйти. Конфликт с процедурой перестаёт быть личным и становится задачей. Конфликт без процедуры всегда бьёт по дружбе.</p>
+
+<h2 id="rule7">Правило 7. Бумаги — это форма уважения</h2>
+<p>Простая письменная форма: договорённость на одну страницу, график вложений и возвратов, расписка или чек на каждую операцию. Многие друзья воспринимают бумаги как недоверие, а на деле это наоборот: бумага фиксирует то, что оба уже решили, и бережёт память от искажений. Через год никто не помнит деталей разговора — помнят запись.</p>
+
+<h2 id="red-flags">Когда с друзьями бизнес начинать НЕ стоит</h2>
+<p>Есть красные флаги, при которых дружбу лучше беречь: друг избегает разговора о цифрах и отшучивается; предлагает «всё на доверии, зачем бумаги»; уже имел истории с невозвратом долгов близким; смешивает личные обиды с рабочими вопросами; хочет вложить деньги, происхождение которых не может объяснить. Любой один флаг — повод вежливо отказаться и остаться друзьями.</p>
+
+<h2 id="stories">Три истории, которые вы наверняка слышали</h2>
+<div class="stories-grid">
+<div class="story-card">
+<span class="story-badge">История 1</span>
+<h4>Вложились поровну, прибыль делили «на глаз»</h4>
+<p>Через год один считал, что работал больше, и забрал себе больше. Дружба кончилась раньше, чем бизнес. Чего не хватило: формулы дележа, записанной одной строкой в первый день.</p>
+</div>
+<div class="story-card">
+<span class="story-badge">История 2</span>
+<h4>Друг одолжил из оборота «до зарплаты» три раза</h4>
+<p>На четвёртый раз оборота не хватило на закупку, сделка сорвалась, виноватых искали вечером на кухне. Чего не хватило: правила, что деньги партнёрства не выходят из оборота до срока.</p>
+</div>
+<div class="story-card">
+<span class="story-badge">История 3</span>
+<h4>Один решил выйти внезапно и забрать всё сразу</h4>
+<p>Второй остался без товара и без денег на сезон. Чего не хватило: заранее описанного сценария выхода — срок, порядок возврата, замена партнёра.</p>
+</div>
+</div>
+<p>Во всех трёх историях людей не губила жадность. Их губило отсутствие страницы, на которой правила были записаны до начала.</p>
+
+<h2 id="checklist">Чек-лист: что обсудить до первого рубля</h2>
+<div class="checklist-grid">
+<div class="checklist-item">
+<h4>Сроки</h4>
+<p>Когда деньги входят и когда возвращаются.</p>
+</div>
+<div class="checklist-item">
+<h4>Доли</h4>
+<p>Как делится прибыль — формулой, а не настроением.</p>
+</div>
+<div class="checklist-item">
+<h4>Прозрачность</h4>
+<p>Где оба видят движение денег.</p>
+</div>
+<div class="checklist-item">
+<h4>Роли</h4>
+<p>Кто за что отвечает и кто решает в спорной зоне.</p>
+</div>
+<div class="checklist-item">
+<h4>Исключения</h4>
+<p>Договорённость, что их не бывает.</p>
+</div>
+<div class="checklist-item">
+<h4>Выход</h4>
+<p>Сценарий выхода и форс-мажора заранее.</p>
+</div>
+<div class="checklist-item">
+<h4>Бумаги</h4>
+<p>Одна страница договорённости и записи по каждой операции.</p>
+</div>
+</div>
+
+<div class="final-block" id="conclusion">
+<h2>Итог</h2>
+<p>Бизнес с друзьями — не запретная тема, а задача со звёздочкой. Она решается теми же инструментами, что и любой серьёзный бизнес: ясностью, расписанием и прозрачностью, — плюс одним бонусом, которого нет ни у каких других партнёров: капиталом доверия, накопленным годами дружбы. Деньги, положенные на систему, дружбу не проверяют — они её укрепляют. Ломают не деньги. Ломает отсутствие правил.</p>
+</div>
+</article>
+</main>
+<footer>
+<div class="footer-content">
+<p class="footer-text">© 2026 YuNur. Исламская рассрочка без переплат.</p>
+<p class="footer-text"><a href="articles.html" class="footer-link">← Все статьи</a></p>
+</div>
+</footer>
+</body>
+</html>
