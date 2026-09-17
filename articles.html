@@ -1,177 +1,548 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Статьи — YuNur</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:#eef2ef;color:#22372e}
-header{background:#2b4a3a;padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
-.logo{background:#f4f1ea;color:#2b4a3a;font-weight:700;padding:8px 14px;border-radius:12px;text-decoration:none}
-nav{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto}
-nav a{color:#fff;text-decoration:none;font-size:15px}
-.btn{background:#fff;color:#2b4a3a;padding:10px 18px;border-radius:999px;text-decoration:none;font-weight:600}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статьи — YuNur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&display=swap&subset=cyrillic" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark: #1E3A1A;
+            --green-mid: #14290F;
+            --gold: #C9A227;
+            --gold-light: #E8D68A;
+            --white: #ffffff;
+            --text-gray: #E0E0E0;
+        }
 
-/* Каталог кнопка */
-.catalog-btn{background:transparent;color:#fff;padding:8px 16px;border-radius:8px;font-weight:500;font-size:15px;transition:all 0.2s ease;border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;gap:8px}
-.catalog-btn:hover{background:rgba(255,255,255,0.1)}
-.catalog-btn-icon{display:flex;flex-direction:column;gap:3px}
-.catalog-btn-icon span{display:block;width:18px;height:2px;background:#fff;border-radius:1px}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Каталог Dropdown */
-.catalog-dropdown{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-10px);background:#fff;border:1px solid #2d6a4f;border-radius:20px;box-shadow:0 10px 40px rgba(27,67,50,0.2);z-index:999;display:none;overflow:hidden;max-width:900px;width:calc(100vw - 40px)}
-.catalog-dropdown.active{display:block;animation:dropdownFade 0.2s ease forwards}
-@keyframes dropdownFade{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.catalog-dropdown-content{display:flex;padding:1.5rem;gap:1.5rem}
-.catalog-categories{min-width:220px;border-right:1px solid rgba(27,67,50,0.1);padding-right:1.5rem}
-.catalog-category{display:flex;align-items:center;gap:0.75rem;padding:12px 16px;border-radius:12px;cursor:pointer;transition:all 0.2s ease;font-weight:500;color:#22372e;margin-bottom:0.5rem}
-.catalog-category:hover{background:#f2f7f4}
-.catalog-category.active{background:#2d6a4f;color:#fff}
-.catalog-category-icon{font-size:1.3rem}
-.catalog-brands{flex:1;min-width:200px}
-.catalog-brands-title{font-size:0.85rem;color:#2d6a4f;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:1rem}
-.catalog-brands-list{display:flex;flex-wrap:wrap;gap:0.5rem}
-.catalog-brand-btn{background:transparent;color:#2d6a4f;padding:8px 16px;border-radius:25px;border:1px solid #2d6a4f;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.2s ease;text-decoration:none;display:inline-block}
-.catalog-brand-btn:hover{background:#2d6a4f;color:#fff}
-.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);z-index:998;display:none}
-.overlay.active{display:block}
-main{max-width:1000px;margin:0 auto;padding:34px 18px 70px}
-h1{text-align:center;color:#1f3a2d;margin-bottom:26px;font-size:34px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{background:#fbfcfb;border:1px solid #2b4a3a33;border-radius:16px;padding:20px;cursor:pointer}
-.card:hover{box-shadow:0 6px 18px #2b4a3a22}
-.cat{display:inline-block;font-size:12px;color:#3e6b4f;border:1px solid #3e6b4f55;border-radius:999px;padding:3px 10px;margin-bottom:10px}
-.card h3{color:#1f3a2d;margin-bottom:8px}
-.card p{font-size:14px;color:#51655a}
-.date{margin-top:12px;font-size:12px;color:#7d8f85}
-.msg{text-align:center;color:#7d8f85;padding:30px}
-.err{text-align:center;color:#b3372f;padding:30px}
-article{background:#fbfcfb;border:1px solid #2b4a3a33;border-radius:16px;padding:28px}
-article h2{color:#1f3a2d;margin:22px 0 10px}
-article p{margin:10px 0;line-height:1.6}
-.back{display:inline-block;margin-bottom:16px;color:#3e6b4f;cursor:pointer;text-decoration:underline}
-footer{background:#2b4a3a;color:#dfe9e2;text-align:center;padding:22px;font-size:14px}
-</style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+            color: var(--text-gray);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Арабский геометрический узор (гирих) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0 L60 35 L95 35 L67 57 L78 92 L50 70 L22 92 L33 57 L5 35 L40 35 Z' fill='none' stroke='%23C9A227' stroke-width='0.5' opacity='0.06'/%3E%3C/svg%3E");
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Шапка с полоской флага Дагестана */
+        header {
+            background: rgba(30, 58, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+        }
+
+        .flag-stripe {
+            display: flex;
+            height: 4px;
+            width: 100%;
+        }
+
+        .flag-stripe-green { flex: 1; background: #008000; }
+        .flag-stripe-blue { flex: 1; background: #0033A0; }
+        .flag-stripe-red { flex: 1; background: #D20000; }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 20px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--gold);
+            color: var(--green-dark);
+        }
+
+        /* Заголовок статьи */
+        .article-header {
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+
+        .article-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .article-lead {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Оглавление */
+        .toc {
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .toc h3 {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .toc a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            background: var(--gold);
+            color: var(--green-dark);
+        }
+
+        /* Разделы статьи */
+        section {
+            margin: 2.5rem 0;
+        }
+
+        section h2 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+        }
+
+        section p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        /* Цитата-акцент */
+        .quote {
+            border-left: 3px solid var(--gold);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background: rgba(201, 162, 39, 0.05);
+            font-style: italic;
+            color: var(--gold-light);
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* Карточки историй */
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .story-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(201, 162, 39, 0.2);
+        }
+
+        .story-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--green-dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .story-card h3 {
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .story-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Чек-лист плитка */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .checklist-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(201, 162, 39, 0.4);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:hover {
+            border-color: var(--gold);
+            box-shadow: 0 5px 20px rgba(201, 162, 39, 0.15);
+        }
+
+        .checklist-item strong {
+            color: var(--gold);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .checklist-item p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Итог */
+        .conclusion {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1) 0%, rgba(201, 162, 39, 0.05) 100%);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .conclusion h2 {
+            border-bottom: none;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .conclusion p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Красные флаги */
+        .red-flags {
+            background: rgba(210, 0, 0, 0.1);
+            border: 1px solid rgba(210, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .red-flags h3 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .red-flags ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .red-flags li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .red-flags li::before {
+            content: '⚠️';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Футер */
+        footer {
+            background: rgba(30, 58, 26, 0.95);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* Адаптив */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .article-header {
+                padding: 2rem 0 1.5rem;
+            }
+
+            .toc ul {
+                flex-direction: column;
+            }
+
+            .toc a {
+                display: block;
+                text-align: center;
+            }
+
+            .stories-grid,
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .conclusion {
+                padding: 1.5rem;
+            }
+
+            .conclusion h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-<a class="logo" href="index.html">YuNur</a>
-<nav>
-<a href="index.html#calculator">Калькулятор</a>
-<a href="index.html#how-it-works">Как это работает</a>
-<a href="rates.html">Курсы валют</a>
-<a href="articles.html">Статьи</a>
-<a href="payments.html">Мои платежи</a>
-</nav>
-<button class="catalog-btn" onclick="toggleCatalog()">
-    <span class="catalog-btn-icon">
-        <span></span>
-        <span></span>
-        <span></span>
-    </span>
-    Каталог
-</button>
-<a class="btn" href="index.html#application">Оставить заявку</a>
-</header>
-<main>
-<h1>Статьи</h1>
-<div id="content"><div class="msg">Загрузка...</div></div>
-</main>
-<footer>© YuNur. Исламская рассрочка без переплат.</footer>
-
-<!-- Каталог Dropdown -->
-<div class="overlay" id="catalog-overlay" onclick="closeCatalog()"></div>
-<div class="catalog-dropdown" id="catalog-dropdown">
-    <div class="catalog-dropdown-content">
-        <div class="catalog-categories">
-            <div class="catalog-category active" data-category="phones" onclick="selectCategory('phones')">
-                <span class="catalog-category-icon">📱</span>
-                <span>Телефоны</span>
-            </div>
-            <div class="catalog-category" data-category="fridge" onclick="selectCategory('fridge')">
-                <span class="catalog-category-icon">🧊</span>
-                <span>Холодильники</span>
-            </div>
-            <div class="catalog-category" data-category="washing" onclick="selectCategory('washing')">
-                <span class="catalog-category-icon">🌀</span>
-                <span>Стиральные машины</span>
-            </div>
-            <div class="catalog-category" data-category="vacuum" onclick="selectCategory('vacuum')">
-                <span class="catalog-category-icon">🧹</span>
-                <span>Пылесосы</span>
-            </div>
-        </div>
-        <div class="catalog-brands">
-            <p class="catalog-brands-title">Бренды</p>
-            <div class="catalog-brands-list" id="brands-container">
-                <!-- Бренды заполняются JS -->
-            </div>
-        </div>
+    <!-- Полоска флага Дагестана -->
+    <div class="flag-stripe">
+        <div class="flag-stripe-green"></div>
+        <div class="flag-stripe-blue"></div>
+        <div class="flag-stripe-red"></div>
     </div>
-</div>
-<script>
-const API='https://api.github.com/repos/Faust-412/YuNur/contents/content/articles?ref=main';
-let articles=[];
-async function loadList(){
-const box=document.getElementById('content');
-try{
-const res=await fetch(API);
-if(res.status===404){box.innerHTML='<div class="msg">Статей пока нет — скоро появятся.</div>';return;}
-if(!res.ok)throw 0;
-const files=(await res.json()).filter(f=>f.name.endsWith('.md')||f.name.endsWith('.txt'));
-if(!files.length){box.innerHTML='<div class="msg">Статей пока нет — скоро появятся.</div>';return;}
-articles=await Promise.all(files.map(async f=>{const raw=await(await fetch(f.download_url)).text();return parse(raw,f.name);}));
-articles.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-renderList();
-}catch(e){box.innerHTML='<div class="err">Не удалось загрузить статьи. Попробуйте позже.</div>';}
-}
-function parse(raw,file){
-const lines=raw.split('\n');
-const a={file,title:file,category:'Статьи',date:'',teaser:'',body:[]};
-let i=0;
-for(;i<lines.length;i++){
-const l=lines[i].trim();
-if(l.startsWith('Название:'))a.title=l.replace('Название:','').trim();
-else if(l.startsWith('Рубрика:'))a.category=l.replace('Рубрика:','').trim();
-else if(l.startsWith('Дата:'))a.date=l.replace('Дата:','').trim();
-else if(l.startsWith('Тизер:'))a.teaser=l.replace('Тизер:','').trim();
-else break;
-}
-a.body=lines.slice(i);
-if(!a.teaser)a.teaser=(a.body.find(l=>l.trim()&&!l.startsWith('#'))||'').trim();
-return a;
-}
-function renderList(){
-const box=document.getElementById('content');
-box.innerHTML='<div class="grid">'+articles.map((a,n)=>'<div class="card" onclick="openArticle('+n+')"><span class="cat">'+esc(a.category)+'</span><h3>'+esc(a.title)+'</h3><p>'+esc(a.teaser)+'</p><div class="date">'+esc(fmtDate(a.date))+'</div></div>').join('')+'</div>';
-}
-function openArticle(n){
-const a=articles[n];
-const html=a.body.map(line=>{
-const l=line.trim();
-if(!l)return '';
-if(l.startsWith('### '))return '<h2>'+esc(l.slice(4))+'</h2>';
-if(l.startsWith('## '))return '<h2>'+esc(l.slice(3))+'</h2>';
-if(l.startsWith('# '))return '<h2>'+esc(l.slice(2))+'</h2>';
-if(l.startsWith('- '))return '<p>• '+esc(l.slice(2))+'</p>';
-return '<p>'+esc(l)+'</p>';
-}).join('');
-document.getElementById('content').innerHTML='<span class="back" onclick="renderList()">← Все статьи</span><article><span class="cat">'+esc(a.category)+'</span><h1 style="text-align:left;font-size:28px;margin:8px 0 4px">'+esc(a.title)+'</h1><div class="date">'+esc(fmtDate(a.date))+'</div>'+html+'</article>';
-window.scrollTo(0,0);
-}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function fmtDate(d){if(!d)return '';const t=new Date(d);return isNaN(t)?d:t.toLocaleDateString('ru-RU');}
 
-// Каталог
-const brandsByCategory={phones:['iPhone','Samsung'],fridge:['Samsung','LG','Bosch','Haier','Indesit'],washing:['LG','Samsung','Bosch','Haier','Indesit'],vacuum:['Dyson','Samsung','LG','Bosch','Philips']};
-let currentCategory='phones';
-function toggleCatalog(){const dropdown=document.getElementById('catalog-dropdown');const overlay=document.getElementById('catalog-overlay');dropdown.classList.toggle('active');overlay.classList.toggle('active');}
-function closeCatalog(){const dropdown=document.getElementById('catalog-dropdown');const overlay=document.getElementById('catalog-overlay');dropdown.classList.remove('active');overlay.classList.remove('active');}
-function selectCategory(category){currentCategory=category;document.querySelectorAll('.catalog-category').forEach(cat=>{cat.classList.remove('active');if(cat.dataset.category===category){cat.classList.add('active');}});const brandsContainer=document.getElementById('brands-container');brandsContainer.innerHTML='';brandsByCategory[category].forEach(brand=>{const btn=document.createElement('a');btn.className='catalog-brand-btn';btn.textContent=brand;btn.href='brand.html?b='+brand.toLowerCase();brandsContainer.appendChild(btn);});}
-document.addEventListener('DOMContentLoaded',function(){selectCategory('phones');});
+    <header>
+        <div class="header-content container">
+            <a href="index.html" class="logo">YuNur · Статьи</a>
+            <a href="index.html" class="back-btn">← На главную</a>
+        </div>
+    </header>
 
-loadList();
-</script>
+    <main class="container">
+        <article>
+            <header class="article-header">
+                <h1 class="article-title">Бизнес с друзьями: как не потерять ни денег, ни дружбы</h1>
+                <p class="article-lead">«Не занимай друзьям и не начинай с ними бизнес» — эту мудрость повторяют так часто, что многие даже не пробуют. А зря: партнёрство с близкими людьми может быть самым крепким видом бизнеса — если сразу выстроить то, что защитит и деньги, и отношения.</p>
+            </header>
+
+            <!-- Оглавление -->
+            <nav class="toc">
+                <h3>Оглавление</h3>
+                <ul>
+                    <li><a href="#why-fear">Почему все боятся</a></li>
+                    <li><a href="#rule1">Правило 1</a></li>
+                    <li><a href="#rule2">Правило 2</a></li>
+                    <li><a href="#rule3">Правило 3</a></li>
+                    <li><a href="#rule4">Правило 4</a></li>
+                    <li><a href="#rule5">Правило 5</a></li>
+                    <li><a href="#rule6">Правило 6</a></li>
+                    <li><a href="#rule7">Правило 7</a></li>
+                    <li><a href="#red-flags">Красные флаги</a></li>
+                    <li><a href="#stories">Три истории</a></li>
+                    <li><a href="#checklist">Чек-лист</a></li>
+                    <li><a href="#conclusion">Итог</a></li>
+                </ul>
+            </nav>
+
+            <section id="why-fear">
+                <h2>Почему все боятся и когда страх оправдан</h2>
+                <p>Опасность не в том, что друг окажется мошенником. Настоящая опасность — размытость. Друзья по умолчанию избегают «неудобных» разговоров о деньгах: о долях, сроках, выходе, прибыли. В результате каждый носит в голове свою версию договорённостей, и первое же расхождение версий воспринимается как предательство. Бизнес с друзьями рушится не от жадности, а от недосказанности, которой дали созреть.</p>
+            </section>
+
+            <section id="rule1">
+                <h2>Правило 1. Договорённости — до первых денег</h2>
+                <p>Всё, что может стать конфликтом через год, проговаривается в первый день: кто сколько вкладывает, как делится прибыль, каков срок вложения, как и когда деньги возвращаются, что происходит при форс-мажоре и при выходе одного из партнёров. Важный признак зрелости договорённостей: их можно пересказать вслух одинаково с двух сторон. Если один говорит «через год вернём», а второй слышал «когда получится» — бизнес уже начал умирать, просто ещё не заметил.</p>
+                <div class="quote">Если один говорит «через год вернём», а второй слышал «когда получится» — бизнес уже начал умирать.</div>
+            </section>
+
+            <section id="rule2">
+                <h2>Правило 2. Прозрачность сильнее доверия</h2>
+                <p>Доверие — фундамент, но фундаменту нужна проверка на просадку. Любое партнёрство живёт дольше, если у обеих сторон есть доступ к картине денег: какие суммы вошли, на что ушли, что начислено, что в обороте. Формат не важен — таблица, общая папка, личный кабинет инвестора, — важен принцип: никому не приходится верить на слово, потому что всё видно.</p>
+                <div class="quote">Чем меньше нужна вера в мелочах, тем крепче доверие в главном.</div>
+            </section>
+
+            <section id="rule3">
+                <h2>Правило 3. Правила выше настроения</h2>
+                <p>Самое разрушительное в дружеских деньгах — исключение. «Выручи до пятницы», «давай сейчас заберу, потом верну», «в этот раз без учёта». Одно исключение отменяет правило, а отменённое правило отменяет безопасность. Деньги партнёрства ходят только по заранее описанным маршрутам и датам. Это не холодность: это защита обоих от обиды, которая всегда рождается из исключения, сделанного другому.</p>
+            </section>
+
+            <section id="rule4">
+                <h2>Правило 4. Роли, а не родство</h2>
+                <p>В рабочие часы у друзей есть роли: кто считает, кто решает, кто отвечает за товар, кто говорит с клиентами. Спор по рабочему вопросу ведут роли, а не личности, — и это позволяет вечером остаться братьями, а не оппонентами. Там, где роль не назначена, решение принимает тот, кто громче, и это всегда медленно разрушает и дело, и отношения.</p>
+            </section>
+
+            <section id="rule5">
+                <h2>Правило 5. Деньги любят расписание</h2>
+                <p>Вложения, начисления и возвраты живут по календарю, а не по обстоятельствам. График платежей и дат возврата — это не бюрократия, а способ снять с дружбы нагрузку переговоров: когда всё написано, не нужно каждый раз «договариваться заново», рискуя задеть чувства. Дисциплина расписания — самая дешёвая форма уважения к партнёру.</p>
+            </section>
+
+            <section id="rule6">
+                <h2>Правило 6. Протокол конфликта — заранее</h2>
+                <p>Хорошие партнёры договариваются не только о том, как работать, но и о том, как спорить: сколько времени даётся на обсуждение разногласия, кто принимает финальное решение в какой зоне, что происходит, если один хочет выйти. Конфликт с процедурой перестаёт быть личным и становится задачей. Конфликт без процедуры всегда бьёт по дружбе.</p>
+            </section>
+
+            <section id="rule7">
+                <h2>Правило 7. Бумаги — это форма уважения</h2>
+                <p>Простая письменная форма: договорённость на одну страницу, график вложений и возвратов, расписка или чек на каждую операцию. Многие друзья воспринимают бумаги как недоверие, а на деле это наоборот: бумага фиксирует то, что оба уже решили, и бережёт память от искажений. Через год никто не помнит деталей разговора — помнят запись.</p>
+            </section>
+
+            <section id="red-flags">
+                <h2>Когда с друзьями бизнес начинать НЕ стоит</h2>
+                <div class="red-flags">
+                    <h3>Красные флаги:</h3>
+                    <ul>
+                        <li>Друг избегает разговора о цифрах и отшучивается</li>
+                        <li>Предлагает «всё на доверии, зачем бумаги»</li>
+                        <li>Уже имел истории с невозвратом долгов близким</li>
+                        <li>Смешивает личные обиды с рабочими вопросами</li>
+                        <li>Хочет вложить деньги, происхождение которых не может объяснить</li>
+                    </ul>
+                    <p style="margin-top: 1rem;">Любой один флаг — повод вежливо отказаться и остаться друзьями.</p>
+                </div>
+            </section>
+
+            <section id="stories">
+                <h2>Три истории, которые вы наверняка слышали</h2>
+                <div class="stories-grid">
+                    <div class="story-card">
+                        <span class="story-badge">История 1</span>
+                        <h3>Вложились поровну, прибыль делили «на глаз»</h3>
+                        <p>Через год один считал, что работал больше, и забрал себе больше. Дружба кончилась раньше, чем бизнес.</p>
+                        <div class="quote" style="margin-top: 1rem; font-size: 0.85rem;">Чего не хватило: формулы дележа, записанной одной строкой в первый день.</div>
+                    </div>
+                    <div class="story-card">
+                        <span class="story-badge">История 2</span>
+                        <h3>Друг одолжил из оборота «до зарплаты»</h3>
+                        <p>Три раза занимал «до зарплаты». На четвёртый раз оборота не хватило на закупку, сделка сорвалась, виноватых искали вечером на кухне.</p>
+                        <div class="quote" style="margin-top: 1rem; font-size: 0.85rem;">Чего не хватило: правила, что деньги партнёрства не выходят из оборота до срока.</div>
+                    </div>
+                    <div class="story-card">
+                        <span class="story-badge">История 3</span>
+                        <h3>Внезапный выход из бизнеса</h3>
+                        <p>Всё шло хорошо, пока один не решил выйти внезапно и забрать всё сразу. Второй остался без товара и без денег на сезон.</p>
+                        <div class="quote" style="margin-top: 1rem; font-size: 0.85rem;">Чего не хватило: заранее описанного сценария выхода — срок, порядок возврата, замена партнёра.</div>
+                    </div>
+                </div>
+                <p style="margin-top: 1.5rem;">Во всех трёх историях людей не губила жадность. Их губило отсутствие страницы, на которой правила были записаны до начала.</p>
+            </section>
+
+            <section id="checklist">
+                <h2>Чек-лист: что обсудить до первого рубля</h2>
+                <div class="checklist-grid">
+                    <div class="checklist-item">
+                        <strong>Сроки</strong>
+                        <p>Когда деньги входят и когда возвращаются</p>
+                    </div>
+                    <div class="checklist-item">
+                        <strong>Доли</strong>
+                        <p>Как делится прибыль — формулой, а не настроением</p>
+                    </div>
+                    <div class="checklist-item">
+                        <strong>Прозрачность</strong>
+                        <p>Где оба видят движение денег</p>
+                    </div>
+                    <div class="checklist-item">
+                        <strong>Роли</strong>
+                        <p>Кто за что отвечает и кто решает в спорной зоне</p>
+                    </div>
+                    <div class="checklist-item">
+                        <strong>Исключения</strong>
+                        <p>Договорённость, что их не бывает</p>
+                    </div>
+                    <div class="checklist-item">
+                        <strong>Выход</strong>
+                        <p>Сценарий выхода и форс-мажора заранее</p>
+                    </div>
+                    <div class="checklist-item">
+                        <strong>Бумаги</strong>
+                        <p>Одна страница договорённости и записи по каждой операции</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="conclusion" class="conclusion">
+                <h2>Итог</h2>
+                <p>Бизнес с друзьями — не запретная тема, а задача со звёздочкой. Она решается теми же инструментами, что и любой серьёзный бизнес: ясностью, расписанием и прозрачностью, — плюс одним бонусом, которого нет ни у каких других партнёров: капиталом доверия, накопленным годами дружбы.</p>
+                <p style="margin-top: 1rem; color: var(--gold); font-weight: 500;">Деньги, положенные на систему, дружбу не проверяют — они её укрепляют. Ломают не деньги. Ломает отсутствие правил.</p>
+            </section>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 YuNur. Все права защищены.</p>
+            <p style="margin-top: 0.5rem;"><a href="index.html">Вернуться на главный сайт</a></p>
+        </div>
+    </footer>
 </body>
 </html>
