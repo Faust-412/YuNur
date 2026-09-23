@@ -1,35 +1,35 @@
 {
-  "updatedAt": "2026-09-23T10:24:03.562Z",
-  "sourceDate": "2026-09-23T11:30:00+03:00",
+  "updatedAt": "2026-09-23T15:41:59.746Z",
+  "sourceDate": "2026-09-24T11:30:00+03:00",
   "currencies": [
     {
       "code": "USD",
       "name": "Доллар США",
-      "value": 84.0657,
-      "previous": 84.0954
+      "value": 84.3969,
+      "previous": 84.0657
     },
     {
       "code": "EUR",
       "name": "Евро",
-      "value": 96.5915,
-      "previous": 96.3733
+      "value": 96.7442,
+      "previous": 96.5915
     },
     {
       "code": "CNY",
       "name": "Китайский юань",
-      "value": 12.5291,
-      "previous": 12.5448
+      "value": 12.5598,
+      "previous": 12.5291
     },
     {
       "code": "JPY",
       "name": "Японская иена",
-      "value": 0.535109,
-      "previous": 0.535299
+      "value": 0.537218,
+      "previous": 0.535109
     },
     {
       "code": "GOLD",
       "name": "Золото (за грамм)",
-      "value": 11667.879743270374,
+      "value": 11615.351833830857,
       "previous": null
     }
   ]
