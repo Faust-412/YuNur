@@ -29,6 +29,12 @@
         "name": "доход по сделке \"айфон 15 про 256гб\", месяц 2",
         "amount": 3120,
         "key": "accrual_deal_1788957063015_month_2"
+      },
+      {
+        "date": "2026-11-17",
+        "type": "take_for_product",
+        "name": "iphone 17 pro 512 gb",
+        "amount": 120000
       }
     ],
     "deals": [
@@ -41,6 +47,17 @@
         "term": 10,
         "markupRuble": 31200,
         "monthlyIncome": 3120,
+        "active": true
+      },
+      {
+        "id": "deal_1794940884425",
+        "date": "2026-11-17",
+        "productName": "iphone 17 pro 512 gb",
+        "amount": 120000,
+        "depositPercent": 40,
+        "term": 6,
+        "markupRuble": 25200,
+        "monthlyIncome": 2100,
         "active": true
       }
     ],
