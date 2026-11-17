@@ -244,5 +244,48 @@
       }
     ],
     "bonus": 108
+  },
+  {
+    "hash": "11a383ebe761e143d15f357f0970da130149a773ab5c61df65aea7bb2c9f479a",
+    "phoneHash": "c48c373de6501e5d48ad6fed6a9dd8100fd7ab84d00bfb23a36ee1acbc39d20e",
+    "name": "Мужик Таджик Абуров",
+    "item": "Айфон 15 про 256 гб",
+    "total": 22200,
+    "schedule": [
+      {
+        "date": "2026-11-17",
+        "sum": 3700,
+        "paid": false
+      },
+      {
+        "date": "2026-12-17",
+        "sum": 3700,
+        "paid": false
+      },
+      {
+        "date": "2027-01-17",
+        "sum": 3700,
+        "paid": false
+      },
+      {
+        "date": "2027-02-17",
+        "sum": 3700,
+        "paid": false
+      },
+      {
+        "date": "2027-03-17",
+        "sum": 3700,
+        "paid": false
+      },
+      {
+        "date": "2027-04-17",
+        "sum": 3700,
+        "paid": false
+      }
+    ],
+    "bonus": 0,
+    "mode": "mini",
+    "refCode": "RF-6200",
+    "refBy": ""
   }
 ]
