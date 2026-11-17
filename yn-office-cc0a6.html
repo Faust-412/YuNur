@@ -73,6 +73,8 @@
         <div class="login-box">
             <h1>🔐 YuNur Admin</h1>
            <input type="password" id="masterCode" placeholder="Мастер-код">
+<input type="password" id="githubToken" style="display:none">
+<input type="checkbox" id="rememberToken" checked style="display:none">
 <button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
             <p id="errorMsg" class="error-msg">Доступ запрещён</p>
         </div>
@@ -81,12 +83,13 @@
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('newClient')">Новый клиент</button>
-            <button class="tab" onclick="switchTab('payments')">Платежи</button>
-            <button class="tab" onclick="switchTab('collections')">Сборы</button>
-            <button class="tab" onclick="switchTab('investors')" id="investorsTabBtn">Инвесторы</button>
-            <button class="tab" onclick="switchTab('articles')">Статьи</button>
-        </div>
+  <button class="tab active" onclick="switchTab('newClient')">Новый клиент</button>
+  <button class="tab" onclick="switchTab('payments')">Платежи</button>
+  <button class="tab" onclick="switchTab('collections')">Сборы</button>
+  <button class="tab" onclick="switchTab('investors')" id="investorsTabBtn">Инвесторы</button>
+  <button class="tab" onclick="switchTab('articles')">Статьи</button>
+  <button class="tab" onclick="switchTab('settings')">⚙️ Настройки</button>
+</div>
 
         <!-- New Client Tab -->
         <div id="newClientTab" class="tab-content active">
@@ -450,6 +453,28 @@
         </div>
 
         <!-- Articles Tab -->
+        <!-- Settings Tab -->
+<div id="settingsTab" class="tab-content">
+  <h2>⚙️ Настройки</h2>
+  <div class="result-box" style="margin-top: 20px;">
+    <h3>GitHub токен для автосохранения</h3>
+    <p style="color: #666; margin-bottom: 15px;">
+      Токен сохраняется в браузере и используется для автоматического сохранения данных.
+      Если токен истёк — создай новый на <a href="https://github.com/settings/tokens" target="_blank">GitHub</a>
+    </p>
+    <div class="form-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="settingsToken" placeholder="ghp_xxxxxxxxxxxx">
+    </div>
+    <button class="btn btn-primary" onclick="saveSettingsToken()" style="width: auto;">Сохранить токен</button>
+    <p id="tokenStatus" style="margin-top: 10px; font-weight: 500;"></p>
+  </div>
+  <div class="result-box" style="margin-top: 20px;">
+    <h3>Проверить токен</h3>
+    <button class="btn btn-outline" onclick="testToken()" style="width: auto;">Проверить подключение к GitHub</button>
+    <p id="tokenTestResult" style="margin-top: 10px; font-weight: 500;"></p>
+  </div>
+</div>
         <div id="articlesTab" class="tab-content">
             <h2>📚 Статьи</h2>
             
@@ -656,10 +681,21 @@
                 document.getElementById('investorsTab').classList.add('active');
                 loadInvestors();
             } else if (tabName === 'articles') {
-                document.querySelectorAll('.tab')[4].classList.add('active');
-                document.getElementById('articlesTab').classList.add('active');
-            }
-        }
+  document.querySelectorAll('.tab')[4].classList.add('active');
+  document.getElementById('articlesTab').classList.add('active');
+} else if (tabName === 'settings') {
+  document.querySelectorAll('.tab')[5].classList.add('active');
+  document.getElementById('settingsTab').classList.add('active');
+  const savedToken = localStorage.getItem('yunur_token');
+  if (savedToken) {
+    document.getElementById('settingsToken').value = savedToken;
+    document.getElementById('tokenStatus').textContent = '✅ Токен сохранён в браузере';
+    document.getElementById('tokenStatus').style.color = '#1b5e20';
+  } else {
+    document.getElementById('tokenStatus').textContent = '⚠️ Токен не сохранён — автосохранение не работает';
+    document.getElementById('tokenStatus').style.color = '#d32f2f';
+  }
+}
 
         // НАСТРОЙКИ: базовая наценка в зависимости от взноса (как в index.html режим "База")
         const BASE_MARKUP = {
@@ -2659,6 +2695,47 @@
             link.download = 'investors.csv';
             link.click();
         }
+            function saveSettingsToken() {
+  const token = document.getElementById('settingsToken').value.trim();
+  if (token) {
+    localStorage.setItem('yunur_token', token);
+    document.getElementById('githubToken').value = token;
+    document.getElementById('tokenStatus').textContent = '✅ Токен сохранён! Автосохранение работает.';
+    document.getElementById('tokenStatus').style.color = '#1b5e20';
+  } else {
+    localStorage.removeItem('yunur_token');
+    document.getElementById('tokenStatus').textContent = '⚠️ Токен удалён. Автосохранение отключено.';
+    document.getElementById('tokenStatus').style.color = '#d32f2f';
+  }
+}
+
+async function testToken() {
+  const token = document.getElementById('settingsToken').value.trim() || localStorage.getItem('yunur_token');
+  const resultEl = document.getElementById('tokenTestResult');
+  if (!token) {
+    resultEl.textContent = '❌ Токен не введён';
+    resultEl.style.color = '#d32f2f';
+    return;
+  }
+  resultEl.textContent = '🔄 Проверка...';
+  resultEl.style.color = '#666';
+  try {
+    const resp = await fetch('https://api.github.com/user', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      resultEl.textContent = `✅ Подключено как ${data.login}`;
+      resultEl.style.color = '#1b5e20';
+    } else {
+      resultEl.textContent = '❌ Токен невалиден или истёк';
+      resultEl.style.color = '#d32f2f';
+    }
+  } catch (e) {
+    resultEl.textContent = '❌ Ошибка подключения';
+    resultEl.style.color = '#d32f2f';
+  }
+}
     </script>
 </body>
 </html>
