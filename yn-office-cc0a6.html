@@ -72,12 +72,8 @@
     <div id="loginSection" class="login-wrapper">
         <div class="login-box">
             <h1>🔐 YuNur Admin</h1>
-            <input type="password" id="masterCode" placeholder="Мастер-код">
-            <input type="password" id="githubToken" placeholder="GitHub-токен (для автосохранения)">
-            <label class="remember-row">
-                <input type="checkbox" id="rememberToken"> Запомнить токен в этом браузере
-            </label>
-            <button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
+           <input type="password" id="masterCode" placeholder="Мастер-код">
+<button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
             <p id="errorMsg" class="error-msg">Доступ запрещён</p>
         </div>
     </div>
@@ -614,41 +610,20 @@
 
         window.addEventListener('DOMContentLoaded', loadToken);
 
-        async function checkMasterCode() {
-            const code = document.getElementById('masterCode').value;
-            const encoder = new TextEncoder();
-            const data = encoder.encode(code);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-            if (inputHash !== actualMasterHash) {
-                document.getElementById('errorMsg').style.display = 'block';
-                return;
-            }
-            
-            // Проверка токена GitHub API
-            const token = document.getElementById('githubToken').value.trim() || localStorage.getItem('yunur_token') || '';
-            if (token) {
-                try {
-                    const resp = await fetch('https://api.github.com/user', {
-                        headers: { 'Authorization': 'Bearer ' + token }
-                    });
-                    if (!resp.ok && resp.status === 401) {
-                        showErrorBanner('Токен истёк или невалиден — создай новый и войди снова');
-                        return;
-                    }
-                } catch (e) {
-                    showErrorBanner('Токен истёк или невалиден — создай новый и войди снова');
-                    return;
-                }
-            }
-            
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            saveToken();
-        }
-        
+       async function checkMasterCode() {
+  const code = document.getElementById('masterCode').value;
+  const encoder = new TextEncoder();
+  const data = encoder.encode(code);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  if (inputHash !== actualMasterHash) {
+    document.getElementById('errorMsg').style.display = 'block';
+    return;
+  }
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+}
         function showErrorBanner(message) {
             let banner = document.getElementById('tokenErrorBanner');
             if (!banner) {
