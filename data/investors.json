@@ -15,6 +15,20 @@
         "type": "take_for_product",
         "name": "айфон 15 про 256гб",
         "amount": 80000
+      },
+      {
+        "date": "2026-10-09",
+        "type": "income",
+        "name": "доход по сделке \"айфон 15 про 256гб\", месяц 1",
+        "amount": 3120,
+        "key": "accrual_deal_1788957063015_month_1"
+      },
+      {
+        "date": "2026-11-09",
+        "type": "income",
+        "name": "доход по сделке \"айфон 15 про 256гб\", месяц 2",
+        "amount": 3120,
+        "key": "accrual_deal_1788957063015_month_2"
       }
     ],
     "deals": [
