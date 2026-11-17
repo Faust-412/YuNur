@@ -637,7 +637,7 @@
 
         window.addEventListener('DOMContentLoaded', loadToken);
 
-       async function checkMasterCode() {
+async function checkMasterCode() {
   const code = document.getElementById('masterCode').value;
   const encoder = new TextEncoder();
   const data = encoder.encode(code);
