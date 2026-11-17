@@ -64,5 +64,23 @@
     "invCode": "INV-B72D",
     "phoneTail": "000",
     "tier": "base"
+  },
+  {
+    "name": "Петр Первый",
+    "phoneTail": "321",
+    "invCode": "INV-D344",
+    "sum": 2000000,
+    "tier": "base",
+    "date": "2026-11-17",
+    "term": 24,
+    "transactions": [
+      {
+        "date": "2026-11-17",
+        "type": "deposit",
+        "name": "Первоначальный взнос",
+        "amount": 2000000
+      }
+    ],
+    "deals": []
   }
 ]
