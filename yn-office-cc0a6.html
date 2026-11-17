@@ -73,8 +73,10 @@
         <div class="login-box">
             <h1>🔐 YuNur Admin</h1>
            <input type="password" id="masterCode" placeholder="Мастер-код">
-<input type="password" id="githubToken" style="display:none">
-<input type="checkbox" id="rememberToken" checked style="display:none">
+<input type="password" id="githubToken" placeholder="GitHub-токен (необязательно)">
+<label class="remember-row">
+<input type="checkbox" id="rememberToken"> Запомнить токен в этом браузере
+</label>
 <button class="btn btn-primary" onclick="checkMasterCode()">Войти</button>
             <p id="errorMsg" class="error-msg">Доступ запрещён</p>
         </div>
