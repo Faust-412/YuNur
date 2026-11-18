@@ -1,5 +1,41 @@
 [
   {
+    "name": "Петр Первый",
+    "phoneTail": "321",
+    "invCode": "INV-D344",
+    "sum": 2000000,
+    "tier": "base",
+    "date": "2026-11-17",
+    "term": 24,
+    "transactions": [
+      {
+        "date": "2026-11-17",
+        "type": "deposit",
+        "name": "Первоначальный взнос",
+        "amount": 2000000
+      },
+      {
+        "date": "2026-11-18",
+        "type": "take_for_product",
+        "name": "машина",
+        "amount": 1400000
+      }
+    ],
+    "deals": [
+      {
+        "id": "deal_1795010184777",
+        "date": "2026-11-18",
+        "productName": "машина",
+        "amount": 1400000,
+        "depositPercent": 40,
+        "term": 6,
+        "markupRuble": 294000,
+        "monthlyIncome": 24500,
+        "active": true
+      }
+    ]
+  },
+  {
     "name": "Тестов Тест Тестович",
     "sum": 1000000,
     "date": "2026-09-09",
@@ -64,23 +100,5 @@
     "invCode": "INV-B72D",
     "phoneTail": "000",
     "tier": "base"
-  },
-  {
-    "name": "Петр Первый",
-    "phoneTail": "321",
-    "invCode": "INV-D344",
-    "sum": 2000000,
-    "tier": "base",
-    "date": "2026-11-17",
-    "term": 24,
-    "transactions": [
-      {
-        "date": "2026-11-17",
-        "type": "deposit",
-        "name": "Первоначальный взнос",
-        "amount": 2000000
-      }
-    ],
-    "deals": []
   }
 ]
