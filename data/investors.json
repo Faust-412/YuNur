@@ -19,6 +19,12 @@
         "type": "take_for_product",
         "name": "car",
         "amount": 1101100
+      },
+      {
+        "date": "2026-11-18",
+        "type": "topup",
+        "name": "Пополнение счёта",
+        "amount": 2
       }
     ],
     "deals": [
