@@ -143,7 +143,8 @@
       {
         "date": "2026-11-07",
         "sum": 11556,
-        "paid": false
+        "paid": true,
+        "paidSum": 11556
       },
       {
         "date": "2026-12-07",
