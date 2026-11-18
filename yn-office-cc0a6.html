@@ -479,6 +479,15 @@ function copyWaText() { const text = document.getElementById('waText').textConte
 function copyJson() { const json = document.getElementById('jsonOutput').textContent; navigator.clipboard.writeText(json).then(() => { alert('JSON скопирован!'); }); }
 function downloadJson() { const json = document.getElementById('jsonOutput').textContent; const blob = new Blob([json], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'clients.json'; a.click(); URL.revokeObjectURL(url); }
 async function findClient() {
+  let clients = [];
+try {
+const response = await fetch('data/clients.json?' + Date.now());
+clients = await response.json();
+window.allClients = clients;   // ← ЭТА СТРОКА НОВАЯ
+} catch (e) {
+alert('Ошибка загрузки данных');
+return;
+}
 const phone = document.getElementById('payPhone').value.trim();
 const code = document.getElementById('payCode').value.trim();
 if (!phone || !code) { alert('Введите телефон и код клиента'); return; }
