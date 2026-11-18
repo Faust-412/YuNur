@@ -17,20 +17,20 @@
       {
         "date": "2026-11-18",
         "type": "take_for_product",
-        "name": "машина",
-        "amount": 1400000
+        "name": "car",
+        "amount": 1101100
       }
     ],
     "deals": [
       {
-        "id": "deal_1795010184777",
+        "id": "deal_1795010243949",
         "date": "2026-11-18",
-        "productName": "машина",
-        "amount": 1400000,
+        "productName": "car",
+        "amount": 1101100,
         "depositPercent": 40,
-        "term": 6,
-        "markupRuble": 294000,
-        "monthlyIncome": 24500,
+        "term": 10,
+        "markupRuble": 257657,
+        "monthlyIncome": 12883,
         "active": true
       }
     ]
