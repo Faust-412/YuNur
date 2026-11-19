@@ -31,6 +31,12 @@
         "type": "take_for_product",
         "name": "айфон 15 про 256 гб",
         "amount": 75999
+      },
+      {
+        "date": "2026-11-19",
+        "type": "take_for_product",
+        "name": "Айфон 15 про 256 гб",
+        "amount": 55900
       }
     ],
     "deals": [
@@ -57,6 +63,19 @@
         "active": true,
         "clientHash": "45e8ff0f6edf487578fa6ea8d3b582dbffdf7dddb199792ab13e1b94995cc89f",
         "clientName": "Тест (Айфон 15 про 256 гб)"
+      },
+      {
+        "id": "deal_1795103410014",
+        "date": "2026-11-19",
+        "productName": "Айфон 15 про 256 гб",
+        "amount": 55900,
+        "depositPercent": 40,
+        "term": 10,
+        "markupRuble": 13081,
+        "monthlyIncome": 654,
+        "active": true,
+        "clientHash": "ded31a465819156de6fe7aea8cecc40025f4758991a18a7f668bc89eb5030a2e",
+        "clientName": "Мужик Таджик Абуров (Айфон 15 про 256 гб)"
       }
     ]
   },
