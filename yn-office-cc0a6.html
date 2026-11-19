@@ -193,6 +193,12 @@ body { font-family: 'DM Sans', sans-serif; background: #f8f9fa; color: #1a1a1a; 
 </div>
 <div id="takeForProductForm" class="result-box hidden" style="background: #f5f5f5; margin-bottom: 20px;">
 <h4>Взять на товар</h4>
+  <div class="form-group">
+<label>Клиент (кто берёт товар)</label>
+<select id="takeClientSelect">
+<option value="">Выбрать клиента...</option>
+</select>
+</div>
 <div class="form-row">
 <div class="form-group"><label>Название товара</label><input type="text" id="takeProductName" placeholder="iPhone 17 Pro"></div>
 <div class="form-group"><label>Сумма (₽)</label><input type="number" id="takeProductAmount" placeholder="100000" oninput="calculateDealPreview()"></div>
@@ -947,7 +953,33 @@ renderInvestors(currentInvestors);
 }
 function toggleTopUpForm() { const form = document.getElementById('topUpForm'); form.classList.toggle('hidden'); document.getElementById('takeForProductForm').classList.add('hidden'); }
 function toggleTakeForProductForm() { const form = document.getElementById('takeForProductForm'); form.classList.toggle('hidden'); document.getElementById('topUpForm').classList.add('hidden'); }
-function validateTopUpAmount() {
+function validateTopUpAmount() 
+async function toggleTakeForProductForm() {
+const form = document.getElementById('takeForProductForm');
+form.classList.toggle('hidden');
+document.getElementById('topUpForm').classList.add('hidden');
+// Загружаем список клиентов в select
+if (!form.classList.contains('hidden')) {
+await loadClientsToSelect();
+}
+}
+async function loadClientsToSelect() {
+const select = document.getElementById('takeClientSelect');
+select.innerHTML = '<option value="">Выбрать клиента...</option>';
+try {
+const response = await fetch('data/clients.json?' + Date.now());
+const clients = await response.json();
+clients.forEach(c => {
+const option = document.createElement('option');
+option.value = c.hash;
+option.textContent = c.name;
+option.dataset.item = c.item || '';
+select.appendChild(option);
+});
+} catch (e) {
+console.error('Не удалось загрузить клиентов', e);
+}
+}{
 const amountInput = document.getElementById('topUpAmount');
 const errorHint = document.getElementById('topUpErrorHint');
 const amount = parseInt(amountInput.value) || 0;
@@ -1018,7 +1050,17 @@ const amount = parseInt(document.getElementById('takeProductAmount').value);
 const mode = document.getElementById('takeDealMode').value;
 const depositPercent = parseInt(document.getElementById('takeBaseDeposit').value) || parseInt(document.getElementById('takeMiniDeposit').value);
 const term = parseInt(document.getElementById('takeTerm').value);
-if (!productName || !amount || !depositPercent || !term) { alert('Заполните все поля'); return; }
+const clientSelect = document.getElementById('takeClientSelect');
+const clientHash = clientSelect.value;
+const clientName = clientSelect.options[clientSelect.selectedIndex]?.text || '';
+if (!productName || !amount || !depositPercent || !term) {
+alert('Заполните все поля');
+return;
+}
+if (!clientHash) {
+alert('Выберите клиента из списка');
+return;
+ }
 const inv = currentInvestors[selectedInvestorIndex];
 const metrics = calculateInvestorMetrics(inv);
 if (metrics.onAccount < amount) { alert(`Недостаточно средств на счёте. Доступно: ${metrics.onAccount.toLocaleString('ru-RU')} ₽`); return; }
@@ -1031,18 +1073,31 @@ const today = new Date().toISOString().split('T')[0];
 const dealId = 'deal_' + Date.now();
 inv.transactions.push({ date: today, type: 'take_for_product', name: productName, amount: amount });
 inv.deals.push({ id: dealId, date: today, productName: productName, amount: amount, depositPercent: depositPercent, term: term, markupRuble: markupRuble, monthlyIncome: monthlyIncome, active: true });
-const jsonStr = JSON.stringify(currentInvestors, null, 2);
+const jsonStr = JSON.stringify(currentInvestors, null,
+                               inv.deals.push({
+id: dealId,
+date: today,
+productName: productName,
+amount: amount,
+depositPercent: depositPercent,
+term: term,
+markupRuble: markupRuble,
+monthlyIncome: monthlyIncome,
+active: true,
+clientHash: clientHash,
+clientName: clientName
+});2);
 const saved = await commitInvestorsToGithub(jsonStr, `investor: take for product ${productName}`);
-if (saved) { document.getElementById('takeProductName').value = ''; document.getElementById('takeProductAmount').value = ''; document.getElementById('takeBaseDeposit').value = ''; document.getElementById('takeMiniDeposit').value = ''; document.getElementById('takeTerm').value = ''; document.getElementById('takeForProductForm').classList.add('hidden'); updateInvestorCardDisplay(inv); }
+if (saved) {
+document.getElementById('takeProductName').value = '';
+document.getElementById('takeProductAmount').value = '';
+document.getElementById('takeBaseDeposit').value = '';
+document.getElementById('takeMiniDeposit').value = '';
+document.getElementById('takeTerm').value = '';
+document.getElementById('takeClientSelect').value = '';
+document.getElementById('takeForProductForm').classList.add('hidden');
+updateInvestorCardDisplay(inv);
 }
-async function addInvestor() {
-const nameInput = document.getElementById('invName');
-const phoneTailInput = document.getElementById('invPhoneTail');
-const sumInput = document.getElementById('invSum');
-const tierSelect = document.getElementById('invTier');
-const termInput = document.getElementById('invTerm');
-const savedMsg = document.getElementById('invSavedMsg');
-const errorHint = document.getElementById('invErrorHint');
 const name = nameInput.value.trim();
 const phoneTail = (phoneTailInput.value || '').trim().slice(-3);
 const sum = parseInt(sumInput.value);
