@@ -25,6 +25,12 @@
         "type": "topup",
         "name": "Пополнение счёта",
         "amount": 2
+      },
+      {
+        "date": "2026-11-19",
+        "type": "take_for_product",
+        "name": "айфон 15 про 256 гб",
+        "amount": 75999
       }
     ],
     "deals": [
@@ -38,6 +44,19 @@
         "markupRuble": 257657,
         "monthlyIncome": 12883,
         "active": true
+      },
+      {
+        "id": "deal_1795096863527",
+        "date": "2026-11-19",
+        "productName": "айфон 15 про 256 гб",
+        "amount": 75999,
+        "depositPercent": 40,
+        "term": 10,
+        "markupRuble": 17784,
+        "monthlyIncome": 889,
+        "active": true,
+        "clientHash": "45e8ff0f6edf487578fa6ea8d3b582dbffdf7dddb199792ab13e1b94995cc89f",
+        "clientName": "Тест (Айфон 15 про 256 гб)"
       }
     ]
   },
