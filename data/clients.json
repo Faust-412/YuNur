@@ -232,12 +232,14 @@
       {
         "date": "2026-09-06",
         "sum": 13500,
-        "paid": true
+        "paid": true,
+        "paidSum": 15550
       },
       {
         "date": "2026-10-06",
         "sum": 13500,
-        "paid": false
+        "paid": true,
+        "paidSum": 2050
       },
       {
         "date": "2026-11-06",
