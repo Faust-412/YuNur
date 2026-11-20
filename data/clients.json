@@ -286,12 +286,15 @@
       {
         "date": "2027-02-17",
         "sum": 3700,
-        "paid": false
+        "paid": true,
+        "paidSum": 3990,
+        "bonusGiven": true
       },
       {
         "date": "2027-03-17",
         "sum": 3700,
-        "paid": false
+        "paid": true,
+        "paidSum": 290
       },
       {
         "date": "2027-04-17",
@@ -299,7 +302,7 @@
         "paid": false
       }
     ],
-    "bonus": 59.56,
+    "bonus": 91.48,
     "mode": "mini",
     "refCode": "RF-6C9C",
     "refBy": ""
